@@ -30,6 +30,10 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
 #        TS_STATE="tailscale.state"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN sudo ulimit -n 65535
+
+
+
 RUN sudo rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' | sudo tee /etc/apt/apt.conf.d/keep-cache
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
