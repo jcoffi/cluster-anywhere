@@ -30,7 +30,7 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
 #        TS_STATE="tailscale.state"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN sudo ulimit -n 65535
+#RUN sudo ulimit -n 65535
 
 
 
