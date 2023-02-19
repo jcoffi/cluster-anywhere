@@ -69,20 +69,17 @@ RUN sudo apt update \
 && sudo chmod +x /home/ray/run_tests.sh \
 && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
     pandas \
-    'dask==2022.2.0' \
     modin[ray] \
     'ray>=2.2.0' \
     fredapi \
     sympy \
     numba \
-    numpy \
     datetime \
     icecream \
     geojson \
     tsfresh \
     crate[sqlalchemy] \
     alpaca_py \
-    auto-sklearn \
     pandas_datareader \
     yfinance
 
