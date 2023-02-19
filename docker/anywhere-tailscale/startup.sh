@@ -150,7 +150,7 @@ if [ ! $statedata ] && [ $clusterhosts = "nexus.chimp-beta.ts.net:4300" ]; then
 fi
 
 if [ $location = "onPrem" ]; then
-    node_store_allow_mmap="-Cnode.store.allow_mmap=true \\"
+    #node_store_allow_mmap="-Cnode.store.allow_mmap=false \\"
 fi
 
 # If NODETYPE is "head", run the supernode command and append some text to .bashrc
