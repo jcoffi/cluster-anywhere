@@ -94,11 +94,9 @@ if [ $? -ne 0 ]; then
   echo "Error: failed to parse list of devices from Tailscale API response"
   clusterhosts="nexus.chimp-beta.ts.net:4300"
 fi
-export CLUSTERHOSTS=$clusterhosts
-
 # Output the clusterhosts left as a comma-separated list. This will be used by the crate seed host parameter
-#clusterhosts=$(echo $response | tr ' ' '\n' | awk '{print $0".chimp-beta.ts.net:4300"}' | tr 'n' ',')
-
+clusterhosts=$(echo $response | tr ' ' '\n' | awk '{print $0".chimp-beta.ts.net:4300"}' | tr 'n' ',')
+export CLUSTERHOSTS=$clusterhosts
 
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
