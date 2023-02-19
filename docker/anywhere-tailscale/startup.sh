@@ -207,7 +207,6 @@ term_handler(){
 trap 'term_handler' SIGTERM
 
 #echo "***Starting"
-#/bin/tcsh ./my-command
 
 # Running something in foreground, otherwise the container will stop
 while true
