@@ -149,9 +149,9 @@ if [ ! $statedata ]; then
     cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
 fi
 
-if [ $location = "onPrem" ]; then
+#if [ $location = "onPrem" ]; then
     #node_store_allow_mmap="-Cnode.store.allow_mmap=false \\"
-fi
+#fi
 
 # If NODETYPE is "head", run the supernode command and append some text to .bashrc
 if [ "$NODETYPE" = "head" ]; then
