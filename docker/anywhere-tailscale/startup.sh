@@ -145,7 +145,7 @@ else
 fi
 
 
-if [ ! $statedata ] && [ $clusterhosts = "nexus.chimp-beta.ts.net:4300" ]; then
+if [ ! $statedata ]; then
     cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
 fi
 
