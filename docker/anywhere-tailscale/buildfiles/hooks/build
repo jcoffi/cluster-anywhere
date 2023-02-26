@@ -1,4 +1,3 @@
 #!/bin/bash
-#--cache-from=rayproject/ray-ml:latest-py38-$DOCKER_TAG
 # Set image type based on build argument
-docker build . --ulimit memlock=-1 -t jcoffi/cluster-anywhere:$DOCKER_TAG --build-arg IMAGETYPE=$DOCKER_TAG
+docker build . --force-rm --ulimit memlock=-1 -t jcoffi/cluster-anywhere:$DOCKER_TAG --build-arg IMAGETYPE=$DOCKER_TAG
