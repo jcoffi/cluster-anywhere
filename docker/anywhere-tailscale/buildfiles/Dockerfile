@@ -1,5 +1,5 @@
 ARG IMAGETYPE=cpu
-FROM rayproject/ray-ml:latest-py38-$IMAGETYPE
+FROM rayproject/ray:2.2.0-py38-$IMAGETYPE
 ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         MODIN_ENGINE=ray \
         MODIN_RAY_CLUSTER=True \
@@ -29,7 +29,7 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
 #        TS_STATEDIR="/data/tailscale/" \
 #        TS_STATE="tailscale.state"
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+#SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 #RUN sudo ulimit -n 65535
 
 
@@ -70,7 +70,7 @@ RUN sudo apt update \
 && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
     pandas \
     modin[ray] \
-    'ray>=2.2.0' \
+    'ray[air]>=2.2.0' \
     fredapi \
     sympy \
     numba \
