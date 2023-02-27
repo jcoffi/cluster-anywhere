@@ -70,6 +70,8 @@ RUN sudo apt update \
 && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
     pandas \
     modin[ray] \
+    'sqlalchemy<2.0' \
+    crate[sqlalchemy] \
     'ray[air]==2.2' \
     torch \
     fredapi \
@@ -79,7 +81,6 @@ RUN sudo apt update \
     icecream \
     geojson \
     tsfresh \
-    crate[sqlalchemy] \
     alpaca_py \
     pandas_datareader \
     yfinance
