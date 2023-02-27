@@ -70,7 +70,8 @@ RUN sudo apt update \
 && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
     pandas \
     modin[ray] \
-    'ray[air]==2.2.0' \
+    'ray[air]==2.2' \
+    torch \
     fredapi \
     sympy \
     numba \
