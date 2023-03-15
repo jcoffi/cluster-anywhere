@@ -71,6 +71,27 @@ functiontodetermine_cloud_provider() {
 
 functiontodetermine_cloud_provider
 
+functiontodetermine_cpu() {
+  # Check if lscpu command exists
+  if command -v lscpu >/dev/null 2>&1 ; then
+      # Get vendor information from lscpu output
+      vendor=$(lscpu | grep 'Vendor ID' | awk '{print $3}')
+
+      # Check if vendor is AMD or Intel
+      if [ "$vendor" == "AuthenticAMD" ]; then
+        export CPU_VENDOR=$vendor
+      elif [ "$vendor" == "GenuineIntel" ]; then
+        export CPU_VENDOR=$vendor
+      else
+          echo "CPU vendor could not be determined."
+      fi
+  else
+      echo "lscpu command not found. Unable to determine CPU vendor."
+  fi
+}
+
+functiontodetermine_cpu
+
 set -ae
 
 ## add in code to search and remove the machine name from tailscale if it already exists
