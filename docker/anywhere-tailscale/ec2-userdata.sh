@@ -1,8 +1,8 @@
 #! /bin/sh -x
 curl https://get.docker.com | sudo sh
-sudo usermod -aG docker ubuntu || true
 sleep 10
 sudo touch ~/.sudo_as_admin_successful
+sudo usermod -aG docker ubuntu || true
 sudo docker pull jcoffi/cluster-anywhere:cpu
 sudo docker pull containrrr/watchtower:latest
 sudo docker run --name=watchtower --env=WATCHTOWER_CLEANUP=true --env=WATCHTOWER_INCLUDE_STOPPED=true --env=WATCHTOWER_REVIVE_STOPPED=true --env=WATCHTOWER_INCLUDE_RESTARTING=true --env=WATCHTOWER_POLL_INTERVAL=900 --env=WATCHTOWER_TIMEOUT=300 --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin --volume=/var/run/docker.sock:/var/run/docker.sock --workdir=/ --restart=unless-stopped --runtime=runc -d containrrr/watchtower:latest
