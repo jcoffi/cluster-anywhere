@@ -166,15 +166,11 @@ else
 fi
 
 
-if [ ! $statedata ]; then
-    cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
-fi
-
 #if [ $location = "onPrem" ]; then
     #node_store_allow_mmap="-Cnode.store.allow_mmap=false \\"
 #fi
 
-# If NODETYPE is "head", run the supernode command and append some text to .bashrc
+
 if [ "$NODETYPE" = "head" ]; then
     node_name='-Cnode.name=nexus \\'
     node_master='-Cnode.master=true \\'
@@ -182,9 +178,12 @@ if [ "$NODETYPE" = "head" ]; then
 
     ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address nexus.chimp-beta.ts.net
 
-    #there is state data and we can see other hosts in the cluster, just start up
 
 else
+
+    if [ ! $statedata ]; then
+        cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
+    fi
 
     ray start --address='nexus.chimp-beta.ts.net:6379' --disable-usage-stats --node-ip-address $HOSTNAME.chimp-beta.ts.net
 
