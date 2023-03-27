@@ -153,11 +153,11 @@ done
 # check if we already have state data
 if [ -d "$CRATE_HEAP_DUMP_PATH" ]; then
 
-	if [ -d "$CRATE_HEAP_DUMP_PATH/nodes/0/" ] && [ "$(ls -A $CRATE_HEAP_DUMP_PATH/nodes/0/)" ]; then
-        echo "$CRATE_HEAP_DUMP_PATH/nodes/0/ is not Empty"
+	if [ -d "$CRATE_HEAP_DUMP_PATH/nodes/0/_state/" ] && [ "$(ls -A $CRATE_HEAP_DUMP_PATH/nodes/0/_state/)" ]; then
+        echo "$CRATE_HEAP_DUMP_PATH/nodes/0/_state/ is not Empty"
         statedata=$true
 	else
-        echo "$CRATE_HEAP_DUMP_PATH/nodes/0/ is Empty"
+        echo "$CRATE_HEAP_DUMP_PATH/nodes/0/_state/ is Empty"
         statedata=$false
 	fi
 else
