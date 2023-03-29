@@ -122,7 +122,7 @@ get_clusterhosts() {
 }
 
 
-$clusterhosts=$(get_clusterhosts)
+clusterhosts=$(get_clusterhosts)
 
 export CLUSTERHOSTS=$clusterhosts
 
