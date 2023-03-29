@@ -103,7 +103,7 @@ curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY
 
 
 
-def get_clusterhosts():
+get_clusterhosts() {
   ### getting a list of remaining devices
   # Make the GET request to the Tailscale API to retrieve the list of all devices
   # This could be updated to grab the DNS domain too to be more flexable.
@@ -119,7 +119,8 @@ def get_clusterhosts():
   fi
 
   clusterhosts="$(echo $clusterhosts | tr ' ' ',')"
-  return
+}
+
 
 $clusterhosts=get_clusterhosts
 
