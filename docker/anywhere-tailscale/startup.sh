@@ -103,26 +103,22 @@ curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY
 
 
 
-get_clusterhosts() {
-  ### getting a list of remaining devices
-  # Make the GET request to the Tailscale API to retrieve the list of all devices
-  # This could be updated to grab the DNS domain too to be more flexable.
-  # This is used for the parameter discovery.seed.hosts in crate.yml
-  clusterhosts=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices 2>/dev/null)
-  if [ $? -ne 0 ]; then
-    echo "Error: failed to fetch list of devices from Tailscale API"
-  fi
-  clusterhosts=$(echo $clusterhosts | jq -r '.devices[].name')
-  if [ $? -ne 0 ]; then
-    echo "Error: failed to parse list of devices from Tailscale API response"
-    clusterhosts="nexus.chimp-beta.ts.net:4300"
-  fi
 
-  clusterhosts="$(echo $clusterhosts | tr ' ' ',')"
-}
+### getting a list of remaining devices
+# Make the GET request to the Tailscale API to retrieve the list of all devices
+# This could be updated to grab the DNS domain too to be more flexable.
+# This is used for the parameter discovery.seed.hosts in crate.yml
+clusterhosts=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices 2>/dev/null)
+if [ $? -ne 0 ]; then
+  echo "Error: failed to fetch list of devices from Tailscale API"
+fi
+clusterhosts=$(echo $clusterhosts | jq -r '.devices[].name')
+if [ $? -ne 0 ]; then
+  echo "Error: failed to parse list of devices from Tailscale API response"
+  clusterhosts="nexus.chimp-beta.ts.net:4300"
+fi
 
-
-clusterhosts=$(get_clusterhosts)
+clusterhosts="$(echo $clusterhosts | tr ' ' ',')"
 
 export CLUSTERHOSTS=$clusterhosts
 
@@ -217,7 +213,6 @@ term_handler(){
     echo "Running Cluster Election"
     /usr/local/bin/crash -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';"
     echo "Running Decommission"
-    $clusterhosts=get_clusterhosts
     /usr/local/bin/crash --hosts ${clusterhosts} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';"
 
 
