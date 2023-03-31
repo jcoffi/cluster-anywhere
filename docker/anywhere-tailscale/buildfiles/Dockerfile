@@ -82,7 +82,7 @@ RUN sudo apt update \
     geojson \
     tsfresh \
     alpaca_py \
-    pandas_datareader \
+    tiingo \
     yfinance
 
     # dask version compatible with ray and modin

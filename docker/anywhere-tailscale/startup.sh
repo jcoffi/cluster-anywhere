@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
+#echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
 echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
 echo "net.ipv6.conf.lo.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
 echo "vm.max_map_count = 262144" | sudo tee -a /etc/sysctl.conf
@@ -168,9 +168,10 @@ else
 fi
 
 
-#if [ $location = "onPrem" ]; then
-    #node_store_allow_mmap="-Cnode.store.allow_mmap=false \\"
-#fi
+if [ $location = "AWS" ]; then
+    node_store_allow_mmap="-Cnode.store.allow_mmap=true \\"
+    node_master='-Cnode.master=false \\'
+fi
 
 
 if [ "$NODETYPE" = "head" ]; then
@@ -208,12 +209,13 @@ fi
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 term_handler(){
+    echo "Running Cluster Election"
+    /usr/local/bin/crash --hosts ${clusterhosts} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
+    echo "Running Decommission"
+    /usr/local/bin/crash --hosts ${clusterhosts} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
     echo "***Stopping"
     ray stop -g 60 -v
-    echo "Running Cluster Election"
-    /usr/local/bin/crash -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';"
-    echo "Running Decommission"
-    /usr/local/bin/crash --hosts ${clusterhosts} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';"
+
 
 
     deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
