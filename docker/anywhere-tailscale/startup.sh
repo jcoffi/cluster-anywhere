@@ -206,6 +206,16 @@ fi
 #[ WITH (access_key = ${AWS_ACCESS_KEY_ID}, secret_key = ${AWS_SECRET_ACCESS_KEY}), endpoint = s3.${AWS_DEFAULT_REGION}.amazonaws.com, bucket = ${AWS_S3_BUCKET}, base_path=crate/ ]
 #
 
+#!/bin/bash
+
+if grep -q microsoft /proc/version; then
+  conda install -y jupyterlab &&  jupyter-lab  --allow-root --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
+fi
+
+
+
+
+
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 term_handler(){
