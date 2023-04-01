@@ -243,6 +243,7 @@ term_handler(){
 
 # Setup signal handlers
 trap 'term_handler' SIGTERM
+trap 'term_handler' EXIT
 
 #echo "***Starting"
 
