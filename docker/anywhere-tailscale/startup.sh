@@ -179,10 +179,6 @@ if [ "$NODETYPE" = "head" ]; then
     node_master='-Cnode.master=true \\'
     node_data='-Cnode.data=false \\'
 
-    if [ ! $statedata ]; then
-        cluster_initial_master_nodes='-Ccluster.initial_master_nodes=${clusterhosts} \\'
-    fi
-
     ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address nexus.chimp-beta.ts.net
 
 
