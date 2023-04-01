@@ -173,6 +173,11 @@ if [ $location = "AWS" ]; then
     node_master='-Cnode.master=false \\'
 fi
 
+if [ ! $statedata ]; then
+   cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
+fi
+
+
 
 if [ "$NODETYPE" = "head" ]; then
     node_name='-Cnode.name=nexus \\'
@@ -184,9 +189,7 @@ if [ "$NODETYPE" = "head" ]; then
 
 else
 
-    if [ ! $statedata ]; then
-        cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
-    fi
+
 
     ray start --address='nexus.chimp-beta.ts.net:6379' --disable-usage-stats --node-ip-address $HOSTNAME.chimp-beta.ts.net
 
