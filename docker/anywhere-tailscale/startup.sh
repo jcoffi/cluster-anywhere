@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -z "$TSAPIKEY" ]; then
+  echo "Environmental variable for TSAPIKEY not set"
+  exit 1
+fi
 
 #echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
 echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
@@ -17,13 +21,8 @@ memory=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 
 # Convert kB to GB
 gb_memory=$(echo "scale=2; $memory / 1048576" | bc)
-shm_memory=$(echo "scale=2; $gb_memory / 3" | bc)
+shm_memory=$(echo "scale=0; $gb_memory / 3" | bc)
 num_cpus=$(nproc)
-
-if [ -z "$TSAPIKEY" ]; then
-  echo "Environmental variable for TSAPIKEY not set"
-  exit 1
-fi
 
 #settings number of cpus for optimial (local) speed
 export NUMEXPR_MAX_THREADS=$num_cpus
@@ -32,11 +31,9 @@ export MAKEFLAGS="-j$num_cpus"
 #used by conda
 export CPU_COUNT=$num_cpus
 
-CRATE_HEAP_SIZE=$(echo $shm_memory | awk '{print int($0+0.5)}')
-export CRATE_HEAP_SIZE=$CRATE_HEAP_SIZE"G"
-export shm_memory=$shm_memory"G"
-
-
+#CRATE_HEAP_SIZE=$(echo $shm_memory | awk '{print int($0+0.5)}')
+export CRATE_HEAP_SIZE="${shm_memory}G"
+export shm_memory="${shm_memory}G"
 
 functiontodetermine_cloud_provider() {
   if [ -f "/sys/hypervisor/uuid" ]; then
