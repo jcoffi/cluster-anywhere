@@ -241,9 +241,14 @@ term_handler(){
     exit 0
 }
 
+error_handler(){
+  exit 1
+}
+
 # Setup signal handlers
 trap 'term_handler' SIGTERM
 trap 'term_handler' EXIT
+trap 'error_handler' ERR
 
 #echo "***Starting"
 
