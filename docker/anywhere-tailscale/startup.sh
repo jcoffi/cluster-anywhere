@@ -17,19 +17,23 @@ echo "vm.swappiness = 1" | sudo tee -a /etc/sysctl.conf
 IPADDRESS=$(curl -s http://ifconfig.me/ip)
 export IPADDRESS=$IPADDRESS
 
+
+echo "export NUMEXPR_MAX_THREADS='$(nproc)'" | sudo tee -a ~/.bashrc
+echo "export MAKEFLAGS='-j$(nproc)'" | sudo tee -a ~/.bashrc
+echo "export CPU_COUNT='$(nproc)'" | sudo tee -a ~/.bashrc
+
 memory=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 
 # Convert kB to GB
 gb_memory=$(echo "scale=2; $memory / 1048576" | bc)
 shm_memory=$(echo "scale=0; $gb_memory / 3" | bc)
-num_cpus=$(nproc)
 
 #settings number of cpus for optimial (local) speed
-export NUMEXPR_MAX_THREADS=$num_cpus
+export NUMEXPR_MAX_THREADS='$(nproc)'
 #used by conda to specify cpus for building packages
-export MAKEFLAGS="-j$num_cpus"
+export MAKEFLAGS='-j$(nproc)'
 #used by conda
-export CPU_COUNT=$num_cpus
+export CPU_COUNT='$(nproc)'
 
 #CRATE_HEAP_SIZE=$(echo $shm_memory | awk '{print int($0+0.5)}')
 export CRATE_HEAP_SIZE="${shm_memory}G"
