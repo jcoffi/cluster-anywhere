@@ -224,9 +224,10 @@ fi
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 term_handler(){
     echo "Running Cluster Election"
-    /usr/local/bin/crash --hosts ${clusterhosts} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
+    # changed these from "clusterhosts" to nexus because so many of the AWS instances shut down to quick to send out the message outside of AWS if they all shut down at once
+    /usr/local/bin/crash --hosts nexus -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
     echo "Running Decommission"
-    /usr/local/bin/crash --hosts ${clusterhosts} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
+    /usr/local/bin/crash --hosts nexus -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
     echo "***Stopping"
     ray stop -g 60 -v
 
