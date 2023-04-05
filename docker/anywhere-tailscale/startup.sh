@@ -176,11 +176,10 @@ if [ ! $location = "OnPrem" ]; then
 fi
 
 if [ ! $statedata ]; then
-
   if [ $clusterhosts = "nexus.chimp-beta.ts.net:4300" ]; then
-   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
+   cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
   fi
-  cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
+  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
 fi
 
 
