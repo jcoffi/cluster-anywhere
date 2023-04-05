@@ -6,8 +6,8 @@ if [ -z "$TSAPIKEY" ]; then
 fi
 
 #echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-echo "net.ipv6.conf.lo.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
+#echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
+#echo "net.ipv6.conf.lo.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
 echo "vm.max_map_count = 262144" | sudo tee -a /etc/sysctl.conf
 echo "vm.swappiness = 1" | sudo tee -a /etc/sysctl.conf
 
@@ -176,10 +176,11 @@ if [ ! $location = "OnPrem" ]; then
 fi
 
 if [ ! $statedata ]; then
+
   if [ $clusterhosts = "nexus.chimp-beta.ts.net:4300" ]; then
    discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
-   cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
   fi
+  cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
 fi
 
 
