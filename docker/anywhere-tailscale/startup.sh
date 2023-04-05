@@ -119,8 +119,10 @@ if [ $? -ne 0 ]; then
   clusterhosts="nexus.chimp-beta.ts.net:4300"
 fi
 
+# making it a comma separated list
 clusterhosts="$(echo $clusterhosts | tr ' ' ',')"
-
+# removing AWS instances
+clusterhosts="$(echo $clusterhosts | sed 's/i-[^,]*,//g')"
 export CLUSTERHOSTS=$clusterhosts
 
 # Make sure directories exist as they are not automatically created
@@ -174,7 +176,10 @@ if [ ! $location = "OnPrem" ]; then
 fi
 
 if [ ! $statedata ]; then
+  if [ $clusterhosts = "nexus.chimp-beta.ts.net:4300" ]; then
+   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
    cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
+  fi
 fi
 
 
