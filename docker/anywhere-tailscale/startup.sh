@@ -170,7 +170,6 @@ fi
 
 
 if [ ! $location = "OnPrem" ]; then
-    node_store_allow_mmap='-Cnode.store.allow_mmap=true \\'
     node_master='-Cnode.master=false \\'
 fi
 
