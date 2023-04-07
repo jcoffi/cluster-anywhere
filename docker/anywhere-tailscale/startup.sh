@@ -284,7 +284,7 @@ function check_ray_connection() {
 
 while true
 do
-  #sleep 60
+  sleep 60
   get_cluster_hosts
   check_ray_connection
 done
