@@ -285,6 +285,6 @@ function check_ray_connection() {
 while true
 do
   sleep 60
-  get_cluster_hosts
+  export CLUSTERHOSTS="$(get_cluster_hosts)"
   check_ray_connection
 done
