@@ -1,3 +1,8 @@
 #!/bin/bash
+export NUMEXPR_MAX_THREADS='$(nproc)'
+#used by conda to specify cpus for building packages
+export MAKEFLAGS='-j$(nproc)'
+#used by conda
+export CPU_COUNT='$(nproc)'
 # Set image type based on build argument
 docker build . --force-rm --ulimit memlock=-1 -t jcoffi/cluster-anywhere:$DOCKER_TAG --build-arg IMAGETYPE=$DOCKER_TAG
