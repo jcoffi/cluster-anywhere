@@ -129,10 +129,10 @@ function get_cluster_hosts() {
   # removing AWS instances
   clusterhosts="$(echo $clusterhosts | sed 's/i-[^,]*,//g')"
 
-  export CLUSTERHOSTS=$clusterhosts
+  echo $clusterhosts
 }
 
-get_cluster_hosts
+export CLUSTERHOSTS="$(get_cluster_hosts)"
 
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
