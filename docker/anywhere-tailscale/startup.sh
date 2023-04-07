@@ -109,21 +109,30 @@ curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY
 # Make the GET request to the Tailscale API to retrieve the list of all devices
 # This could be updated to grab the DNS domain too to be more flexable.
 # This is used for the parameter discovery.seed.hosts in crate.yml
-clusterhosts=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices 2>/dev/null)
-if [ $? -ne 0 ]; then
-  echo "Error: failed to fetch list of devices from Tailscale API"
-fi
-clusterhosts=$(echo $clusterhosts | jq -r '.devices[].name')
-if [ $? -ne 0 ]; then
-  echo "Error: failed to parse list of devices from Tailscale API response"
-  clusterhosts="nexus.chimp-beta.ts.net:4300"
-fi
+function get_cluster_hosts() {
+  #TSAPIKEY=$1
 
-# making it a comma separated list
-clusterhosts="$(echo $clusterhosts | tr ' ' ',')"
-# removing AWS instances
-clusterhosts="$(echo $clusterhosts | sed 's/i-[^,]*,//g')"
-export CLUSTERHOSTS=$clusterhosts
+  clusterhosts=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices 2>/dev/null)
+  if [ $? -ne 0 ]; then
+    #echo "Error: failed to fetch list of devices from Tailscale API"
+    return 1
+  fi
+
+  clusterhosts=$(echo $clusterhosts | jq -r '.devices[].name')
+  if [ $? -ne 0 ]; then
+    #echo "Error: failed to parse list of devices from Tailscale API response"
+    clusterhosts="nexus.chimp-beta.ts.net:4300"
+  fi
+
+  # making it a comma-separated list
+  clusterhosts="$(echo $clusterhosts | tr ' ' ',')"
+  # removing AWS instances
+  clusterhosts="$(echo $clusterhosts | sed 's/i-[^,]*,//g')"
+
+  export CLUSTERHOSTS=$clusterhosts
+}
+
+get_cluster_hosts
 
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
@@ -214,8 +223,6 @@ fi
 #[ WITH (access_key = ${AWS_ACCESS_KEY_ID}, secret_key = ${AWS_SECRET_ACCESS_KEY}), endpoint = s3.${AWS_DEFAULT_REGION}.amazonaws.com, bucket = ${AWS_S3_BUCKET}, base_path=crate/ ]
 #
 
-#!/bin/bash
-
 if grep -q microsoft /proc/version; then
   conda install -y jupyterlab &&  jupyter-lab  --allow-root --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
 fi
@@ -258,8 +265,26 @@ trap 'error_handler' ERR
 #echo "***Starting"
 
 # Running something in foreground, otherwise the container will stop
+#while true
+#do
+#  #sleep 1000 # Doesn't work with sleep. Not sure why.
+#  tail -f /dev/null & wait ${!}
+#done
+function check_ray_connection() {
+  ray_status=$(ray status 2>&1)
+
+  if [[ $ray_status == *"Error:"* ]]; then
+    #echo "Ray is not connected."
+    return 1
+  else
+    #echo "Ray is connected."
+    return 0
+  fi
+}
+
 while true
 do
-   #sleep 1000 - Doesn't work with sleep. Not sure why.
-   tail -f /dev/null & wait ${!}
+  #sleep 60
+  get_cluster_hosts
+  check_ray_connection
 done
