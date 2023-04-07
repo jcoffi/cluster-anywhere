@@ -93,7 +93,7 @@ functiontodetermine_cpu() {
 
 functiontodetermine_cpu
 
-set -ae
+#set -ae
 
 ## add in code to search and remove the machine name from tailscale if it already exists
 deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
@@ -185,9 +185,9 @@ if [ ! $location = "OnPrem" ]; then
 fi
 
 if [ ! $statedata ]; then
-  if [ "$CLUSTERHOSTS" = "nexus.chimp-beta.ts.net:4300" ]; then
-   cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
-  fi
+  #if [ "$CLUSTERHOSTS" = "nexus.chimp-beta.ts.net:4300" ]; then
+  # cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
+  #fi
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
 fi
 

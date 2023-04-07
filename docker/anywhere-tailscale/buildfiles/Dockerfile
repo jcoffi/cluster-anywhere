@@ -87,8 +87,6 @@ RUN sudo apt update \
     tiingo \
     yfinance
 
-    # dask version compatible with ray and modin
-
 #for direct connections from tailscale
 EXPOSE 41641/udp
 
