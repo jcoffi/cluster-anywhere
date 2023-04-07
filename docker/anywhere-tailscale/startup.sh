@@ -185,7 +185,7 @@ if [ ! $location = "OnPrem" ]; then
 fi
 
 if [ ! $statedata ]; then
-  if [ $clusterhosts = "nexus.chimp-beta.ts.net:4300" ]; then
+  if [ "${CLUSTERHOSTS}" = "nexus.chimp-beta.ts.net:4300" ]; then
    cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
   fi
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
@@ -217,7 +217,7 @@ fi
             ${node_store_allow_mmap}
             &
 
-/usr/local/bin/crash --hosts ${clusterhosts} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'all';" &
+/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'all';" &
 #CREATE REPOSITORY s3backup TYPE s3
 #[ WITH (parameter_name [= value], [, ...]) ]
 #[ WITH (access_key = ${AWS_ACCESS_KEY_ID}, secret_key = ${AWS_SECRET_ACCESS_KEY}), endpoint = s3.${AWS_DEFAULT_REGION}.amazonaws.com, bucket = ${AWS_S3_BUCKET}, base_path=crate/ ]
@@ -239,7 +239,7 @@ term_handler(){
     /usr/local/bin/crash --hosts nexus -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
     echo "Running Decommission"
     /usr/local/bin/crash --hosts nexus -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
-    echo "***Stopping"
+    echo "***Stopping***"
     ray stop -g 60 -v
 
 
