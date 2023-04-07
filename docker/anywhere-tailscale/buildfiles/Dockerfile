@@ -47,6 +47,7 @@ RUN sudo apt update \
 && sudo groupadd crate \
         && export PLATFORM="$( case $(uname --m) in x86_64) echo x64_linux ;; aarch64) echo aarch64_linux ;; esac)" \
         && CRATE_LATEST_TAG=$(curl -s https://api.github.com/repos/crate/crate/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') \
+        && CRASH_LATEST_TAG=$(curl -s https://api.github.com/repos/crate/crash/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') \
         && sudo mkdir -p /crate \
         && sudo adduser ray crate \
         && sudo chown -R ray /crate \
@@ -61,8 +62,8 @@ RUN sudo apt update \
         && sudo chown 1000 log4j2.properties \
         && sudo mv log4j2.properties /crate/config/log4j2.properties \
         && rm crate-${CRATE_LATEST_TAG}.tar.gz \
-        && curl -fSL -O https://cdn.crate.io/downloads/releases/crash_standalone_0.28.0 \
-        && sudo mv crash_standalone_0.28.0 /usr/local/bin/crash \
+        && curl -fSL -O https://cdn.crate.io/downloads/releases/crash_standalone_${CRASH_LATEST_TAG} \
+        && sudo mv crash_standalone_${CRASH_LATEST_TAG} /usr/local/bin/crash \
         && sudo chmod +x /usr/local/bin/crash \
 && curl -fSL -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh" \
 && sudo chmod +x /home/ray/startup.sh \
