@@ -114,25 +114,30 @@ function get_cluster_hosts() {
 
   clusterhosts=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices 2>/dev/null)
   if [ $? -ne 0 ]; then
-    #echo "Error: failed to fetch list of devices from Tailscale API"
+    echo "Error: failed to fetch list of devices from Tailscale API"
     return 1
   fi
 
   clusterhosts=$(echo $clusterhosts | jq -r '.devices[].name')
   if [ $? -ne 0 ]; then
-    #echo "Error: failed to parse list of devices from Tailscale API response"
-    clusterhosts="nexus.chimp-beta.ts.net:4300"
+    echo "Error: failed to parse list of devices from Tailscale API response"
+    clusterhosts="nexus:4300"
   fi
+
 
   # making it a comma-separated list
   clusterhosts="$(echo $clusterhosts | tr ' ' ',')"
   # removing AWS instances
   clusterhosts="$(echo $clusterhosts | sed 's/i-[^,]*,//g')"
+  # strip domain names
+  clusterhosts="$(echo $clusterhosts | sed 's/.chimp-beta.ts.net//g')"
 
   echo $clusterhosts
 }
 
 export CLUSTERHOSTS="$(get_cluster_hosts)"
+
+
 
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
