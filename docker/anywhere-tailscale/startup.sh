@@ -209,22 +209,10 @@ else
 
 fi
 
-/crate/bin/crate \
-            ${cluster_initial_master_nodes}
-            ${node_name}
-            ${node_master}
-            ${node_data}
-            ${node_store_allow_mmap}
-            &
 
-/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'all';" &
-#CREATE REPOSITORY s3backup TYPE s3
-#[ WITH (parameter_name [= value], [, ...]) ]
-#[ WITH (access_key = ${AWS_ACCESS_KEY_ID}, secret_key = ${AWS_SECRET_ACCESS_KEY}), endpoint = s3.${AWS_DEFAULT_REGION}.amazonaws.com, bucket = ${AWS_S3_BUCKET}, base_path=crate/ ]
-#
 
-if grep -q microsoft /proc/version; then
-  conda install -y jupyterlab &&  jupyter-lab  --allow-root --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
+if $(grep -q microsoft /proc/version); then
+  conda install -c conda-forge -y jupyterlab nano && jupyter-lab --ServerApp.token='' --allow-root --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
 fi
 
 
@@ -233,7 +221,7 @@ fi
 
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
-term_handler(){
+function term_handler(){
     echo "Running Cluster Election"
     # changed these from "clusterhosts" to nexus because so many of the AWS instances shut down to quick to send out the message outside of AWS if they all shut down at once
     /usr/local/bin/crash --hosts nexus -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
@@ -253,7 +241,7 @@ term_handler(){
     exit 0
 }
 
-error_handler(){
+function error_handler(){
   exit 1
 }
 
@@ -281,6 +269,24 @@ function check_ray_connection() {
     return 0
   fi
 }
+
+
+/crate/bin/crate \
+            ${cluster_initial_master_nodes}
+            ${discovery_zen_minimum_master_nodes}
+            ${node_name}
+            ${node_master}
+            ${node_data}
+            ${node_store_allow_mmap}
+            &
+
+/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'all';" &
+#CREATE REPOSITORY s3backup TYPE s3
+#[ WITH (parameter_name [= value], [, ...]) ]
+#[ WITH (access_key = ${AWS_ACCESS_KEY_ID}, secret_key = ${AWS_SECRET_ACCESS_KEY}), endpoint = s3.${AWS_DEFAULT_REGION}.amazonaws.com, bucket = ${AWS_S3_BUCKET}, base_path=crate/ ]
+#
+
+
 
 while true
 do
