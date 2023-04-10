@@ -130,7 +130,7 @@ function get_cluster_hosts() {
   # removing AWS instances
   clusterhosts="$(echo $clusterhosts | sed 's/i-[^,]*,//g')"
   # strip domain names
-  clusterhosts="$(echo $clusterhosts | sed 's/.chimp-beta.ts.net//g')"
+  clusterhosts="$(echo $clusterhosts | sed 's/.chimp-beta.ts.net/:4300/g')"
 
   echo $clusterhosts
 }
@@ -190,9 +190,9 @@ if [ ! $location = "OnPrem" ]; then
 fi
 
 if [ ! $statedata ]; then
-  #if [ "$CLUSTERHOSTS" = "nexus.chimp-beta.ts.net:4300" ]; then
-  # cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
-  #fi
+  if [ "$CLUSTERHOSTS" = "nexus:4300" ]; then
+   cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
+  fi
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
 fi
 
