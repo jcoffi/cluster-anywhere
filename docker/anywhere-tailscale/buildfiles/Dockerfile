@@ -74,7 +74,8 @@ RUN sudo apt update \
     modin[ray] \
     'sqlalchemy<2.0' \
     crate[sqlalchemy] \
-    'ray[air]==2.2' \
+    'distributed==2022.2.0' \
+    'ray==2.2' \
     torch \
     fredapi \
     sympy \
