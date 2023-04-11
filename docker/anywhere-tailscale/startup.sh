@@ -130,14 +130,13 @@ function get_cluster_hosts() {
   # removing AWS instances
   clusterhosts="$(echo $clusterhosts | sed 's/i-[^,]*,//g')"
   # strip domain names
-  clusterhosts="$(echo $clusterhosts | sed 's/.chimp-beta.ts.net/:4300/g')"
+  #clusterhosts="$(echo $clusterhosts | sed 's/.chimp-beta.ts.net/:4300/g')"
 
   echo $clusterhosts
 }
 
 export CLUSTERHOSTS="$(get_cluster_hosts)"
-
-
+#export CLUSTERNODES="$(echo $CLUSTERHOSTS | sed 's/.chimp-beta.ts.net/:4300/g')"
 
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
@@ -190,12 +189,8 @@ if [ ! $location = "OnPrem" ]; then
 fi
 
 if [ ! $statedata ]; then
-  if [ "$CLUSTERHOSTS" = "nexus:4300" ]; then
-   cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
-  fi
-  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
+   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
 fi
-
 
 
 if [ "$NODETYPE" = "head" ]; then
@@ -205,6 +200,10 @@ if [ "$NODETYPE" = "head" ]; then
 
     ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address nexus.chimp-beta.ts.net
 
+  if [ ! $statedata ]; then
+    cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
+#    discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
+  fi
 
 else
 
@@ -228,10 +227,9 @@ fi
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 function term_handler(){
     echo "Running Cluster Election"
-    # changed these from "clusterhosts" to nexus because so many of the AWS instances shut down to quick to send out the message outside of AWS if they all shut down at once
-    /usr/local/bin/crash --hosts nexus -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
+    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
     echo "Running Decommission"
-    /usr/local/bin/crash --hosts nexus -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
+    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
     echo "***Stopping***"
     ray stop -g 60 -v
 
