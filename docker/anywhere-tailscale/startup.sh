@@ -216,7 +216,7 @@ fi
 
 
 if $(grep -q microsoft /proc/version); then
-  conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
+  conda install -c conda-forge -y jupyterlab nano #&& jupyter-lab --allow-root --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
 fi
 
 
