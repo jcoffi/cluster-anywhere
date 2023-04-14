@@ -71,15 +71,18 @@ RUN sudo apt update \
 && sudo chmod +x /home/ray/run_tests.sh \
 && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
     pandas \
+    pandas_market_calendars \
     modin[ray] \
     'sqlalchemy<2.0' \
     crate[sqlalchemy] \
     'distributed==2022.2.0' \
     'ray==2.2' \
+    scikit-learn-intelex \
     torch \
     fredapi \
     sympy \
     numba \
+    numpy \
     datetime \
     icecream \
     geojson \
@@ -90,6 +93,7 @@ RUN sudo apt update \
 
 #for direct connections from tailscale
 EXPOSE 41641/udp
+EXPOSE 41641/tcp
 
 VOLUME /data
 RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR
