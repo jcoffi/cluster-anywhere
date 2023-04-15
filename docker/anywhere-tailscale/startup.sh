@@ -200,10 +200,10 @@ if [ "$NODETYPE" = "head" ]; then
 
     ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address nexus.chimp-beta.ts.net
 
-  if [ ! $statedata ]; then
-    cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
-#    discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
-  fi
+    if [ ! $statedata ]; then
+      cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
+  #    discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
+    fi
 
 else
 
