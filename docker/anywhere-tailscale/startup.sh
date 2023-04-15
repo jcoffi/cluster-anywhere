@@ -209,15 +209,15 @@ else
 
 
 
-    ray start --address='nexus.chimp-beta.ts.net:6379' --disable-usage-stats --node-ip-address $HOSTNAME.chimp-beta.ts.net
+    ray start --address='nexus.chimp-beta.ts.net:6379' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net
 
 fi
 
 
 
 if $(grep -q microsoft /proc/version); then
-  sudo chmod -R 777 ~/files
-  conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --NotebookApp.token='' --NotebookApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
+  sudo chmod -R 777 /files
+  conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
 fi
 
 
@@ -262,17 +262,7 @@ trap 'error_handler' ERR
 #  #sleep 1000 # Doesn't work with sleep. Not sure why.
 #  tail -f /dev/null & wait ${!}
 #done
-function check_ray_connection() {
-  ray_status=$(ray status 2>&1)
 
-  if [[ $ray_status == *"Error:"* ]]; then
-    #echo "Ray is not connected."
-    return 1
-  else
-    #echo "Ray is connected."
-    return 0
-  fi
-}
 
 
 /crate/bin/crate \
@@ -294,7 +284,6 @@ function check_ray_connection() {
 
 while true
 do
-  sleep 60
+  sleep 300
   export CLUSTERHOSTS="$(get_cluster_hosts)"
-  check_ray_connection
 done
