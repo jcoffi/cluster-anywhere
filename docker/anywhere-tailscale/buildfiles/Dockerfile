@@ -33,6 +33,8 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
 #RUN sudo ulimit -n 65535
 
 
+#we'll make the cluster name the github commit id, this way every new image is a new cluster but we keep state
+
 
 
 RUN sudo apt update \

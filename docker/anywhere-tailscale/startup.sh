@@ -189,7 +189,9 @@ if [ ! $location = "OnPrem" ]; then
 fi
 
 if [ ! $statedata ]; then
-   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
+  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
+else
+  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
 fi
 
 
@@ -202,7 +204,7 @@ if [ "$NODETYPE" = "head" ]; then
 
     if [ ! $statedata ]; then
       cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
-  #    discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
+      discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
     fi
 
 else
@@ -230,7 +232,7 @@ function term_handler(){
     echo "Running Cluster Election"
     /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
     echo "Running Decommission"
-    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
+    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';"
     echo "***Stopping***"
     ray stop -g 60 -v
 
