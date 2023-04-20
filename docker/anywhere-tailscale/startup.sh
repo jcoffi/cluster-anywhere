@@ -240,12 +240,8 @@ function term_handler(){
     echo "***Stopping***"
     ray stop -g 60 -v
 
-
-
-    deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
-    export deviceid=$deviceid
-    echo "Deleting the device from Tailscale"
-    curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
+    echo "tailscale logout"
+    sudo tailscale logout
     echo "Shutting Tailscale Down"
     sudo tailscale down
     exit 0
