@@ -1,4 +1,5 @@
 #!/bin/bash
+export HOME=/home/ray
 
 if [ -z "$TSAPIKEY" ]; then
   echo "Environmental variable for TSAPIKEY not set"
