@@ -149,7 +149,7 @@ sudo ufw allow 41641/tcp
 
 if [ -c /dev/net/tun ]; then
     sudo tailscaled &
-    sudo tailscale up --authkey=${TSKEY} --accept-risk=all --accept-routes --accept-dns=true
+    sudo tailscale up --authkey=${TSKEY} --accept-risk=all --accept-routes --accept-dns=false
 else
     echo "tun doesn't exist"
     sudo tailscaled -tun userspace-networking -state mem: -socks5-server=localhost:1080 -outbound-http-proxy-listen=localhost:3128 &
