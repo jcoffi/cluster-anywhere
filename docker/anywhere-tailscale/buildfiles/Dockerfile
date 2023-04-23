@@ -41,7 +41,7 @@ RUN sudo apt update \
 && curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null \
 && curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list \
 && sudo apt update \
-&& sudo apt install -y --no-install-recommends iptables tailscale iproute2 procps inotify-tools \
+&& sudo apt install -y --no-install-recommends iptables-nft tailscale \
 && sudo mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
 && sudo apt clean \
 && sudo rm -rf /var/lib/apt/lists/* \
