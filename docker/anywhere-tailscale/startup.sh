@@ -189,6 +189,7 @@ fi
 
 if [ ! $location = "OnPrem" ]; then
     node_master='-Cnode.master=false \\'
+    node_data='-Cnode.data=false \\'
 fi
 
 if [ ! $statedata ]; then
