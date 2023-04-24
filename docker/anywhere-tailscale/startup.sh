@@ -233,12 +233,13 @@ fi
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 function term_handler(){
+    echo "***Stopping***"
+    ray stop -f
     echo "Running Cluster Election"
     /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
     echo "Running Decommission"
     /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';"
-    echo "***Stopping***"
-    ray stop -g 60 -v
+
 
     echo "tailscale logout"
     sudo tailscale logout
@@ -248,11 +249,23 @@ function term_handler(){
 }
 
 function error_handler(){
-  exit 1
+    echo "***Stopping***"
+    ray stop -f
+    echo "Running Cluster Election"
+    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
+    #echo "Running Decommission"
+    #/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';"
+
+    echo "tailscale logout"
+    sudo tailscale logout
+    echo "Shutting Tailscale Down"
+    sudo tailscale down
+    exit 1
 }
 
 # Setup signal handlers
 trap 'term_handler' SIGTERM
+trap 'term_handler' SIGKILL
 trap 'term_handler' EXIT
 trap 'error_handler' ERR
 
@@ -286,6 +299,5 @@ trap 'error_handler' ERR
 
 while true
 do
-  sleep 300
-  export CLUSTERHOSTS="$(get_cluster_hosts)"
+  tail -f /dev/null & wait ${!}
 done
