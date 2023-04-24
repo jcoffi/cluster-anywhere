@@ -144,11 +144,10 @@ export CLUSTERHOSTS="$(get_cluster_hosts)"
 sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATE
 sudo chmod -R 7777 /data
 
-sudo ufw allow 41641/udp
-sudo ufw allow 41641/tcp
+
 
 if [ -c /dev/net/tun ]; then
-    sudo tailscaled &
+    sudo tailscaled -port 41641 & #2>/dev/null&
     sudo tailscale up --authkey=${TSKEY} --accept-risk=all --accept-routes --accept-dns=true
 else
     echo "tun doesn't exist"
