@@ -107,6 +107,6 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR
 #  rm juicefs "juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz"
 
 ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
-HEALTHCHECK --interval=300s --timeout=15s --start-period=300s \
+HEALTHCHECK --interval=60s --timeout=15s --start-period=300s --retries=3 \
 CMD sh /home/ray/run_tests.sh
 #CMD curl -s localhost:4200 | jq -r '.ok' | grep -q true && ray status || exit 1
