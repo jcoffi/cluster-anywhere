@@ -190,6 +190,8 @@ fi
 if [ ! $location = "OnPrem" ]; then
     node_master='-Cnode.master=false \\'
     node_data='-Cnode.data=false \\'
+    node_voting_only='-Cnode.voting_only=false \\'
+
 fi
 
 if [ ! $statedata ]; then
@@ -202,7 +204,7 @@ fi
 if [ "$NODETYPE" = "head" ]; then
     node_name='-Cnode.name=nexus \\'
     node_master='-Cnode.master=true \\'
-    node_data='-Cnode.data=false \\'
+    node_data='-Cnode.data=true \\'
 
     ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address nexus.chimp-beta.ts.net
 
@@ -286,6 +288,7 @@ trap 'error_handler' ERR
             ${node_name}
             ${node_master}
             ${node_data}
+            ${node_voting_only}
             ${node_store_allow_mmap}
             &
 
