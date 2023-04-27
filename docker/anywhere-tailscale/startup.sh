@@ -189,7 +189,7 @@ fi
 
 if [ ! $location = "OnPrem" ]; then
     node_master='-Cnode.master=false \\'
-    node_data='-Cnode.data=false \\'
+    node_data='-Cnode.data=true \\'
     node_voting_only='-Cnode.voting_only=false \\'
 
 fi
