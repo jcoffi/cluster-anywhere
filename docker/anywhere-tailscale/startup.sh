@@ -27,7 +27,7 @@ memory=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 
 # Convert kB to GB
 gb_memory=$(echo "scale=2; $memory / 1048576" | bc)
-shm_memory=$(echo "scale=0; $gb_memory / 3" | bc)
+shm_memory=$(echo "scale=0; $gb_memory / 1" | bc)
 
 #settings number of cpus for optimial (local) speed
 export NUMEXPR_MAX_THREADS='$(nproc)'
@@ -37,7 +37,7 @@ export MAKEFLAGS='-j$(nproc)'
 export CPU_COUNT='$(nproc)'
 
 #CRATE_HEAP_SIZE=$(echo $shm_memory | awk '{print int($0+0.5)}')
-export CRATE_HEAP_SIZE="${gb_memory}G"
+export CRATE_HEAP_SIZE="${shm_memory}G"
 export shm_memory="${shm_memory}G"
 
 functiontodetermine_cloud_provider() {
