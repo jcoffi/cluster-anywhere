@@ -37,7 +37,7 @@ export MAKEFLAGS='-j$(nproc)'
 export CPU_COUNT='$(nproc)'
 
 #CRATE_HEAP_SIZE=$(echo $shm_memory | awk '{print int($0+0.5)}')
-export CRATE_HEAP_SIZE="${memory}"
+export CRATE_HEAP_SIZE="${gb_memory}G"
 export shm_memory="${shm_memory}G"
 
 functiontodetermine_cloud_provider() {
