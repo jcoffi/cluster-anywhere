@@ -52,15 +52,15 @@ setup_docker_or_podman() {
 
 configure_sysctl() {
   sudo sysctl -w vm.max_map_count=262144
-  sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
-  sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
-  sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=1
+  #sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
+  #sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
+  #sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=1
   sudo sysctl -p
 
   echo -e "vm.max_map_count = 262144\n" | sudo tee /etc/sysctl.conf
-  echo -e "net.ipv6.conf.all.disable_ipv6=1\n" | sudo tee /etc/sysctl.conf
-  echo -e "net.ipv6.conf.default.disable_ipv6=1\n" | sudo tee /etc/sysctl.conf
-  echo -e "net.ipv6.conf.lo.disable_ipv6=1\n" | sudo tee /etc/sysctl.conf
+  #echo -e "net.ipv6.conf.all.disable_ipv6=1\n" | sudo tee /etc/sysctl.conf
+  #echo -e "net.ipv6.conf.default.disable_ipv6=1\n" | sudo tee /etc/sysctl.conf
+  #echo -e "net.ipv6.conf.lo.disable_ipv6=1\n" | sudo tee /etc/sysctl.conf
 }
 
 disable_sleep_for_laptops() {
@@ -89,6 +89,7 @@ remove_registry_and_install_dependencies() {
 
 handle_nvidia_gpu() {
   # Check if the GPU is NVIDIA
+  sudo apt install jq -y
   if [ -n "$(lspci | grep -i nvidia)" ] || [ -n "$(nvidia-smi -L)" ]; then
     if [ -x "$(command -v nvidia-smi)" ] && [ -d /usr/local/cuda ]; then
       CUDA="Already done"
