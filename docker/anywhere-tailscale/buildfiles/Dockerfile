@@ -38,8 +38,8 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
 
 RUN sudo apt update \
 && sudo apt install -y --no-install-recommends ca-certificates curl bc wget jq lsb-release \
-&& curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null \
-&& curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list \
+&& curl -fsSLZ https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null \
+&& curl -fsSLZ https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list \
 && sudo apt update \
 && sudo apt install -y --no-install-recommends iptables nftables tailscale iproute2 procps inotify-tools \
 && sudo mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
@@ -54,21 +54,21 @@ RUN sudo apt update \
         && sudo chown -R ray /crate \
         && sudo chgrp -R crate /crate \
         && export CRATE_URL=https://cdn.crate.io/downloads/releases/cratedb/${PLATFORM}/crate-${CRATE_LATEST_TAG}.tar.gz \
-        && curl -fSL -O ${CRATE_URL} \
-        && curl -fSL -O "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/crate.yml" \
-        && curl -fSL -O "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/log4j2.properties" \
+        && curl -fsSLZ -O ${CRATE_URL} \
+        && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/crate.yml" \
+        && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/log4j2.properties" \
         && sudo tar -xf crate-${CRATE_LATEST_TAG}.tar.gz -C /crate --strip-components=1 \
         && sudo chown 1000 crate.yml \
         && sudo mv crate.yml /crate/config/crate.yml \
         && sudo chown 1000 log4j2.properties \
         && sudo mv log4j2.properties /crate/config/log4j2.properties \
         && rm crate-${CRATE_LATEST_TAG}.tar.gz \
-        && curl -fSL -O https://cdn.crate.io/downloads/releases/crash_standalone_${CRASH_LATEST_TAG} \
+        && curl -fsSLZ -O https://cdn.crate.io/downloads/releases/crash_standalone_${CRASH_LATEST_TAG} \
         && sudo mv crash_standalone_${CRASH_LATEST_TAG} /usr/local/bin/crash \
         && sudo chmod +x /usr/local/bin/crash \
-&& curl -fSL -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh" \
+&& curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh" \
 && sudo chmod +x /home/ray/startup.sh \
-&& curl -fSL -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
+&& curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
 && sudo chmod +x /home/ray/run_tests.sh \
 && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
     pandas \
