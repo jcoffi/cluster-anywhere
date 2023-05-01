@@ -109,4 +109,3 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR
 ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
 HEALTHCHECK --interval=60s --timeout=15s --start-period=300s --retries=1 \
 CMD sh /home/ray/run_tests.sh
-#CMD curl -s localhost:4200 | jq -r '.ok' | grep -q true && ray status || exit 1
