@@ -1,4 +1,5 @@
 #!/bin/bash
+echo $HOSTNAME
 export NUMEXPR_MAX_THREADS='$(nproc)'
 #used by conda to specify cpus for building packages
 export MAKEFLAGS='-j$(nproc)'
