@@ -4,9 +4,5 @@ export NUMEXPR_MAX_THREADS='$(nproc)'
 export MAKEFLAGS='-j$(nproc)'
 #used by conda
 export CPU_COUNT='$(nproc)'
-
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/k1i4l9y6
 # Set image type based on build argument
-docker buildx build --cache-from=rayproject/ray:2.2.0-py39-$DOCKER_TAG --cache-from=jcoffi/cluster-anywhere:cpu --ulimit 'memlock=-1' --ulimit 'nofile=65535:65535' -t jcoffi/cluster-anywhere:$DOCKER_TAG -t public.ecr.aws/k1i4l9y6/jcoffi/cluster-anywhere:$DOCKER_TAG --build-arg IMAGETYPE=$DOCKER_TAG .
-
-docker push public.ecr.aws/k1i4l9y6/jcoffi/cluster-anywhere:$DOCKER_TAG
+docker buildx build --cache-to=type=s3,region=us-west-2,bucket=cluster-anywhere --cache-from=rayproject/ray:2.2.0-py39-$DOCKER_TAG --cache-from=type=s3,region=us-west-2,bucket=cluster-anywhere --ulimit 'memlock=-1' --ulimit 'nofile=65535:65535' -t jcoffi/cluster-anywhere:$DOCKER_TAG --build-arg IMAGETYPE=$DOCKER_TAG .
