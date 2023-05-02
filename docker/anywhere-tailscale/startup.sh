@@ -204,7 +204,7 @@ fi
 if [ "$NODETYPE" = "head" ]; then
     node_name='-Cnode.name=nexus \\'
     node_master='-Cnode.master=true \\'
-    node_data='-Cnode.data=true \\'
+    node_data='-Cnode.data=false \\'
 
     ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address nexus.chimp-beta.ts.net
 
