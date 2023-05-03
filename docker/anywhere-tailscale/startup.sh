@@ -57,6 +57,11 @@ functiontodetermine_cloud_provider() {
       export LOCATION=$location
       return
     fi
+    if [[ $UUID =~ "Xen" ]]; then
+      location="AWS"
+      export LOCATION=$location
+      return
+    fi
   elif [ -f "/proc/version" ]; then
     # Check if the instance is running on Azure (not tested and probably wrong)
     VERSION=$(cat /proc/version)
