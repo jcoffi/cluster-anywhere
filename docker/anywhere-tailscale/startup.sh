@@ -49,7 +49,7 @@ functiontodetermine_cloud_provider() {
       export LOCATION=$location
       return
     fi
-  elif [ -f "/sys/devices/virtual/dmi/id/product_uuid" ]; then
+  elif [ -f "/sys/devices/virtual/dmi/id/sys_vendor" ]; then
     # Check if the instance is running on AWS
     UUID=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
     if [[ $UUID =~ "EC2" ]]; then
