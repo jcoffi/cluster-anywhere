@@ -40,7 +40,7 @@ export CPU_COUNT='$(nproc)'
 export CRATE_HEAP_SIZE="${shm_memory}G"
 export shm_memory="${shm_memory}G"
 
-functiontodetermine_cloud_provider() {
+determine_cloud_provider() {
   if [ -f "/sys/hypervisor/uuid" ]; then
     # Check if the instance is running on GCP (not tested and probably wrong)
     UUID=$(cat /sys/hypervisor/uuid)
@@ -70,13 +70,13 @@ functiontodetermine_cloud_provider() {
       export LOCATION=$location
       return
     fi
+  else
+    location="OnPrem"
+    export LOCATION=$location
   fi
-  location="OnPrem"
-  export LOCATION=$location
-  return
 }
 
-functiontodetermine_cloud_provider
+determine_cloud_provider
 
 functiontodetermine_cpu() {
   # Check if lscpu command exists
