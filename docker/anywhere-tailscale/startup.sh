@@ -70,9 +70,8 @@ determine_cloud_provider() {
       export LOCATION=$location
       return
     fi
-  else
-    location="OnPrem"
-    export LOCATION=$location
+  location="OnPrem"
+  export LOCATION=$location
   fi
 }
 
