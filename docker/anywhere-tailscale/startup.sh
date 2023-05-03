@@ -237,10 +237,11 @@ fi
 function term_handler(){
     echo "***Stopping***"
     ray stop -f
-    echo "Running Cluster Election"
-    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
     echo "Running Decommission"
     /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';"
+    echo "Running Cluster Election"
+    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
+
 
 
     echo "tailscale logout"
