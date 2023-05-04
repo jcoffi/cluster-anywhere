@@ -11,10 +11,6 @@ services:
       - data:/data
     environment:
       - NODETYPE=edge
-      - TSKEY=""
-      - TSAPIKEY=""
-      - AWS_ACCESS_KEY_ID=""
-      - AWS_SECRET_ACCESS_KEY=""
       - AWS_DEFAULT_REGION="us-west-2"
       - AWS_S3_BUCKET="cluster-anywhere"
     mem_limit: 5.6gb
