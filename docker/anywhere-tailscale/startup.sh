@@ -42,7 +42,7 @@ export shm_memory="${shm_memory}G"
 
 check_cloud_provider() {
   # Check AWS EC2
-  if curl -s http://169.254.169.254/latest/meta-data/ >/dev/null 2>&1; then
+  if curl -s -m 5 http://169.254.169.254/latest/meta-data/ >/dev/null 2>&1; then
     echo "Cloud Provider: Amazon Web Services (AWS)"
     location="AWS"
     export LOCATION=$location
@@ -50,7 +50,7 @@ check_cloud_provider() {
   fi
 
   # Check Google Cloud Platform (GCP)
-  if curl -s -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/ >/dev/null 2>&1; then
+  if curl -s -m 5 -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/ >/dev/null 2>&1; then
     echo "Cloud Provider: Google Cloud Platform (GCP)"
     location="GCP"
     export LOCATION=$location
@@ -58,7 +58,7 @@ check_cloud_provider() {
   fi
 
   # Check Microsoft Azure
-  if curl -s -H "Metadata: true" http://169.254.169.254/metadata/instance?api-version=2021-02-01 >/dev/null 2>&1; then
+  if curl -s -m 5 -H "Metadata: true" http://169.254.169.254/metadata/instance?api-version=2021-02-01 >/dev/null 2>&1; then
     echo "Cloud Provider: Microsoft Azure"
     location="Azure"
     export LOCATION=$location
@@ -66,7 +66,7 @@ check_cloud_provider() {
   fi
 
   # Check Oracle Cloud Infrastructure (OCI)
-  if curl -s http://169.254.169.254/opc/v1/ >/dev/null 2>&1; then
+  if curl -s -m 5 http://169.254.169.254/opc/v1/ >/dev/null 2>&1; then
     echo "Cloud Provider: Oracle Cloud Infrastructure (OCI)"
     location="OCI"
     export LOCATION=$location
@@ -314,3 +314,6 @@ while true
 do
   tail -f /dev/null & wait ${!}
 done
+
+echo "Running Decommission"
+/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';"
