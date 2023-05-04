@@ -104,18 +104,13 @@ RayServerBidiReactor::RayServerBidiReactor(
   StartPull();
 }
 
-void RayServerBidiReactor::Disconnect() {
-  io_context_.dispatch(
-      [this]() {
-        if (!disconnected_) {
-          disconnected_ = true;
-          Finish(grpc::Status::OK);
-        }
-      },
-      "");
+void RayServerBidiReactor::DoDisconnect() {
+  io_context_.dispatch([this]() { Finish(grpc::Status::OK); }, "");
 }
 
-void RayServerBidiReactor::OnCancel() { Disconnect(); }
+void RayServerBidiReactor::OnCancel() {
+  io_context_.dispatch([this]() { Disconnect(); }, "");
+}
 
 void RayServerBidiReactor::OnDone() {
   io_context_.dispatch(
@@ -155,15 +150,12 @@ void RayClientBidiReactor::OnDone(const grpc::Status &status) {
       "");
 }
 
-void RayClientBidiReactor::Disconnect() {
+void RayClientBidiReactor::DoDisconnect() {
   io_context_.dispatch(
       [this]() {
-        if (!disconnected_) {
-          disconnected_ = true;
-          StartWritesDone();
-          // Free the hold to allow OnDone being called.
-          RemoveHold();
-        }
+        StartWritesDone();
+        // Free the hold to allow OnDone being called.
+        RemoveHold();
       },
       "");
 }
@@ -216,8 +208,9 @@ void RaySyncer::Connect(const std::string &node_id,
             [this, channel](const std::string &node_id, bool restart) {
               sync_reactors_.erase(node_id);
               if (restart) {
-                RAY_LOG(INFO) << "Connection is broken. Reconnect to node: "
-                              << NodeID::FromBinary(node_id);
+                RAY_LOG_EVERY_MS(INFO, 10 * 1000)
+                    << "Connection is broken. Reconnect to node: "
+                    << NodeID::FromBinary(node_id);
                 Connect(node_id, channel);
               }
             },

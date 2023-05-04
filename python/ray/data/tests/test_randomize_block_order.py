@@ -4,7 +4,7 @@ import ray
 from ray.data._internal.execution.operators.all_to_all_operator import AllToAllOperator
 from ray.data._internal.execution.operators.map_operator import MapOperator
 from ray.data._internal.logical.operators.read_operator import Read
-from ray.data._internal.logical.operators.map_operator import AbstractMap
+from ray.data._internal.logical.operators.map_operator import AbstractUDFMap
 from ray.data._internal.logical.operators.all_to_all_operator import (
     RandomizeBlocks,
     Repartition,
@@ -14,6 +14,7 @@ from ray.data._internal.logical.rules.randomize_blocks import ReorderRandomizeBl
 from ray.data._internal.logical.interfaces import LogicalPlan
 from ray.data._internal.logical.optimizers import LogicalOptimizer
 from ray.data._internal.planner.planner import Planner
+from ray.data.tests.util import extract_values
 
 
 def test_randomize_blocks_operator(ray_start_regular_shared, enable_optimizer):
@@ -112,7 +113,20 @@ def test_randomize_block_order_after_repartition():
 def test_randomize_blocks_e2e(ray_start_regular_shared, enable_optimizer):
     ds = ray.data.range(12, parallelism=4)
     ds = ds.randomize_block_order(seed=0)
-    assert ds.take_all() == [6, 7, 8, 0, 1, 2, 3, 4, 5, 9, 10, 11], ds
+    assert extract_values("id", ds.take_all()) == [
+        6,
+        7,
+        8,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        9,
+        10,
+        11,
+    ], ds
 
 
 def test_randomize_blocks_rule_e2e(ray_start_regular_shared, enable_optimizer):
@@ -123,7 +137,7 @@ def test_randomize_blocks_rule_e2e(ray_start_regular_shared, enable_optimizer):
     plan = ds._logical_plan
     optimized_plan = LogicalOptimizer().optimize(plan)
 
-    inverse_order = iter([Read, AbstractMap, RandomizeBlocks])
+    inverse_order = iter([Read, AbstractUDFMap, RandomizeBlocks])
     for node in optimized_plan.dag.post_order_iter():
         assert isinstance(node, next(inverse_order))
 
@@ -136,7 +150,7 @@ def test_randomize_blocks_rule_e2e(ray_start_regular_shared, enable_optimizer):
     plan = ds._logical_plan
     optimized_plan = LogicalOptimizer().optimize(plan)
 
-    inverse_order = iter([Read, RandomizeBlocks, Repartition, AbstractMap])
+    inverse_order = iter([Read, RandomizeBlocks, Repartition, AbstractUDFMap])
     for node in optimized_plan.dag.post_order_iter():
         assert isinstance(node, next(inverse_order))
 

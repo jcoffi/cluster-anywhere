@@ -24,7 +24,7 @@ RUN sudo apt-get update \
     && $HOME/anaconda3/bin/pip --no-cache-dir install -U \
            -r requirements.txt \
     # Then, keep requirements bounds as constraints and install remaining test dependencies
-    && $HOME/anaconda3/bin/pip --use-deprecated=legacy-resolver --no-cache-dir install -U \
+    && $HOME/anaconda3/bin/pip --no-cache-dir install -U \
            -c requirements.txt \
            -r requirements_rllib.txt \
            -r requirements_train.txt \
@@ -39,6 +39,8 @@ RUN sudo apt-get update \
     && sudo rm \
         requirements*.txt \
     && sudo apt-get clean
+
+RUN $HOME/anaconda3/bin/pip freeze > /home/ray/pip-freeze.txt
 
 # Make sure tfp is installed correctly and matches tf version.
 RUN python -c "import tensorflow_probability"

@@ -4,9 +4,9 @@
 # __create_from_python_begin__
 import ray
 
-# Create a Dataset of Python objects.
+# Create a Datastream of Python objects.
 ds = ray.data.range(10000)
-# -> Dataset(num_blocks=200, num_rows=10000, schema=<class 'int'>)
+# -> Datastream(num_blocks=200, num_rows=10000, schema=<class 'int'>)
 
 ds.take(5)
 # -> [0, 1, 2, 3, 4]
@@ -14,7 +14,7 @@ ds.take(5)
 ds.schema()
 # <class 'int'>
 
-# Create a Dataset from Python objects, which are held as Arrow records.
+# Create a Datastream from Python objects, which are held as Arrow records.
 ds = ray.data.from_items([
         {"sepal.length": 5.1, "sepal.width": 3.5,
          "petal.length": 1.4, "petal.width": 0.2, "variety": "Setosa"},
@@ -23,7 +23,7 @@ ds = ray.data.from_items([
         {"sepal.length": 4.7, "sepal.width": 3.2,
          "petal.length": 1.3, "petal.width": 0.2, "variety": "Setosa"},
      ])
-# Dataset(num_blocks=3, num_rows=3,
+# Datastream(num_blocks=3, num_rows=3,
 #         schema={sepal.length: float64, sepal.width: float64,
 #                 petal.length: float64, petal.width: float64, variety: object})
 
@@ -47,18 +47,16 @@ ds.schema()
 # fmt: off
 # __create_from_files_begin__
 # Create from CSV.
-# Tip: "example://" is a convenient protocol to access the
-# python/ray/data/examples/data directory.
-ds = ray.data.read_csv("example://iris.csv")
-# Dataset(num_blocks=1, num_rows=150,
-#         schema={sepal.length: float64, sepal.width: float64,
-#                 petal.length: float64, petal.width: float64, variety: object})
+ds = ray.data.read_csv("s3://anonymous@air-example-data/iris.csv")
+# Datastream(num_blocks=1, num_rows=150,
+#         schema={sepal length (cm): double, sepal width (cm): double, 
+#         petal length (cm): double, petal width (cm): double, target: int64})
 
 # Create from Parquet.
-ds = ray.data.read_parquet("example://iris.parquet")
-# Dataset(num_blocks=1, num_rows=150,
-#         schema={sepal.length: float64, sepal.width: float64,
-#                 petal.length: float64, petal.width: float64, variety: object})
+ds = ray.data.read_parquet("s3://anonymous@air-example-data/iris.parquet")
+# Datastream(num_blocks=1, num_rows=150,
+#         schema={sepal.length: double, sepal.width: double, 
+#         petal.length: double, petal.width: double, variety: string})
 
 # __create_from_files_end__
 # fmt: on
@@ -69,7 +67,7 @@ import pandas
 
 # Create 10 blocks for parallelism.
 ds = ds.repartition(10)
-# Dataset(num_blocks=10, num_rows=150,
+# Datastream(num_blocks=10, num_rows=150,
 #         schema={sepal.length: float64, sepal.width: float64,
 #                 petal.length: float64, petal.width: float64, variety: object})
 
@@ -77,8 +75,8 @@ ds = ds.repartition(10)
 def transform_batch(df: pandas.DataFrame) -> pandas.DataFrame:
     return df[(df["sepal.length"] < 5.5) & (df["petal.length"] > 3.5)]
 
-transformed_ds = ds.map_batches(transform_batch)
-# Dataset(num_blocks=10, num_rows=3,
+transformed_ds = ds.map_batches(transform_batch, batch_format="pandas")
+# Datastream(num_blocks=10, num_rows=3,
 #         schema={sepal.length: float64, sepal.width: float64,
 #                 petal.length: float64, petal.width: float64, variety: object})
 

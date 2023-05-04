@@ -12,6 +12,7 @@ from typing import (
 from ray._private.usage.usage_lib import TagKey, record_extra_usage_tag
 
 from ray.serve.context import get_global_client
+from ray.dag.dag_node import DAGNodeBase
 from ray.dag.class_node import ClassNode
 from ray.dag.function_node import FunctionNode
 from ray.serve.config import (
@@ -32,6 +33,39 @@ logger = logging.getLogger(SERVE_LOGGER_NAME)
 
 
 @PublicAPI
+class Application(DAGNodeBase):
+    """Returned from `Deployment.bind()`.
+
+    Can be passed into another `Deployment.bind()` to compose multiple deployments in a
+    single application, passed to `serve.run`, or deployed via a Serve config file.
+    """
+
+    def __init__(
+        self, *, _internal_dag_node: Optional[Union[ClassNode, FunctionNode]] = None
+    ):
+        """This class should not be constructed directly."""
+        if _internal_dag_node is None:
+            raise RuntimeError("This class should not be constructed directly.")
+
+        self._internal_dag_node = _internal_dag_node
+
+    def _get_internal_dag_node(self) -> Union[ClassNode, FunctionNode]:
+        if self._internal_dag_node is None:
+            raise RuntimeError("Application object should not be constructed directly.")
+
+        return self._internal_dag_node
+
+    @classmethod
+    def _from_internal_dag_node(cls, dag_node: Union[ClassNode, FunctionNode]):
+        return cls(_internal_dag_node=dag_node)
+
+    # Proxy all method calls to the underlying DAG node. This allows this class to be
+    # passed in place of the ClassNode or FunctionNode in the DAG building code.
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._get_internal_dag_node(), name)
+
+
+@PublicAPI
 class Deployment:
     def __init__(
         self,
@@ -43,8 +77,8 @@ class Deployment:
         init_kwargs: Optional[Tuple[Any]] = None,
         route_prefix: Union[str, None, DEFAULT] = DEFAULT.VALUE,
         ray_actor_options: Optional[Dict] = None,
-        _internal=False,
         is_driver_deployment: Optional[bool] = False,
+        _internal=False,
     ) -> None:
         """Construct a Deployment. CONSTRUCTOR SHOULDN'T BE USED DIRECTLY.
 
@@ -82,10 +116,25 @@ class Deployment:
         if not (ray_actor_options is None or isinstance(ray_actor_options, dict)):
             raise TypeError("ray_actor_options must be a dict.")
 
+        if is_driver_deployment is True:
+            if config.num_replicas != 1:
+                raise ValueError("num_replicas should not be set for driver deployment")
+            if config.autoscaling_config:
+                raise ValueError("autoscaling should not be set for driver deployment")
+
         if init_args is None:
             init_args = ()
         if init_kwargs is None:
             init_kwargs = {}
+
+        docs_path = None
+        if (
+            inspect.isclass(func_or_class)
+            and hasattr(func_or_class, "__module__")
+            and func_or_class.__module__ == "ray.serve.api"
+            and hasattr(func_or_class, "__fastapi_docs_path__")
+        ):
+            docs_path = func_or_class.__fastapi_docs_path__
 
         self._func_or_class = func_or_class
         self._name = name
@@ -96,6 +145,7 @@ class Deployment:
         self._route_prefix = route_prefix
         self._ray_actor_options = ray_actor_options
         self._is_driver_deployment = is_driver_deployment
+        self._docs_path = docs_path
 
     @property
     def name(self) -> str:
@@ -168,11 +218,11 @@ class Deployment:
         )
 
     @PublicAPI(stability="beta")
-    def bind(self, *args, **kwargs) -> Union[ClassNode, FunctionNode]:
-        """Bind the provided arguments and return a class or function node.
+    def bind(self, *args, **kwargs) -> Application:
+        """Bind the arguments to the deployment and return an Application.
 
-        The returned bound deployment can be deployed or bound to other
-        deployments to create a deployment graph.
+        The returned Application can be deployed using `serve.run` (or via
+        config file) or bound to another deployment for composition.
         """
 
         copied_self = copy(self)
@@ -180,7 +230,7 @@ class Deployment:
         schema_shell = deployment_to_schema(copied_self)
 
         if inspect.isfunction(self._func_or_class):
-            return FunctionNode(
+            dag_node = FunctionNode(
                 self._func_or_class,
                 args,  # Used to bind and resolve DAG only, can take user input
                 kwargs,  # Used to bind and resolve DAG only, can take user input
@@ -191,7 +241,7 @@ class Deployment:
                 },
             )
         else:
-            return ClassNode(
+            dag_node = ClassNode(
                 self._func_or_class,
                 args,
                 kwargs,
@@ -201,6 +251,8 @@ class Deployment:
                     "is_from_serve_deployment": True,
                 },
             )
+
+        return Application._from_internal_dag_node(dag_node)
 
     @guarded_deprecation_warning(instructions=MIGRATION_MESSAGE)
     @Deprecated(message=MIGRATION_MESSAGE)
@@ -415,7 +467,7 @@ class Deployment:
             new_config.health_check_timeout_s = health_check_timeout_s
 
         if is_driver_deployment is DEFAULT.VALUE:
-            self._is_driver_deployment = False
+            is_driver_deployment = self._is_driver_deployment
 
         return Deployment(
             func_or_class,
@@ -427,7 +479,7 @@ class Deployment:
             route_prefix=route_prefix,
             ray_actor_options=ray_actor_options,
             _internal=True,
-            is_driver_deployment=self._is_driver_deployment,
+            is_driver_deployment=is_driver_deployment,
         )
 
     @PublicAPI(stability="alpha")
@@ -513,8 +565,18 @@ class Deployment:
         return str(self)
 
 
-def deployment_to_schema(d: Deployment) -> DeploymentSchema:
-    """Converts a live deployment object to a corresponding structured schema."""
+def deployment_to_schema(
+    d: Deployment, include_route_prefix: bool = True
+) -> DeploymentSchema:
+    """Converts a live deployment object to a corresponding structured schema.
+
+    Args:
+        d: Deployment object to convert
+        include_route_prefix: Whether to include the route_prefix in the returned
+            schema. This should be set to False if the schema will be included in a
+            higher-level object describing an application, and you want to place
+            route_prefix at the application level.
+    """
 
     if d.ray_actor_options is not None:
         ray_actor_options_schema = RayActorOptionsSchema.parse_obj(d.ray_actor_options)
@@ -524,7 +586,6 @@ def deployment_to_schema(d: Deployment) -> DeploymentSchema:
     deployment_options = {
         "name": d.name,
         "num_replicas": None if d._config.autoscaling_config else d.num_replicas,
-        "route_prefix": d.route_prefix,
         "max_concurrent_queries": d.max_concurrent_queries,
         "user_config": d.user_config,
         "autoscaling_config": d._config.autoscaling_config,
@@ -535,6 +596,9 @@ def deployment_to_schema(d: Deployment) -> DeploymentSchema:
         "ray_actor_options": ray_actor_options_schema,
         "is_driver_deployment": d._is_driver_deployment,
     }
+
+    if include_route_prefix:
+        deployment_options["route_prefix"] = d.route_prefix
 
     # Let non-user-configured options be set to defaults. If the schema
     # is converted back to a deployment, this lets Serve continue tracking
@@ -565,6 +629,11 @@ def schema_to_deployment(s: DeploymentSchema) -> Deployment:
     else:
         ray_actor_options = s.ray_actor_options.dict(exclude_unset=True)
 
+    if s.is_driver_deployment is DEFAULT.VALUE:
+        is_driver_deployment = False
+    else:
+        is_driver_deployment = s.is_driver_deployment
+
     config = DeploymentConfig.from_default(
         num_replicas=s.num_replicas,
         user_config=s.user_config,
@@ -586,5 +655,5 @@ def schema_to_deployment(s: DeploymentSchema) -> Deployment:
         route_prefix=s.route_prefix,
         ray_actor_options=ray_actor_options,
         _internal=True,
-        is_driver_deployment=s.is_driver_deployment,
+        is_driver_deployment=is_driver_deployment,
     )
