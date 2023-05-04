@@ -40,43 +40,47 @@ export CPU_COUNT='$(nproc)'
 export CRATE_HEAP_SIZE="${shm_memory}G"
 export shm_memory="${shm_memory}G"
 
-functiontodetermine_cloud_provider() {
-  if [ -f "/sys/hypervisor/uuid" ]; then
-    # Check if the instance is running on GCP (not tested and probably wrong)
-    UUID=$(cat /sys/hypervisor/uuid)
-    if [[ $UUID =~ "gce" ]]; then
-      location="GCP"
-      export LOCATION=$location
-      return
-    fi
-  elif [ -f "/sys/devices/virtual/dmi/id/sys_vendor" ]; then
-    # Check if the instance is running on AWS
-    UUID=$(cat /sys/devices/virtual/dmi/id/sys_vendor)
-    if [[ $UUID =~ "EC2" ]]; then
-      location="AWS"
-      export LOCATION=$location
-      return
-    fi
-    if [[ $UUID =~ "Xen" ]]; then
-      location="AWS"
-      export LOCATION=$location
-      return
-    fi
-  elif [ -f "/proc/version" ]; then
-    # Check if the instance is running on Azure (not tested and probably wrong)
-    VERSION=$(cat /proc/version)
-    if [[ $VERSION =~ "Microsoft" ]]; then
-      location="Azure"
-      export LOCATION=$location
-      return
-    fi
+check_cloud_provider() {
+  # Check AWS EC2
+  if curl -s http://169.254.169.254/latest/meta-data/ >/dev/null 2>&1; then
+    echo "Cloud Provider: Amazon Web Services (AWS)"
+    location="AWS"
+    export LOCATION=$location
+    return
   fi
+
+  # Check Google Cloud Platform (GCP)
+  if curl -s -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/ >/dev/null 2>&1; then
+    echo "Cloud Provider: Google Cloud Platform (GCP)"
+    location="GCP"
+    export LOCATION=$location
+    return
+  fi
+
+  # Check Microsoft Azure
+  if curl -s -H "Metadata: true" http://169.254.169.254/metadata/instance?api-version=2021-02-01 >/dev/null 2>&1; then
+    echo "Cloud Provider: Microsoft Azure"
+    location="Azure"
+    export LOCATION=$location
+    return
+  fi
+
+  # Check Oracle Cloud Infrastructure (OCI)
+  if curl -s http://169.254.169.254/opc/v1/ >/dev/null 2>&1; then
+    echo "Cloud Provider: Oracle Cloud Infrastructure (OCI)"
+    location="OCI"
+    export LOCATION=$location
+    return
+  fi
+
+  # Default fallback
+  echo "Unable to determine the Cloud Provider. Either it's a new CSP or it's OnPrem"
   location="OnPrem"
   export LOCATION=$location
-  return
 }
 
-functiontodetermine_cloud_provider
+# Invoke the function
+check_cloud_provider
 
 functiontodetermine_cpu() {
   # Check if lscpu command exists
