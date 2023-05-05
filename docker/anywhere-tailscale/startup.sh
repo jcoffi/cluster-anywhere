@@ -314,6 +314,3 @@ while true
 do
   tail -f /dev/null & wait ${!}
 done
-
-echo "Running Decommission"
-/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';"
