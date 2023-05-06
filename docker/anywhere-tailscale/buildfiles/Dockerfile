@@ -90,7 +90,8 @@ RUN sudo apt update \
     tsfresh \
     alpaca_py \
     tiingo \
-    yfinance
+    yfinance \
+    openai
 
 ##building juicefs
 #RUN JFS_LATEST_TAG=$(curl -s https://api.github.com/repos/juicedata/juicefs/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') && \
