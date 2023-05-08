@@ -280,6 +280,7 @@ trap 'term_handler' SIGTERM
 trap 'term_handler' SIGKILL
 trap 'term_handler' EXIT
 trap 'error_handler' ERR
+trap 'error_handler' SIGSEGV
 
 #echo "***Starting"
 
