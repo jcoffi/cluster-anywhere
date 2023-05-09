@@ -25,8 +25,8 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         CRATE_USE_IPV4=true \
         SQLALCHEMY_SILENCE_UBER_WARNING=1 \
         HOME=/home/ray \
-        TS_STATEDIR="/data/tailscale/"
-#        TS_STATE="tailscale.state"
+        TS_STATEDIR="/data/tailscale/" \
+        TS_STATE="$TS_STATEDIR/tailscale.state"
 #        IPv6=false \
 #        DISABLE_IPV6=true \
 

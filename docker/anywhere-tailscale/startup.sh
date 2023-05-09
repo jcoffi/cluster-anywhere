@@ -150,10 +150,16 @@ export CLUSTERHOSTS="$(get_cluster_hosts)"
 
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
-sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATE
+sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR
 sudo chmod -R 7777 /data
 
+if [ ! -c $TS_STATE ] && echo $CLUSTERHOSTS | grep -q $HOSTNAME ; then
+  deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
+  export deviceid=$deviceid
 
+  echo "Deleting the device from Tailscale"
+  curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
+fi
 
 if [ -c /dev/net/tun ]; then
     sudo tailscaled -port 41641 & #2>/dev/null&
@@ -185,10 +191,10 @@ if [ -d "$CRATE_HEAP_DUMP_PATH" ]; then
 
 	if [ -d "$CRATE_HEAP_DUMP_PATH/nodes/0/_state/" ] && [ "$(ls -A $CRATE_HEAP_DUMP_PATH/nodes/0/_state/)" ]; then
         echo "$CRATE_HEAP_DUMP_PATH/nodes/0/_state/ is not Empty"
-        statedata=$true
+        crate_state_data=$true
 	else
         echo "$CRATE_HEAP_DUMP_PATH/nodes/0/_state/ is Empty"
-        statedata=$false
+        crate_state_data=$false
 	fi
 else
 	echo "Directory $CRATE_HEAP_DUMP_PATH not found."
@@ -203,7 +209,7 @@ if [ ! $location = "OnPrem" ]; then
 
 fi
 
-if [ ! $statedata ]; then
+if [ ! $crate_state_data ]; then
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
 else
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
@@ -217,7 +223,7 @@ if [ "$NODETYPE" = "head" ]; then
 
     ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address nexus.chimp-beta.ts.net
 
-    if [ ! $statedata ]; then
+    if [ ! $crate_state_data ]; then
       cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
       discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
     fi
@@ -246,9 +252,9 @@ fi
 function term_handler(){
 
     echo "Running Decommission"
-    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';"
-    echo "Running Cluster Election"
-    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
+    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
+#    echo "Running Cluster Election"
+#    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
     echo "***Stopping Ray***"
     ray stop
 
@@ -281,16 +287,6 @@ trap 'term_handler' SIGKILL
 trap 'term_handler' EXIT
 trap 'error_handler' ERR
 trap 'error_handler' SIGSEGV
-
-#echo "***Starting"
-
-# Running something in foreground, otherwise the container will stop
-#while true
-#do
-#  #sleep 1000 # Doesn't work with sleep. Not sure why.
-#  tail -f /dev/null & wait ${!}
-#done
-
 
 
 /crate/bin/crate \
