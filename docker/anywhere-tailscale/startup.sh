@@ -222,7 +222,7 @@ if [ "$NODETYPE" = "head" ]; then
     node_master='-Cnode.master=true \\'
     node_data='-Cnode.data=false \\'
 
-    ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address nexus.chimp-beta.ts.net
+    ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net
 
     if [ ! $crate_state_data ]; then
       cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
@@ -251,29 +251,26 @@ fi
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 function term_handler(){
-
+    echo "***Stopping Ray***"
+    ray stop -f
     echo "Running Decommission"
     /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
 #    echo "Running Cluster Election"
 #    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
-    echo "***Stopping Ray***"
-    ray stop
 
 
     echo "tailscale logout"
     sudo tailscale logout
-    echo "Shutting Tailscale Down"
-    sudo tailscale down
     exit 0
 }
 
 function error_handler(){
     echo "***Stopping***"
     ray stop -f
-    echo "Running Cluster Election"
-    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
-    #echo "Running Decommission"
-    #/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';"
+    #echo "Running Cluster Election"
+    #/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
+    echo "Running Decommission"
+    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
 
     echo "tailscale logout"
     sudo tailscale logout
@@ -298,9 +295,8 @@ trap 'error_handler' SIGSEGV
             ${node_data}
             ${node_voting_only}
             ${node_store_allow_mmap}
-            &
 
-/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'all';" &
+#/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'all';" &
 #CREATE REPOSITORY s3backup TYPE s3
 #[ WITH (parameter_name [= value], [, ...]) ]
 #[ WITH (access_key = ${AWS_ACCESS_KEY_ID}, secret_key = ${AWS_SECRET_ACCESS_KEY}), endpoint = s3.${AWS_DEFAULT_REGION}.amazonaws.com, bucket = ${AWS_S3_BUCKET}, base_path=crate/ ]
@@ -308,7 +304,7 @@ trap 'error_handler' SIGSEGV
 
 
 
-while true
-do
-  tail -f /dev/null & wait ${!}
-done
+#while true
+#do
+#  tail -f /dev/null & wait ${!}
+#done
