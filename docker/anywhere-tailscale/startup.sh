@@ -206,7 +206,7 @@ if [ ! $location = "OnPrem" ]; then
     node_master='-Cnode.master=false \\'
     node_data='-Cnode.data=false \\'
     node_voting_only='-Cnode.voting_only=false \\'
-    discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=5'
+    discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
 
 fi
 
