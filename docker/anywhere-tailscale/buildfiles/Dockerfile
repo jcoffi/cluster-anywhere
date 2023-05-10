@@ -109,5 +109,6 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR
 
 ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
 ## Either the interval or the retries needs to be longer so that crate has time to find the cluster
-HEALTHCHECK --interval=300s --timeout=30s --start-period=300s --retries=3 \
+#HEALTHCHECK --interval=300s --timeout=30s --start-period=300s --retries=3 \
+HEALTHCHECK --interval=90s --timeout=30s --start-period=300s --retries=0 \
 CMD sh /home/ray/run_tests.sh
