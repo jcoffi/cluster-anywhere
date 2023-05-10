@@ -206,14 +206,15 @@ if [ ! $location = "OnPrem" ]; then
     node_master='-Cnode.master=false \\'
     node_data='-Cnode.data=false \\'
     node_voting_only='-Cnode.voting_only=false \\'
+    discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=5'
 
 fi
 
-if [ ! $crate_state_data ]; then
-  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
-else
-  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
-fi
+#if [ ! $crate_state_data ]; then
+#  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
+#else
+#  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
+#fi
 
 
 if [ "$NODETYPE" = "head" ]; then
