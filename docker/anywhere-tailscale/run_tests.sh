@@ -15,7 +15,7 @@ fi
 
 if [ "$LOCATION" = "AWS" ]; then
         metadata_url="http://169.254.169.254/latest/meta-data/spot/termination-time"
-        if curl -s $metadata_url; then
+        if curl -sf $metadata_url; then
                 /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
                 ray stop -f
                 sudo tailscale logout
