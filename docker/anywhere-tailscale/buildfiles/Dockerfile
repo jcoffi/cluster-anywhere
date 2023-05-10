@@ -10,10 +10,6 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         RAY_record_ref_creation_sites=1 \
         TZ=America/Los_Angeles \
         NODETYPE=edge \
-        TSKEY="" \
-        TSAPIKEY="" \
-        AWS_ACCESS_KEY_ID="" \
-        AWS_SECRET_ACCESS_KEY="" \
         AWS_DEFAULT_REGION="us-west-2" \
         AWS_S3_BUCKET="cluster-anywhere" \
         CRATE_GC_LOG_DIR="/data/crate/log" \
@@ -27,6 +23,12 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         HOME=/home/ray \
         TS_STATEDIR="/data/tailscale/" \
         TS_STATE="$TS_STATEDIR/tailscale.state"
+ARG TSKEY
+ARG TSAPIKEY
+ARG OPENAPI_KEY
+#        TSAPIKEY="" \
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
 #        IPv6=false \
 #        DISABLE_IPV6=true \
 
