@@ -224,7 +224,7 @@ if [ "$NODETYPE" = "head" ]; then
 
     ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
-    sudo tailscale serve https / https://localhost:4200 \
+    sudo tailscale serve https / http://localhost:4200 \
     && sudo tailscale funnel 443 on
 
     if [ ! $crate_state_data ]; then
