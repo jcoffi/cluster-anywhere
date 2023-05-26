@@ -222,7 +222,7 @@ if [ "$NODETYPE" = "head" ]; then
     node_master='-Cnode.master=true \\'
     node_data='-Cnode.data=false \\'
 
-    ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net
+    ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
     if [ ! $crate_state_data ]; then
       cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
@@ -233,7 +233,7 @@ else
 
 
 
-    ray start --address='nexus.chimp-beta.ts.net:6379' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net
+    ray start --address='nexus.chimp-beta.ts.net:6379' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
 fi
 
