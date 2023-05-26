@@ -202,7 +202,7 @@ else
 fi
 
 
-if [ ! $location = "OnPrem" ]; then
+if [ ! "$location" = "OnPrem" ]; then
     node_master='-Cnode.master=false \\'
     node_data='-Cnode.data=false \\'
     node_voting_only='-Cnode.voting_only=false \\'
@@ -224,9 +224,15 @@ if [ "$NODETYPE" = "head" ]; then
 
     ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
+    sudo tailscale serve https / https://localhost:4200 \
+    && sudo tailscale funnel 443 on
+
     if [ ! $crate_state_data ]; then
       cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
       discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
+    else
+    #This only make sense to use if there is already state data.
+      discovery_seed_hosts='-C${CLUSTERHOSTS} \\'
     fi
 
 else
@@ -242,6 +248,8 @@ fi
 if $(grep -q microsoft /proc/version); then
   sudo chmod -R 777 /files
   conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
+  sudo tailscale serve https:8443 / http://localhost:8888 \
+  && sudo tailscale funnel 8443 on
 fi
 
 
@@ -290,6 +298,7 @@ trap 'error_handler' SIGSEGV
 /crate/bin/crate \
             ${cluster_initial_master_nodes}
             ${discovery_zen_minimum_master_nodes}
+            ${discovery_seed_hosts}
             ${node_name}
             ${node_master}
             ${node_data}
