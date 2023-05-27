@@ -190,7 +190,7 @@ if [ ! -f /data/certs/keystore.jks ] && [ -f /data/certs/$lcase_hostname.key ]; 
     echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml
     echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
     echo "ssl.keystore_key_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
-    #echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
+    echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
 fi
 
 while [ ! $tailscale_status = "Running" ]
