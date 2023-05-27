@@ -106,11 +106,11 @@ functiontodetermine_cpu
 #set -ae
 
 ## add in code to search and remove the machine name from tailscale if it already exists
-#deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
-#export deviceid=$deviceid
+deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
+export deviceid=$deviceid
 
-#echo "Deleting the device from Tailscale"
-#curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
+echo "Deleting the device from Tailscale"
+curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
 
 
 
@@ -186,11 +186,11 @@ fi
 if [ ! -f /data/certs/keystore.jks ] && [ -f /data/certs/$lcase_hostname.key ]; then
     KEYSTOREPASSWORD=$RANDOM$RANDOM
     /crate/jdk/bin/keytool -importcert -keystore /data/certs/keystore.jks -file /data/certs/$lcase_hostname.crt -alias $lcase_hostname-crt --trustcacerts -storepass $KEYSTOREPASSWORD -noprompt
-    cat /data/certs/$lcase_hostname.key | /crate/jdk/bin/keytool -importpass -keystore /data/certs/keystore.jks -alias $lcase_hostname-key -storepass $KEYSTOREPASSWORD -keypass $KEYSTOREPASSWORD -noprompt
+    sudo cat /data/certs/$lcase_hostname.key | /crate/jdk/bin/keytool -importpass -keystore /data/certs/keystore.jks -alias $lcase_hostname-key -storepass $KEYSTOREPASSWORD -keypass $KEYSTOREPASSWORD -noprompt
     echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml
     echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
     echo "ssl.keystore_key_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
-    echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
+    #echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
 fi
 
 while [ ! $tailscale_status = "Running" ]
