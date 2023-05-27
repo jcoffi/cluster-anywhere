@@ -174,24 +174,25 @@ else
     sudo tailscale up --authkey=${TSKEY} --accept-risk=all --accept-routes --accept-dns=true
 fi
 
-# TS_STATE environment variable would specify where the tailscaled.state file is stored, if that is being set.
-# TS_STATEDIR environment variable would specify a directory path other than /var/lib/tailscale, if that is being set.
-lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
-if [ ! -f /data/certs/$lcase_hostname.crt ]; then
-    cd /data/certs
-    sudo tailscale cert ${lcase_hostname}
-    cd $HOME
-fi
+## TS_STATE environment variable would specify where the tailscaled.state file is stored, if that is being set.
+## TS_STATEDIR environment variable would specify a directory path other than /var/lib/tailscale, if that is being set.
 
-if [ ! -f /data/certs/keystore.jks ] && [ -f /data/certs/$lcase_hostname.key ]; then
-    KEYSTOREPASSWORD=$RANDOM$RANDOM
-    /crate/jdk/bin/keytool -importcert -keystore /data/certs/keystore.jks -file /data/certs/$lcase_hostname.crt -alias $lcase_hostname-crt --trustcacerts -storepass $KEYSTOREPASSWORD -noprompt
-    sudo cat /data/certs/$lcase_hostname.key | /crate/jdk/bin/keytool -importpass -keystore /data/certs/keystore.jks -alias $lcase_hostname-key -storepass $KEYSTOREPASSWORD -keypass $KEYSTOREPASSWORD -noprompt
-    echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml
-    echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
-    echo "ssl.keystore_key_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
-    #echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
-fi
+# lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
+# if [ ! -f /data/certs/$lcase_hostname.crt ]; then
+#     cd /data/certs
+#     sudo tailscale cert ${lcase_hostname}
+#     cd $HOME
+# fi
+
+#if [ ! -f /data/certs/keystore.jks ] && [ -f /data/certs/$lcase_hostname.key ]; then
+#    KEYSTOREPASSWORD=$RANDOM$RANDOM
+#    /crate/jdk/bin/keytool -importcert -keystore /data/certs/keystore.jks -file /data/certs/$lcase_hostname.crt -alias $lcase_hostname-crt --trustcacerts -storepass $KEYSTOREPASSWORD -noprompt
+#    sudo cat /data/certs/$lcase_hostname.key | /crate/jdk/bin/keytool -importpass -keystore /data/certs/keystore.jks -alias $lcase_hostname-key -storepass $KEYSTOREPASSWORD -keypass $KEYSTOREPASSWORD -noprompt
+#    echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml
+#    echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
+#    echo "ssl.keystore_key_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
+#    echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
+#fi
 
 while [ ! $tailscale_status = "Running" ]
     do
@@ -261,7 +262,8 @@ fi
 
 if $(grep -q microsoft /proc/version); then
   sudo chmod -R 777 /files
-  conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
+  conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
+  #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
   sudo tailscale serve https:8443 / http://localhost:8888 \
   && sudo tailscale funnel 8443 on
 fi
