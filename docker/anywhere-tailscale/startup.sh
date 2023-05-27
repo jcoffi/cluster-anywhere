@@ -154,12 +154,11 @@ if [ ! -c $TS_STATE ] && echo $CLUSTERHOSTS | grep -q $HOSTNAME ; then
 
   echo "Deleting the device from Tailscale"
   curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
-  sudo rm -rf /data/certs/$HOSTNAME.chimp-beta.ts.net.* /data/certs/keystore
 fi
 
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
-sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR /data/certs
+sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR /certs
 sudo chmod -R 7777 /data
 
 if [ -c /dev/net/tun ]; then
@@ -178,17 +177,17 @@ fi
 ## TS_STATEDIR environment variable would specify a directory path other than /var/lib/tailscale, if that is being set.
 
 # lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
-# if [ ! -f /data/certs/$lcase_hostname.crt ]; then
-#     cd /data/certs
+# if [ ! -f /certs/$lcase_hostname.crt ]; then
+#     cd /certs
 #     sudo tailscale cert ${lcase_hostname}
 #     cd $HOME
 # fi
 
-#if [ ! -f /data/certs/keystore.jks ] && [ -f /data/certs/$lcase_hostname.key ]; then
+#if [ ! -f /certs/keystore.jks ] && [ -f /certs/$lcase_hostname.key ]; then
 #    KEYSTOREPASSWORD=$RANDOM$RANDOM
-#    /crate/jdk/bin/keytool -importcert -keystore /data/certs/keystore.jks -file /data/certs/$lcase_hostname.crt -alias $lcase_hostname-crt --trustcacerts -storepass $KEYSTOREPASSWORD -noprompt
-#    sudo cat /data/certs/$lcase_hostname.key | /crate/jdk/bin/keytool -importpass -keystore /data/certs/keystore.jks -alias $lcase_hostname-key -storepass $KEYSTOREPASSWORD -keypass $KEYSTOREPASSWORD -noprompt
-#    echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml
+#    /crate/jdk/bin/keytool -importcert -keystore /certs/keystore.jks -file /certs/$lcase_hostname.crt -alias $lcase_hostname-crt --trustcacerts -storepass $KEYSTOREPASSWORD -noprompt
+#    sudo cat /certs/$lcase_hostname.key | /crate/jdk/bin/keytool -importpass -keystore /certs/keystore.jks -alias $lcase_hostname-key -storepass $KEYSTOREPASSWORD -keypass $KEYSTOREPASSWORD -noprompt
+#    echo "ssl.keystore_filepath: /certs/keystore.jks" | tee -a /crate/config/crate.yml
 #    echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
 #    echo "ssl.keystore_key_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
 #    echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
@@ -263,7 +262,7 @@ fi
 if $(grep -q microsoft /proc/version); then
   sudo chmod -R 777 /files
   conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
-  #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
+  #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
   sudo tailscale serve https:8443 / http://localhost:8888 \
   && sudo tailscale funnel 8443 on
 fi
