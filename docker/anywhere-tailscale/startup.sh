@@ -192,7 +192,6 @@ if [ ! -f /data/certs/keystore.jks ] && [ -f /data/certs/$lcase_hostname.key ]; 
     && sudo /crate/jdk/bin/keytool -importkeystore -destkeystore /data/certs/keystore.jks -srckeystore /data/certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD \
     && echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml \
     && echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
-    #echo "ssl.keystore_key_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
     && echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
     cd $HOME
 fi
