@@ -6,11 +6,11 @@ if [ -z "$TSAPIKEY" ]; then
   exit 1
 fi
 
-#echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-#echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-#echo "net.ipv6.conf.lo.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-echo "vm.max_map_count = 262144" | sudo tee -a /etc/sysctl.conf
-echo "vm.swappiness = 1" | sudo tee -a /etc/sysctl.conf
+#echo "net.ipv6.conf.all.disable_ipv6=1" | sudo -E tee -a /etc/sysctl.conf
+#echo "net.ipv6.conf.default.disable_ipv6=1" | sudo -E tee -a /etc/sysctl.conf
+#echo "net.ipv6.conf.lo.disable_ipv6=1" | sudo -E tee -a /etc/sysctl.conf
+echo "vm.max_map_count = 262144" | sudo -E tee -a /etc/sysctl.conf
+echo "vm.swappiness = 1" | sudo -E tee -a /etc/sysctl.conf
 
 
 
@@ -19,9 +19,9 @@ IPADDRESS=$(curl -s http://ifconfig.me/ip)
 export IPADDRESS=$IPADDRESS
 
 
-echo "export NUMEXPR_MAX_THREADS='$(nproc)'" | sudo tee -a ~/.bashrc
-echo "export MAKEFLAGS='-j$(nproc)'" | sudo tee -a ~/.bashrc
-echo "export CPU_COUNT='$(nproc)'" | sudo tee -a ~/.bashrc
+echo "export NUMEXPR_MAX_THREADS='$(nproc)'" | sudo -E tee -a ~/.bashrc
+echo "export MAKEFLAGS='-j$(nproc)'" | sudo -E tee -a ~/.bashrc
+echo "export CPU_COUNT='$(nproc)'" | sudo -E tee -a ~/.bashrc
 
 memory=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 
@@ -158,19 +158,19 @@ fi
 
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
-sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR /certs
-sudo chmod -R 7777 /data
+sudo -E mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR /certs
+sudo -E chmod -R 7777 /data
 
 if [ -c /dev/net/tun ]; then
-    sudo tailscaled -port 41641 & #2>/dev/null&
-    sudo tailscale up --authkey=${TSKEY} --accept-risk=all --accept-routes --accept-dns=true
+    sudo -E tailscaled -port 41641 & #2>/dev/null&
+    sudo -E tailscale up --authkey=${TSKEY} --accept-risk=all --accept-routes --accept-dns=true
 else
     echo "tun doesn't exist"
-    sudo tailscaled -tun userspace-networking -state mem: -socks5-server=localhost:1080 -outbound-http-proxy-listen=localhost:3128 &
+    sudo -E tailscaled -tun userspace-networking -state mem: -socks5-server=localhost:1080 -outbound-http-proxy-listen=localhost:3128 &
     export socks_proxy=socks5h://localhost:1080
     export ALL_PROXY=socks5h://localhost:1080
     export http_proxy=http://localhost:3128
-    sudo tailscale up --authkey=${TSKEY} --accept-risk=all --accept-routes --accept-dns=true
+    sudo -E tailscale up --authkey=${TSKEY} --accept-risk=all --accept-routes --accept-dns=true
 fi
 
 ## TS_STATE environment variable would specify where the tailscaled.state file is stored, if that is being set.
@@ -179,16 +179,16 @@ fi
 lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
 if [ ! -f /certs/$lcase_hostname.key ]; then
    cd /certs
-   sudo tailscale cert ${lcase_hostname}
+   sudo -E tailscale cert ${lcase_hostname}
    cd $HOME
 fi
 
 if [ ! -f /certs/keystore.jks ] && [ -f /certs/$lcase_hostname.key ]; then
    KEYSTOREPASSWORD=$RANDOM$RANDOM
    cd /certs
-   sudo openssl pkcs12 -export -name $lcase_hostname -in $lcase_hostname.crt -inkey $lcase_hostname.key -out keystore.p12 -password $KEYSTOREPASSWORD
+   sudo -E openssl pkcs12 -export -name "$lcase_hostname" -in "$lcase_hostname.crt" -inkey "$lcase_hostname.key" -out keystore.p12 -password pass:"$KEYSTOREPASSWORD"
    #https://stackoverflow.com/questions/17695297/importing-the-private-key-public-certificate-pair-in-the-java-keystore
-   sudo /crate/jdk/bin/keytool -importkeystore -destkeystore /certs/keystore.jks -srckeystore /certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD
+   sudo -E /crate/jdk/bin/keytool -importkeystore -destkeystore /certs/keystore.jks -srckeystore /certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD
    cd $HOME
    echo "ssl.keystore_filepath: /certs/keystore.jks" | tee -a /crate/config/crate.yml
    echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
@@ -241,8 +241,8 @@ if [ "$NODETYPE" = "head" ]; then
 
     ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
-    sudo tailscale serve https / http://localhost:4200 \
-    && sudo tailscale funnel 443 on
+    sudo -E tailscale serve https / http://localhost:4200 \
+    && sudo -E tailscale funnel 443 on
 
     if [ ! $crate_state_data ]; then
       cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
@@ -263,11 +263,11 @@ fi
 
 
 if $(grep -q microsoft /proc/version); then
-  sudo chmod -R 777 /files
+  sudo -E chmod -R 777 /files
   conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
   #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
-  sudo tailscale serve https:8443 / http://localhost:8888 \
-  && sudo tailscale funnel 8443 on
+  sudo -E tailscale serve https:8443 / http://localhost:8888 \
+  && sudo -E tailscale funnel 8443 on
 fi
 
 
@@ -286,7 +286,7 @@ function term_handler(){
 
 
     echo "tailscale logout"
-    sudo tailscale logout
+    sudo -E tailscale logout
     exit 0
 }
 
@@ -299,9 +299,9 @@ function error_handler(){
     /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
 
     echo "tailscale logout"
-    sudo tailscale logout
+    sudo -E tailscale logout
     echo "Shutting Tailscale Down"
-    sudo tailscale down
+    sudo -E tailscale down
     exit 1
 }
 
