@@ -5,10 +5,10 @@ services:
       context: .
       args:
         TSAPIKEY: "${TSAPIKEY}"
-        TSKEY: "${TSKEY}"
+        TS_AUTHKEY: "${TSKEY}"
     environment:
       TSAPIKEY: "${TSAPIKEY}"
-      TSKEY: "${TSKEY}"
+      TS_AUTHKEY: "${TSKEY}"
     command: run_tests.sh
     volumes:
       - /dev/net/tun:/dev/net/tun
@@ -24,5 +24,4 @@ services:
       - "41641:41641/udp"
     cap_add:
       - NET_ADMIN
-      - SYS_PTRACE
-      - SYS_ADMIN
+      - NET_RAW
