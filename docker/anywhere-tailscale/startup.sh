@@ -163,14 +163,14 @@ sudo chmod -R 7777 /data
 
 if [ -c /dev/net/tun ]; then
     sudo tailscaled -port 41641 & #2>/dev/null&
-    sudo tailscale up --auth-key=${TS_AUTHKEY} --accept-risk=all --accept-routes
+    sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
 else
     echo "tun doesn't exist"
-    sudo tailscaled -tun userspace-networking -state mem: -socks5-server=localhost:1080 -outbound-http-proxy-listen=localhost:3128 &
+    sudo tailscaled -port 41641 -tun userspace-networking -state mem: -socks5-server=localhost:1080 -outbound-http-proxy-listen=localhost:3128 &
     export socks_proxy=socks5h://localhost:1080
     export ALL_PROXY=socks5h://localhost:1080
     export http_proxy=http://localhost:3128
-    sudo tailscale up --auth-key=${TS_AUTHKEY} --accept-risk=all --accept-routes
+    sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
 fi
 
 ## TS_STATE environment variable would specify where the tailscaled.state file is stored, if that is being set.
