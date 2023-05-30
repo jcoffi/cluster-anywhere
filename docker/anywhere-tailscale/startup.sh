@@ -176,22 +176,25 @@ fi
 ## TS_STATE environment variable would specify where the tailscaled.state file is stored, if that is being set.
 ## TS_STATEDIR environment variable would specify a directory path other than /var/lib/tailscale, if that is being set.
 
-# lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
-# if [ ! -f /certs/$lcase_hostname.crt ]; then
-#     cd /certs
-#     sudo tailscale cert ${lcase_hostname}
-#     cd $HOME
-# fi
+lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
+if [ ! -f /certs/$lcase_hostname.key ]; then
+   cd /certs
+   sudo tailscale cert ${lcase_hostname}
+   cd $HOME
+fi
 
-#if [ ! -f /certs/keystore.jks ] && [ -f /certs/$lcase_hostname.key ]; then
-#    KEYSTOREPASSWORD=$RANDOM$RANDOM
-#    /crate/jdk/bin/keytool -importcert -keystore /certs/keystore.jks -file /certs/$lcase_hostname.crt -alias $lcase_hostname-crt --trustcacerts -storepass $KEYSTOREPASSWORD -noprompt
-#    sudo cat /certs/$lcase_hostname.key | /crate/jdk/bin/keytool -importpass -keystore /certs/keystore.jks -alias $lcase_hostname-key -storepass $KEYSTOREPASSWORD -keypass $KEYSTOREPASSWORD -noprompt
-#    echo "ssl.keystore_filepath: /certs/keystore.jks" | tee -a /crate/config/crate.yml
-#    echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
-#    echo "ssl.keystore_key_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
-#    echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
-#fi
+if [ ! -f /certs/keystore.jks ] && [ -f /certs/$lcase_hostname.key ]; then
+   KEYSTOREPASSWORD=$RANDOM$RANDOM
+   cd /certs
+   sudo openssl pkcs12 -export -name $lcase_hostname -in $lcase_hostname.crt -inkey $lcase_hostname.key -out keystore.p12 -password $KEYSTOREPASSWORD
+   #https://stackoverflow.com/questions/17695297/importing-the-private-key-public-certificate-pair-in-the-java-keystore
+   sudo /crate/jdk/bin/keytool -importkeystore -destkeystore /certs/keystore.jks -srckeystore /certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD
+   cd $HOME
+   echo "ssl.keystore_filepath: /certs/keystore.jks" | tee -a /crate/config/crate.yml
+   echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
+   #echo "ssl.keystore_key_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
+   echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
+fi
 
 while [ ! $tailscale_status = "Running" ]
     do
