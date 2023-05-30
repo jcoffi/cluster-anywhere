@@ -202,7 +202,7 @@ class DataIterator(abc.ABC):
             >>> import ray
             >>> dataset = ray.data.range(10)
             >>> next(iter(dataset.iterator().iter_rows()))
-            0
+            {'id': 0}
 
         Time complexity: O(1)
 
@@ -632,7 +632,7 @@ class DataIterator(abc.ABC):
 
         .. warning::
             If your dataset contains ragged tensors, this method errors. To prevent
-            errors, :ref:`resize your tensors <transforming_variable_tensors>`.
+            errors, :ref:`resize your tensors <transforming_tensors>`.
 
         Examples:
             >>> import ray
