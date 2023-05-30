@@ -189,7 +189,6 @@ if [ ! -f /data/certs/keystore.jks ] && [ -f /data/certs/$lcase_hostname.key ]; 
     KEYSTOREPASSWORD=$RANDOM$RANDOM
     cd /data/certs
     sudo openssl pkcs12 -export -name "$lcase_hostname" -in "$lcase_hostname.crt" -inkey "$lcase_hostname.key" -out keystore.p12 -password pass:"$KEYSTOREPASSWORD" \
-    #https://stackoverflow.com/questions/17695297/importing-the-private-key-public-certificate-pair-in-the-java-keystore
     && sudo /crate/jdk/bin/keytool -importkeystore -destkeystore /data/certs/keystore.jks -srckeystore /data/certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD \
     && echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml \
     && echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \

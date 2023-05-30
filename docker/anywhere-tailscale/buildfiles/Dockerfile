@@ -69,10 +69,10 @@ RUN sudo apt update \
         && curl -fsSLZ -O https://cdn.crate.io/downloads/releases/crash_standalone_${CRASH_LATEST_TAG} \
         && sudo mv crash_standalone_${CRASH_LATEST_TAG} /usr/local/bin/crash \
         && sudo chmod +x /usr/local/bin/crash \
-&& curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh" \
-&& sudo chmod +x /home/ray/startup.sh \
-&& curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
-&& sudo chmod +x /home/ray/run_tests.sh \
+        #&& curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh" \
+        #&& sudo chmod +x /home/ray/startup.sh \
+        && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
+        && sudo chmod +x /home/ray/run_tests.sh \
 && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
     pandas \
     pandas_market_calendars \
@@ -110,7 +110,8 @@ EXPOSE 41641/tcp
 VOLUME /data
 RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR
 
-ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
+#ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
+ENTRYPOINT ["sudo curl -fsSLZ "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh | sudo -E bash"]
 ## Either the interval or the retries needs to be longer so that crate has time to find the cluster
 #HEALTHCHECK --interval=300s --timeout=30s --start-period=300s --retries=3 \
 HEALTHCHECK --interval=60s --timeout=30s --start-period=300s --retries=1 \
