@@ -184,16 +184,16 @@ if [ ! -f /certs/$lcase_hostname.key ]; then
 fi
 
 if [ ! -f /certs/keystore.jks ] && [ -f /certs/$lcase_hostname.key ]; then
-   KEYSTOREPASSWORD=$RANDOM$RANDOM
-   cd /certs
-   sudo -E openssl pkcs12 -export -name "$lcase_hostname" -in "$lcase_hostname.crt" -inkey "$lcase_hostname.key" -out keystore.p12 -password pass:"$KEYSTOREPASSWORD"
-   #https://stackoverflow.com/questions/17695297/importing-the-private-key-public-certificate-pair-in-the-java-keystore
-   sudo -E /crate/jdk/bin/keytool -importkeystore -destkeystore /certs/keystore.jks -srckeystore /certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD
-   cd $HOME
-   echo "ssl.keystore_filepath: /certs/keystore.jks" | tee -a /crate/config/crate.yml
-   echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
-   #echo "ssl.keystore_key_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
-   echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
+    KEYSTOREPASSWORD=$RANDOM$RANDOM
+    cd /certs
+    sudo -E openssl pkcs12 -export -name "$lcase_hostname" -in "$lcase_hostname.crt" -inkey "$lcase_hostname.key" -out keystore.p12 -password pass:"$KEYSTOREPASSWORD" \
+    #https://stackoverflow.com/questions/17695297/importing-the-private-key-public-certificate-pair-in-the-java-keystore
+    && sudo -E /crate/jdk/bin/keytool -importkeystore -destkeystore /certs/keystore.jks -srckeystore /certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD \
+    && echo "ssl.keystore_filepath: /certs/keystore.jks" | tee -a /crate/config/crate.yml \
+    && echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
+    #echo "ssl.keystore_key_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
+    && echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
+    cd $HOME
 fi
 
 while [ ! $tailscale_status = "Running" ]
