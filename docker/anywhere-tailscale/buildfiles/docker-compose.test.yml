@@ -5,10 +5,10 @@ services:
       context: .
       args:
         TSAPIKEY: "${TSAPIKEY}"
-        TS_AUTHKEY: "${TSKEY}"
+        TS_AUTHKEY: "${TS_AUTHKEY}"
     environment:
       TSAPIKEY: "${TSAPIKEY}"
-      TS_AUTHKEY: "${TSKEY}"
+      TS_AUTHKEY: "${TS_AUTHKEY}"
     command: run_tests.sh
     volumes:
       - /dev/net/tun:/dev/net/tun
