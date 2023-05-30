@@ -158,7 +158,7 @@ fi
 
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
-sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR /certs
+sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR /data/certs
 sudo chmod -R 7777 /data
 
 if [ -c /dev/net/tun ]; then
@@ -177,21 +177,21 @@ fi
 ## TS_STATEDIR environment variable would specify a directory path other than /var/lib/tailscale, if that is being set.
 
 lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
-if [ ! -f /certs/$lcase_hostname.key ]; then
-   cd /certs
+if [ ! -f /data/certs/$lcase_hostname.key ]; then
+   cd /data/certs
    echo "Creating certs"
    sudo tailscale cert ${lcase_hostname} || exit 1
    cd $HOME
 fi
 
-if [ ! -f /certs/keystore.jks ] && [ -f /certs/$lcase_hostname.key ]; then
+if [ ! -f /data/certs/keystore.jks ] && [ -f /data/certs/$lcase_hostname.key ]; then
     echo "Generating Certs, Keys and Keystores"
     KEYSTOREPASSWORD=$RANDOM$RANDOM
-    cd /certs
+    cd /data/certs
     sudo openssl pkcs12 -export -name "$lcase_hostname" -in "$lcase_hostname.crt" -inkey "$lcase_hostname.key" -out keystore.p12 -password pass:"$KEYSTOREPASSWORD" \
     #https://stackoverflow.com/questions/17695297/importing-the-private-key-public-certificate-pair-in-the-java-keystore
-    && sudo /crate/jdk/bin/keytool -importkeystore -destkeystore /certs/keystore.jks -srckeystore /certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD \
-    && echo "ssl.keystore_filepath: /certs/keystore.jks" | tee -a /crate/config/crate.yml \
+    && sudo /crate/jdk/bin/keytool -importkeystore -destkeystore /data/certs/keystore.jks -srckeystore /data/certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD \
+    && echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml \
     && echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
     #echo "ssl.keystore_key_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml
     && echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
@@ -267,7 +267,7 @@ fi
 if $(grep -q microsoft /proc/version); then
   sudo chmod -R 777 /files
   conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
-  #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
+  #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
   sudo tailscale serve https:8443 / http://localhost:8888 \
   && sudo tailscale funnel 8443 on
 fi
