@@ -179,11 +179,13 @@ fi
 lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
 if [ ! -f /certs/$lcase_hostname.key ]; then
    cd /certs
+   echo "Creating certs"
    sudo tailscale cert ${lcase_hostname}
    cd $HOME
 fi
 
 if [ ! -f /certs/keystore.jks ] && [ -f /certs/$lcase_hostname.key ]; then
+    echo "Generating Certs, Keys and Keystores"
     KEYSTOREPASSWORD=$RANDOM$RANDOM
     cd /certs
     sudo openssl pkcs12 -export -name "$lcase_hostname" -in "$lcase_hostname.crt" -inkey "$lcase_hostname.key" -out keystore.p12 -password pass:"$KEYSTOREPASSWORD" \
