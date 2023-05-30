@@ -180,7 +180,7 @@ lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
 if [ ! -f /data/certs/$lcase_hostname.key ]; then
    cd /data/certs
    echo "Creating certs"
-   sudo tailscale cert ${lcase_hostname} || exit 1
+   sudo tailscale cert ${lcase_hostname} &
    cd $HOME
 fi
 
