@@ -199,6 +199,7 @@ fi
 if [ ! -f /crate/config/ssl_enabled ] && [ -f /data/certs/keystore.p12 ]; then
     echo "Generating jks"
     sudo rm -rf /data/certs/keystore.jks
+    sudo rm -rf /data/certs/truststore.jks
     cd /data/certs
     sudo /crate/jdk/bin/keytool -importkeystore -destkeystore /data/certs/keystore.jks -srckeystore /data/certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD
     wget -nc https://letsencrypt.org/certs/lets-encrypt-r3.pem
