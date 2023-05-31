@@ -178,6 +178,7 @@ fi
 
 lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
 #create cert
+
 if [ ! -f /data/certs/$lcase_hostname.key ]; then
    cd /data/certs
    echo "Creating certs"
@@ -207,13 +208,15 @@ fi
 
 if [ ! -f /crate/config/ssl_enabled ] && [ -f /data/certs/keystore.jks ]; then
     echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml \
+    && echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
     && echo "ssl.truststore_filepath: /data/certs/truststore.jks" | tee -a /crate/config/crate.yml \
     && echo "ssl.truststore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
-    && echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
     && echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml \
     && sudo touch /crate/config/ssl_enabled \
     && echo $KEYSTOREPASSWORD | sudo tee -a /crate/config/ssl_enabled
 fi
+
+sudo chmod 777 -R /data/certs
 
 while [ ! $tailscale_status = "Running" ]
     do
