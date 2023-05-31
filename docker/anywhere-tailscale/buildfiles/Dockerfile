@@ -51,7 +51,7 @@ CMD sh /home/ray/run_tests.sh
 
 #we'll make the cluster name the github commit id, this way every new image is a new cluster but we keep state
 
-RUN mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
+RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo apt update \
 && sudo apt install -y --no-install-recommends ca-certificates curl bc jq lsb-release \
 && curl -fsSLZ https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null \
