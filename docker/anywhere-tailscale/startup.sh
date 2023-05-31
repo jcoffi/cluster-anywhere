@@ -200,11 +200,15 @@ if [ ! -f /crate/config/ssl_enabled ] && [ -f /data/certs/keystore.p12 ]; then
     sudo rm -rf /data/certs/keystore.jks
     cd /data/certs
     sudo /crate/jdk/bin/keytool -importkeystore -destkeystore /data/certs/keystore.jks -srckeystore /data/certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD
+    wget https://letsencrypt.org/certs/lets-encrypt-r3.pem
+    sudo /crate/jdk/bin/keytool -importcert -alias letsencryptint -keystore truststore.jks -file /data/certs/lets-encrypt-r3.pem -noprompt -trustcacerts -storepass $KEYSTOREPASSWORD
     cd $HOME
 fi
 
 if [ ! -f /crate/config/ssl_enabled ] && [ -f /data/certs/keystore.jks ]; then
     echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml \
+    && echo "ssl.truststore_filepath: /data/certs/truststore.jks" | tee -a /crate/config/crate.yml \
+    && echo "ssl.truststore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
     && echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
     && echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml \
     && sudo touch /crate/config/ssl_enabled
