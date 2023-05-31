@@ -33,8 +33,21 @@ ARG AWS_SECRET_ACCESS_KEY
 #        IPv6=false \
 #        DISABLE_IPV6=true \
 
-#SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-#RUN sudo ulimit -n 65535
+
+#for direct connections from tailscale
+EXPOSE 41641/udp
+EXPOSE 41641/tcp
+
+VOLUME /data
+RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR
+
+ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
+#ENTRYPOINT ["curl", "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh | sudo -E bash"]
+#ENTRYPOINT curl "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh" | /bin/bash -c
+## Either the interval or the retries needs to be longer so that crate has time to find the cluster
+#HEALTHCHECK --interval=300s --timeout=30s --start-period=300s --retries=3 \
+HEALTHCHECK --interval=60s --timeout=30s --start-period=300s --retries=1 \
+CMD sh /home/ray/run_tests.sh
 
 
 #we'll make the cluster name the github commit id, this way every new image is a new cluster but we keep state
@@ -47,7 +60,6 @@ RUN sudo apt update \
 && sudo apt install -y --no-install-recommends iptables nftables tailscale iproute2 procps inotify-tools \
 && sudo mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
 && sudo apt clean \
-&& sudo rm -rf /var/lib/apt/lists/* \
 && sudo groupadd crate \
         && export PLATFORM="$( case $(uname --m) in x86_64) echo x64_linux ;; aarch64) echo aarch64_linux ;; esac)" \
         && CRATE_LATEST_TAG=$(curl -s https://api.github.com/repos/crate/crate/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') \
@@ -102,18 +114,3 @@ RUN sudo apt update \
 #  tar -zxf "juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz" && \
 #  sudo install juicefs /usr/bin && \
 #  rm juicefs "juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz"
-
-#for direct connections from tailscale
-EXPOSE 41641/udp
-EXPOSE 41641/tcp
-
-VOLUME /data
-RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR
-
-ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
-#ENTRYPOINT ["curl", "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh | sudo -E bash"]
-#ENTRYPOINT curl "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh" | /bin/bash -c
-## Either the interval or the retries needs to be longer so that crate has time to find the cluster
-#HEALTHCHECK --interval=300s --timeout=30s --start-period=300s --retries=3 \
-HEALTHCHECK --interval=60s --timeout=30s --start-period=300s --retries=1 \
-CMD sh /home/ray/run_tests.sh
