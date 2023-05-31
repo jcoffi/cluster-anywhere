@@ -85,28 +85,30 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         && sudo chmod +x /home/ray/startup.sh \
         && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
         && sudo chmod +x /home/ray/run_tests.sh \
-&& $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
-    pandas \
-    pandas_market_calendars \
-    modin[ray] \
-    'sqlalchemy<2.0' \
-    crate[sqlalchemy] \
-    'distributed==2022.2.0' \
-    'ray==2.2' \
-    scikit-learn-intelex \
-    torch \
-    fredapi \
-    sympy \
-    numba \
-    numpy \
-    datetime \
-    icecream \
-    geojson \
-    tsfresh \
-    alpaca_py \
-    tiingo \
-    yfinance \
-    openai
+        && sudo chown -R ray /data \
+        && sudo chgrp -R crate /data \
+        && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
+        pandas \
+        pandas_market_calendars \
+        modin[ray] \
+        'sqlalchemy<2.0' \
+        crate[sqlalchemy] \
+        'distributed==2022.2.0' \
+        'ray==2.2' \
+        scikit-learn-intelex \
+        torch \
+        fredapi \
+        sympy \
+        numba \
+        numpy \
+        datetime \
+        icecream \
+        geojson \
+        tsfresh \
+        alpaca_py \
+        tiingo \
+        yfinance \
+        openai
 
 ##building juicefs
 #RUN JFS_LATEST_TAG=$(curl -s https://api.github.com/repos/juicedata/juicefs/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') && \
