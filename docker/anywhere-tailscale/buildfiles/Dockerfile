@@ -39,7 +39,6 @@ EXPOSE 41641/udp
 EXPOSE 41641/tcp
 
 VOLUME /data
-RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR
 
 ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
 #ENTRYPOINT ["curl", "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh | sudo -E bash"]
@@ -52,7 +51,8 @@ CMD sh /home/ray/run_tests.sh
 
 #we'll make the cluster name the github commit id, this way every new image is a new cluster but we keep state
 
-RUN sudo apt update \
+RUN mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
+&& sudo apt update \
 && sudo apt install -y --no-install-recommends ca-certificates curl bc jq lsb-release \
 && curl -fsSLZ https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null \
 && curl -fsSLZ https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list \

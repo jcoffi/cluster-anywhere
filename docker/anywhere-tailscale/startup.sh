@@ -177,6 +177,7 @@ fi
 ## TS_STATEDIR environment variable would specify a directory path other than /var/lib/tailscale, if that is being set.
 
 lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
+#create cert
 if [ ! -f /data/certs/$lcase_hostname.key ]; then
    cd /data/certs
    echo "Creating certs"
@@ -184,16 +185,29 @@ if [ ! -f /data/certs/$lcase_hostname.key ]; then
    cd $HOME
 fi
 
-if [ ! -f /data/certs/keystore.jks ] && [ -f /data/certs/$lcase_hostname.key ]; then
-    echo "Generating Certs, Keys and Keystores"
-    KEYSTOREPASSWORD=$RANDOM$RANDOM
+export KEYSTOREPASSWORD=$RANDOM$RANDOM
+#create p12
+if [ ! -f /crate/config/ssl_enabled ] && [ -f /data/certs/$lcase_hostname.key ]; then
+    echo "Generating p12"
+    sudo rm -rf /data/certs/keystore.p12
     cd /data/certs
-    sudo openssl pkcs12 -export -name "$lcase_hostname" -in "$lcase_hostname.crt" -inkey "$lcase_hostname.key" -out keystore.p12 -password pass:"$KEYSTOREPASSWORD" \
-    && sudo /crate/jdk/bin/keytool -importkeystore -destkeystore /data/certs/keystore.jks -srckeystore /data/certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD \
-    && echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml \
-    && echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
-    && echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml
+    sudo openssl pkcs12 -export -name "$lcase_hostname" -in "$lcase_hostname.crt" -inkey "$lcase_hostname.key" -out keystore.p12 -password pass:"$KEYSTOREPASSWORD"
     cd $HOME
+fi
+#create jks
+if [ ! -f /crate/config/ssl_enabled ] && [ -f /data/certs/keystore.p12 ]; then
+    echo "Generating jks"
+    sudo rm -rf /data/certs/keystore.jks
+    cd /data/certs
+    sudo /crate/jdk/bin/keytool -importkeystore -destkeystore /data/certs/keystore.jks -srckeystore /data/certs/keystore.p12 -srcstoretype pkcs12 -alias $lcase_hostname -srcstorepass $KEYSTOREPASSWORD -deststorepass $KEYSTOREPASSWORD
+    cd $HOME
+fi
+
+if [ ! -f /crate/config/ssl_enabled ] && [ -f /data/certs/keystore.jks ]; then
+    echo "ssl.keystore_filepath: /data/certs/keystore.jks" | tee -a /crate/config/crate.yml \
+    && echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
+    && echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml \
+    && touch /crate/config/ssl_enabled
 fi
 
 while [ ! $tailscale_status = "Running" ]
