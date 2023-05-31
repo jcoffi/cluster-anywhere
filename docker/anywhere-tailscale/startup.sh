@@ -211,7 +211,8 @@ if [ ! -f /crate/config/ssl_enabled ] && [ -f /data/certs/keystore.jks ]; then
     && echo "ssl.truststore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
     && echo "ssl.keystore_password: $KEYSTOREPASSWORD" | tee -a /crate/config/crate.yml \
     && echo "ssl.transport.mode: on" | tee -a /crate/config/crate.yml \
-    && sudo touch /crate/config/ssl_enabled
+    && sudo touch /crate/config/ssl_enabled \
+    && echo $KEYSTOREPASSWORD | sudo tee -a /crate/config/ssl_enabled
 fi
 
 while [ ! $tailscale_status = "Running" ]
