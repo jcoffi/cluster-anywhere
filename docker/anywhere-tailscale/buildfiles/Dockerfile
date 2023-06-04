@@ -68,6 +68,8 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         && sudo adduser ray crate \
         && sudo chown -R ray /crate \
         && sudo chgrp -R crate /crate \
+        && sudo chown -R ray /data \
+        && sudo chgrp -R crate /data \
         && export CRATE_URL=https://cdn.crate.io/downloads/releases/cratedb/${PLATFORM}/crate-${CRATE_LATEST_TAG}.tar.gz \
         && curl -fsSLZ -O ${CRATE_URL} \
         && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/crate.yml" \
