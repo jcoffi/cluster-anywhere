@@ -22,7 +22,6 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         SQLALCHEMY_SILENCE_UBER_WARNING=1 \
         HOME=/home/ray \
         TS_STATEDIR="/data/tailscale" \
-        TS_STATE="$TS_STATEDIR/tailscale.state" \
         TS_ACCEPT_DNS=true
 ARG TS_AUTHKEY
 ARG TSAPIKEY
@@ -36,7 +35,6 @@ ARG AWS_SECRET_ACCESS_KEY
 
 #for direct connections from tailscale
 EXPOSE 41641/udp
-EXPOSE 41641/tcp
 
 VOLUME /data
 
@@ -68,8 +66,10 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         && sudo adduser ray crate \
         && sudo chown -R ray /crate \
         && sudo chgrp -R crate /crate \
+        && sudo chmod -R 776 /crate \
         && sudo chown -R ray /data \
         && sudo chgrp -R crate /data \
+        && sudo chmod -R 776 /data \
         && export CRATE_URL=https://cdn.crate.io/downloads/releases/cratedb/${PLATFORM}/crate-${CRATE_LATEST_TAG}.tar.gz \
         && curl -fsSLZ -O ${CRATE_URL} \
         && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/crate.yml" \
@@ -87,8 +87,6 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         && sudo chmod +x /home/ray/startup.sh \
         && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
         && sudo chmod +x /home/ray/run_tests.sh \
-        && sudo chown -R ray /data \
-        && sudo chgrp -R crate /data \
         && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
         pandas \
         pandas_market_calendars \

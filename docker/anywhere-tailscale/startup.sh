@@ -264,7 +264,7 @@ if [ "$NODETYPE" = "head" ]; then
 
     ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
-    sudo tailscale serve https / http://localhost:4200 \
+    sudo tailscale serve https / http://localhost:8265 \
     && sudo tailscale funnel 443 on
 
     if [ ! $crate_state_data ]; then
@@ -291,6 +291,8 @@ if $(grep -q microsoft /proc/version); then
   #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
   sudo tailscale serve https:8443 / http://localhost:8888 \
   && sudo tailscale funnel 8443 on
+  sudo tailscale serve https:443 / http://localhost:4200/admin \
+  && sudo tailscale funnel 443 on
 fi
 
 
