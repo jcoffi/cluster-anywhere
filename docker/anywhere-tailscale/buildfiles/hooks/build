@@ -8,6 +8,9 @@ export CPU_COUNT='$(nproc)'
 docker buildx build \
 --cache-from=rayproject/ray:2.2.0-py39-$DOCKER_TAG \
 --ulimit 'memlock=-1' \
---ulimit 'nofile=65535:65535' \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --build-arg IMAGETYPE=$DOCKER_TAG .
+
+
+
+#--ulimit 'nofile=65535:65535' \
