@@ -9,7 +9,7 @@ crash -U crate -c "SELECT count(*) FROM sys.nodes" || exit 1
 if [ "$NODETYPE" = "head" ]; then
         ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q ALIVE || exit 1
 else
-        ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q ALIVE || ray start --address='nexus.chimp-beta.ts.net:6379' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net || exit 1
+        ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q ALIVE || exit 1
 fi
 
 
