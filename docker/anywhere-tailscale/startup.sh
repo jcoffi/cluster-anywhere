@@ -172,8 +172,7 @@ else
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
 fi
 
-## TS_STATE environment variable would specify where the tailscaled.state file is stored, if that is being set.
-## TS_STATEDIR environment variable would specify a directory path other than /var/lib/tailscale, if that is being set.
+
 
 # lcase_hostname=${HOSTNAME,,}.chimp-beta.ts.net
 # #create cert
