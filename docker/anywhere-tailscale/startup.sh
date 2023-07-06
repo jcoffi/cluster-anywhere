@@ -42,35 +42,43 @@ export shm_memory="${shm_memory}G"
 
 check_cloud_provider() {
   # Check AWS EC2
-  if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 http://169.254.169.254/latest/meta-data/) != "404" ]; then
-    echo "Cloud Provider: Amazon Web Services (AWS)"
-    location="AWS"
-    export LOCATION=$location
-    return
+  if curl -s -m 5 http://169.254.169.254/latest/meta-data/ >/dev/null 2>&1; then
+    if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 http://169.254.169.254/latest/meta-data/) != "404" ]; then
+      echo "Cloud Provider: Amazon Web Services (AWS)"
+      location="AWS"
+      export LOCATION=$location
+      return
+    fi
   fi
 
   # Check Google Cloud Platform (GCP)
-  if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/) != "404" ]; then
-    echo "Cloud Provider: Google Cloud Platform (GCP)"
-    location="GCP"
-    export LOCATION=$location
-    return
+  if curl -s -m 5 -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/ >/dev/null 2>&1; then
+    if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/) != "404" ]; then
+      echo "Cloud Provider: Google Cloud Platform (GCP)"
+      location="GCP"
+      export LOCATION=$location
+      return
+    fi
   fi
 
   # Check Microsoft Azure
-  if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 -H "Metadata: true" http://169.254.169.254/metadata/instance?api-version=2021-02-01) != "404" ]; then
-    echo "Cloud Provider: Microsoft Azure"
-    location="Azure"
-    export LOCATION=$location
-    return
+  if curl -s -m 5 -H "Metadata: true" http://169.254.169.254/metadata/instance?api-version=2021-02-01 >/dev/null 2>&1; then
+    if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 -H "Metadata: true" http://169.254.169.254/metadata/instance?api-version=2021-02-01) != "404" ]; then
+      echo "Cloud Provider: Microsoft Azure"
+      location="Azure"
+      export LOCATION=$location
+      return
+    fi
   fi
 
   # Check Oracle Cloud Infrastructure (OCI)
-  if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 http://169.254.169.254/opc/v1/) != "404" ]; then
-    echo "Cloud Provider: Oracle Cloud Infrastructure (OCI)"
-    location="OCI"
-    export LOCATION=$location
-    return
+  if curl -s -m 5 http://169.254.169.254/opc/v1/ >/dev/null 2>&1; then
+    if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 http://169.254.169.254/opc/v1/) != "404" ]; then
+      echo "Cloud Provider: Oracle Cloud Infrastructure (OCI)"
+      location="OCI"
+      export LOCATION=$location
+      return
+    fi
   fi
 
   # Check RunPod
@@ -85,8 +93,8 @@ check_cloud_provider() {
   echo "Unable to determine the Cloud Provider. Either it's a new CSP or it's OnPrem"
   location="OnPrem"
   export LOCATION=$location
-  echo "false"
 }
+
 
 
 # Invoke the function
