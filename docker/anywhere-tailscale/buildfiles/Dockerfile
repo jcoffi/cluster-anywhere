@@ -82,14 +82,12 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         'ray==2.2' \
         scikit-learn-intelex \
         torch \
-        fredapi \
         sympy \
         numba \
         numpy \
         datetime \
         icecream \
         geojson \
-        tsfresh \
         alpaca_py \
         tiingo \
         yfinance \
