@@ -79,7 +79,7 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         'sqlalchemy<2.0' \
         crate[sqlalchemy] \
         'distributed==2022.2.0' \
-        'ray==2.2' \
+        'ray==2.5.1' \
         scikit-learn-intelex \
         torch \
         sympy \
