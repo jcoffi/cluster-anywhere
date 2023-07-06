@@ -42,7 +42,7 @@ export shm_memory="${shm_memory}G"
 
 check_cloud_provider() {
   # Check AWS EC2
-  if curl -s -m 5 http://169.254.169.254/latest/meta-data/ >/dev/null 2>&1; then
+  if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 http://169.254.169.254/latest/meta-data/) != "404" ]; then
     echo "Cloud Provider: Amazon Web Services (AWS)"
     location="AWS"
     export LOCATION=$location
@@ -50,7 +50,7 @@ check_cloud_provider() {
   fi
 
   # Check Google Cloud Platform (GCP)
-  if curl -s -m 5 -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/ >/dev/null 2>&1; then
+  if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/) != "404" ]; then
     echo "Cloud Provider: Google Cloud Platform (GCP)"
     location="GCP"
     export LOCATION=$location
@@ -58,7 +58,7 @@ check_cloud_provider() {
   fi
 
   # Check Microsoft Azure
-  if curl -s -m 5 -H "Metadata: true" http://169.254.169.254/metadata/instance?api-version=2021-02-01 >/dev/null 2>&1; then
+  if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 -H "Metadata: true" http://169.254.169.254/metadata/instance?api-version=2021-02-01) != "404" ]; then
     echo "Cloud Provider: Microsoft Azure"
     location="Azure"
     export LOCATION=$location
@@ -66,9 +66,17 @@ check_cloud_provider() {
   fi
 
   # Check Oracle Cloud Infrastructure (OCI)
-  if curl -s -m 5 http://169.254.169.254/opc/v1/ >/dev/null 2>&1; then
+  if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 http://169.254.169.254/opc/v1/) != "404" ]; then
     echo "Cloud Provider: Oracle Cloud Infrastructure (OCI)"
     location="OCI"
+    export LOCATION=$location
+    return
+  fi
+
+  # Check RunPod
+  if [ $RUNPOD_API_KEY ]; then
+    echo "Cloud Provider: RunPod"
+    location="RunPod"
     export LOCATION=$location
     return
   fi
@@ -77,7 +85,9 @@ check_cloud_provider() {
   echo "Unable to determine the Cloud Provider. Either it's a new CSP or it's OnPrem"
   location="OnPrem"
   export LOCATION=$location
+  echo "false"
 }
+
 
 # Invoke the function
 check_cloud_provider
@@ -158,7 +168,7 @@ fi
 
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
-sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR /data/certs
+sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR
 sudo chmod -R 7777 /data
 
 if [ -c /dev/net/tun ]; then
@@ -168,10 +178,11 @@ else
     echo "tun doesn't exist"
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 &
     export socks_proxy=socks5h://localhost:1055/
+    export SOCKS_proxy=socks5h://localhost:1055/
     export ALL_PROXY=socks5h://localhost:1055/
     export http_proxy=http://localhost:1055/
     export HTTP_PROXY=http://localhost:1055/
-    sudo tailscale up --operator=$USER --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
+    sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
 fi
 
 
@@ -274,7 +285,14 @@ if [ "$NODETYPE" = "head" ]; then
     #This only make sense to use if there is already state data.
       discovery_seed_hosts='-C${CLUSTERHOSTS} \\'
     fi
-
+elif [ "$NODETYPE" = "control" ]; then
+  sudo chmod -R 777 /files
+  conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
+  #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
+  sudo tailscale serve https:8443 / http://localhost:8888 \
+  && sudo tailscale funnel 8443 on
+  sudo tailscale serve https:443 / http://localhost:4200 \
+  && sudo tailscale funnel 443 on
 else
 
 
