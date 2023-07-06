@@ -1,5 +1,5 @@
 ARG IMAGETYPE=cpu
-FROM rayproject/ray:2.5.1-py39-$IMAGETYPE
+FROM rayproject/ray:2.2.0-py39-$IMAGETYPE
 ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         MODIN_ENGINE=ray \
         MODIN_RAY_CLUSTER=True \
