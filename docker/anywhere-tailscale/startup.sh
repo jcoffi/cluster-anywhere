@@ -261,7 +261,7 @@ else
 fi
 
 
-if [ ! "$LOCATION" = "OnPrem" ]; then
+if [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
     node_master='-Cnode.master=false \\'
     node_data='-Cnode.data=false \\'
     node_voting_only='-Cnode.voting_only=false \\'
@@ -286,13 +286,12 @@ if [ "$NODETYPE" = "head" ]; then
     sudo tailscale serve https / http://localhost:8265 \
     && sudo tailscale funnel 443 on
 
-    if [ ! $crate_state_data ]; then
-      cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
-      discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
-    else
+#    if [ ! $crate_state_data ]; then
+#      cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
+#      discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
+#    else
     #This only make sense to use if there is already state data.
-      discovery_seed_hosts='-C${CLUSTERHOSTS} \\'
-    fi
+#    fi
 elif [ "$NODETYPE" = "control" ]; then
   sudo chmod -R 777 /files
   conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
