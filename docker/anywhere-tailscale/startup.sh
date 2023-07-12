@@ -261,7 +261,7 @@ else
 fi
 
 
-if [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ] | [ "$NODETYPE" = "user" ]; then
+if [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
   node_master='-Cnode.master=false \\'
   node_data='-Cnode.data=false \\'
   node_voting_only='-Cnode.voting_only=false \\'
@@ -280,6 +280,11 @@ if [ "$NODETYPE" = "head" ]; then
   && sudo tailscale funnel 443 on
 
 elif [ "$NODETYPE" = "user" ]; then
+  node_master='-Cnode.master=false \\'
+  node_data='-Cnode.data=false \\'
+  node_voting_only='-Cnode.voting_only=false \\'
+  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
+
   sudo chmod -R 777 /files
   conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
   #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
