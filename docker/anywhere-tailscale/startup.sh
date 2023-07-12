@@ -261,68 +261,40 @@ else
 fi
 
 
-if [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
-    node_master='-Cnode.master=false \\'
-    node_data='-Cnode.data=false \\'
-    node_voting_only='-Cnode.voting_only=false \\'
-    discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
+if [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ] | [ "$NODETYPE" = "user" ]; then
+  node_master='-Cnode.master=false \\'
+  node_data='-Cnode.data=false \\'
+  node_voting_only='-Cnode.voting_only=false \\'
+  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
 
 fi
 
-#if [ ! $crate_state_data ]; then
-#  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
-#else
-#  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
-#fi
-
-
 if [ "$NODETYPE" = "head" ]; then
-    node_name='-Cnode.name=nexus \\'
-    node_master='-Cnode.master=true \\'
-    node_data='-Cnode.data=false \\'
+  node_name='-Cnode.name=nexus \\'
+  node_master='-Cnode.master=true \\'
+  node_data='-Cnode.data=false \\'
 
-    ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
-    sudo tailscale serve https / http://localhost:8265 \
-    && sudo tailscale funnel 443 on
+  sudo tailscale serve https / http://localhost:8265 \
+  && sudo tailscale funnel 443 on
 
-#    if [ ! $crate_state_data ]; then
-#      cluster_initial_master_nodes='-Ccluster.initial_master_nodes=nexus \\'
-#      discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=1 \\'
-#    else
-    #This only make sense to use if there is already state data.
-#    fi
-elif [ "$NODETYPE" = "control" ]; then
+elif [ "$NODETYPE" = "user" ]; then
   sudo chmod -R 777 /files
   conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
   #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
+
+  #look into using /lab or /admin or whatever so that they can live on the same port (on the head node perhaps)
+  #but we can't move it to the head node right now because the only other port is 10001 and that conflicts with ray
   sudo tailscale serve https:8443 / http://localhost:8888 \
   && sudo tailscale funnel 8443 on
   sudo tailscale serve https:443 / http://localhost:4200 \
   && sudo tailscale funnel 443 on
 else
 
-
-
-    ray start --address='nexus.chimp-beta.ts.net:6379' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  ray start --address='nexus.chimp-beta.ts.net:6379' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
 fi
-
-
-
-if $(grep -q microsoft /proc/version); then
-  sudo chmod -R 777 /files
-  conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
-  #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
-  sudo tailscale serve https:8443 / http://localhost:8888 \
-  && sudo tailscale funnel 8443 on
-  sudo tailscale serve https:443 / http://localhost:4200 \
-  && sudo tailscale funnel 443 on
-fi
-
-
-
-
 
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
