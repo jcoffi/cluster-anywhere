@@ -9,9 +9,12 @@ if [ "$LOCATION" = "AWS" ]; then
 fi
 
 tailscale status -json | jq -r .BackendState | grep -q "Running" || exit 1
+ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE" || exit 1
 curl -s -X POST "http://localhost:4200/_sql?pretty" -H 'Content-Type: application/json' -d'
 {
     "stmt": "select * from sys.nodes where name = '"'$HOSTNAME'"'"
 }
 ' | jq -e '.rows | length > 0' || exit 1
-ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE" || exit 1
+
+
+exit 0
