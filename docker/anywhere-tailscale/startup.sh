@@ -124,11 +124,11 @@ functiontodetermine_cpu
 #set -ae
 
 ## add in code to search and remove the machine name from tailscale if it already exists
-deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
-export deviceid=$deviceid
+#deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
+#export deviceid=$deviceid
 
-echo "Deleting the device from Tailscale"
-curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
+#echo "Deleting the device from Tailscale"
+#curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
 
 
 
