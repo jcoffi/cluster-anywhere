@@ -244,8 +244,8 @@ while [ ! $tailscale_status = "Running" ]
         tailscale_status="$(tailscale status -json | jq -r .BackendState)"
 done
 
-current_node_master=$(crash --hosts ${CLUSTERHOSTS} -c "SELECT n.hostname FROM sys.cluster c JOIN sys.nodes n ON c.master_node = n.id;" --format raw | jq -r '.rows[] | .[0]')
-export CURRENTNODEMASTER="$(current_node_master)"
+#current_node_master=$(crash --hosts ${CLUSTERHOSTS} -c "SELECT n.hostname FROM sys.cluster c JOIN sys.nodes n ON c.master_node = n.id;" --format raw | jq -r '.rows[] | .[0]')
+#export CURRENTNODEMASTER="$(crash --hosts ${CLUSTERHOSTS} -c "SELECT n.hostname FROM sys.cluster c JOIN sys.nodes n ON c.master_node = n.id;" --format raw | jq -r '.rows[] | .[0]')"
 
 # check if we already have state data
 if [ -d "$CRATE_HEAP_DUMP_PATH" ]; then
