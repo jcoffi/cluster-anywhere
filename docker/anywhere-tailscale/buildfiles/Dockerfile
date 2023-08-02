@@ -110,5 +110,5 @@ ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
 #ENTRYPOINT curl "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh" | /bin/bash -c
 ## Either the interval or the retries needs to be longer so that crate has time to find the cluster
 #HEALTHCHECK --interval=300s --timeout=30s --start-period=300s --retries=3 \
-HEALTHCHECK --interval=60s --timeout=59s --start-period=300s --retries=4 \
+HEALTHCHECK --interval=300s --timeout=59s --start-period=300s --retries=0 \
 CMD sh /home/ray/run_tests.sh

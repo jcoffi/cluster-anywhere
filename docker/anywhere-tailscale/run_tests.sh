@@ -8,10 +8,25 @@ if [ "$LOCATION" = "AWS" ]; then
         fi
 fi
 
-tailscale status -json | jq -r .BackendState | grep -q "Running" || exit 1
-ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE" || exit 1
+FAIL=0
+
+tailscale status -json | jq -r .BackendState | grep -q "Running" || FAIL=1
+ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE" || FAIL=1
 curl -s -X POST "http://localhost:4200/_sql?pretty" -H 'Content-Type: application/json' -d'
 {
     "stmt": "select * from sys.nodes where name = '"'$HOSTNAME'"'"
 }
-' | jq -e '.rows | length > 0' || exit 1
+' | jq -e '.rows | length > 0' || FAIL=1
+
+
+
+
+if [ "$FAIL" = "1" ]; then
+    echo "Running Decommission"
+    /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
+    echo "***Stopping Ray***"
+    ray stop -f
+    echo "tailscale logout"
+    sudo tailscale logout
+    sudo kill -TERM 1
+fi
