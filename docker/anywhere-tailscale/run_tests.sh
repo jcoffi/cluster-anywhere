@@ -15,6 +15,3 @@ curl -s -X POST "http://localhost:4200/_sql?pretty" -H 'Content-Type: applicatio
     "stmt": "select * from sys.nodes where name = '"'$HOSTNAME'"'"
 }
 ' | jq -e '.rows | length > 0' || exit 1
-
-
-exit 0
