@@ -21,7 +21,7 @@ curl -s -X POST "http://localhost:4200/_sql?pretty" -H 'Content-Type: applicatio
 
 
 
-if [ "$FAIL" = "1" ]; then
+if [ "$FAIL" = "1" ] && [ ! "$NODETYPE" = "user" ]; then
     echo "Running Decommission"
     /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
     echo "***Stopping Ray***"
