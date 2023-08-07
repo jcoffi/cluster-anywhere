@@ -29,6 +29,5 @@ if [ "$FAIL" = "1" ] && [ ! "$NODETYPE" = "user" ]; then
     echo "tailscale logout"
     sudo tailscale logout
     crate_pid=$(pgrep -f crate)
-    sudo kill -TERM $crate_pid
-    sudo kill -TERM 1
+    sudo kill -TERM $crate_pid 1
 fi
