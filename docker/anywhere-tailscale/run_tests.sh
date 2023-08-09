@@ -25,10 +25,14 @@ if [ "$FAIL" = "1" ] && [ ! "$NODETYPE" = "user" ]; then
     echo "Running Decommission"
     /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
     echo "***Stopping Ray***"
-    ray stop -f
+    ray stop -g 5
     echo "tailscale logout"
     sudo tailscale logout
     crate_pid=$(pgrep -f crate)
-    sudo kill -TERM $crate_pid
     sudo kill -TERM 1
+    if [ $crate_pid ]; then
+        sudo kill -TERM $crate_pid
+    fi
+
+
 fi

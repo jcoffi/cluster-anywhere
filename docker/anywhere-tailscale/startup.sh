@@ -291,6 +291,7 @@ elif [ "$NODETYPE" = "user" ]; then
 
   sudo chmod -R 777 /files
   conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
+  #pip install jupyter_ai
   #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
 
   #look into using /lab or /admin or whatever so that they can live on the same port (on the head node perhaps)
@@ -309,7 +310,7 @@ fi
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 function term_handler(){
     echo "***Stopping Ray***"
-    ray stop -f
+    ray stop
     echo "Running Decommission"
     /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
 #    echo "Running Cluster Election"
@@ -319,14 +320,17 @@ function term_handler(){
     echo "tailscale logout"
     sudo tailscale logout
     crate_pid=$(pgrep -f crate)
-    sudo kill -TERM $crate_pid
     sudo kill -TERM 1
+    if [ $crate_pid ]; then
+        sudo kill -TERM $crate_pid
+    fi
+
     exit 0
 }
 
 function error_handler(){
     echo "***Stopping***"
-    ray stop -f
+    ray stop -g 5
     #echo "Running Cluster Election"
     #/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
     echo "Running Decommission"
@@ -334,8 +338,11 @@ function error_handler(){
 
     echo "tailscale logout"
     sudo tailscale logout
-    echo "Shutting Tailscale Down"
-    sudo tailscale down
+    crate_pid=$(pgrep -f crate)
+    sudo kill -TERM 1
+    if [ $crate_pid ]; then
+        sudo kill -TERM $crate_pid
+    fi
     exit 1
 }
 
