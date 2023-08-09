@@ -9,8 +9,8 @@ fi
 #echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
 #echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
 #echo "net.ipv6.conf.lo.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-echo "vm.max_map_count = 262144" | sudo tee -a /etc/sysctl.conf
-echo "vm.swappiness = 1" | sudo tee -a /etc/sysctl.conf
+#echo "vm.max_map_count = 262144" | sudo tee -a /etc/sysctl.conf
+#echo "vm.swappiness = 1" | sudo tee -a /etc/sysctl.conf
 
 
 
@@ -318,6 +318,9 @@ function term_handler(){
 
     echo "tailscale logout"
     sudo tailscale logout
+    crate_pid=$(pgrep -f crate)
+    sudo kill -TERM $crate_pid
+    sudo kill -TERM 1
     exit 0
 }
 
@@ -342,7 +345,6 @@ trap 'term_handler' SIGKILL
 trap 'term_handler' EXIT
 trap 'error_handler' ERR
 trap 'error_handler' SIGSEGV
-
 
 /crate/bin/crate \
             ${cluster_initial_master_nodes}
