@@ -75,11 +75,11 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
         pandas \
         pandas_market_calendars \
-        modin[ray] \
+#        modin[ray] \
         'sqlalchemy<2.0' \
         crate[sqlalchemy] \
         'distributed' \
-        'ray[all]' \
+#       'ray[all]' \
         scikit-learn-intelex \
         torch \
         sympy \

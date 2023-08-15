@@ -8,6 +8,7 @@ docker buildx create --use --driver=docker-container
 # Set image type based on build argument
 docker buildx build \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
+--push \
 --ulimit 'memlock=-1' \
 --cache-to type=registry,ref=jcoffi/ray:latest-py39-$DOCKER_TAG-cache \
 --cache-from type=registry,ref=jcoffi/ray:latest-py39-$DOCKER_TAG-cache \
