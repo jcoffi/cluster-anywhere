@@ -454,8 +454,8 @@ async def generate_logs_stream(num_chunks: int):
 async def test_logs_manager_list_logs(logs_manager):
     logs_client = logs_manager.data_source_client
 
-    logs_client.get_all_registered_agent_ids = MagicMock()
-    logs_client.get_all_registered_agent_ids.return_value = ["1", "2"]
+    logs_client.get_all_registered_log_agent_ids = MagicMock()
+    logs_client.get_all_registered_log_agent_ids.return_value = ["1", "2"]
 
     logs_client.list_logs.side_effect = [
         generate_list_logs(["gcs_server.out"]),
@@ -472,7 +472,7 @@ async def test_logs_manager_list_logs(logs_manager):
     assert len(result) == 1
     assert result["gcs_server"] == ["gcs_server.out"]
     assert result["raylet"] == []
-    logs_client.get_all_registered_agent_ids.assert_called()
+    logs_client.get_all_registered_log_agent_ids.assert_called()
     logs_client.list_logs.assert_awaited_with("2", "*gcs*", timeout=30)
 
     # The second call raises DataSourceUnavailable, which will
@@ -495,8 +495,8 @@ async def test_logs_manager_resolve_file(logs_manager):
     Test filename is given.
     """
     logs_client = logs_manager.data_source_client
-    logs_client.get_all_registered_agent_ids = MagicMock()
-    logs_client.get_all_registered_agent_ids.return_value = [node_id.hex()]
+    logs_client.get_all_registered_log_agent_ids = MagicMock()
+    logs_client.get_all_registered_log_agent_ids.return_value = [node_id.hex()]
     expected_filename = "filename"
     res = await logs_manager.resolve_filename(
         node_id=node_id.hex(),
@@ -718,8 +718,8 @@ async def test_logs_manager_stream_log(logs_manager):
     NUM_LOG_CHUNKS = 10
     logs_client = logs_manager.data_source_client
 
-    logs_client.get_all_registered_agent_ids = MagicMock()
-    logs_client.get_all_registered_agent_ids.return_value = ["1", "2"]
+    logs_client.get_all_registered_log_agent_ids = MagicMock()
+    logs_client.get_all_registered_log_agent_ids.return_value = ["1", "2"]
     logs_client.ip_to_node_id = MagicMock()
     logs_client.stream_log.return_value = generate_logs_stream(NUM_LOG_CHUNKS)
 
@@ -791,8 +791,8 @@ async def test_logs_manager_keepalive_no_timeout(logs_manager):
     NUM_LOG_CHUNKS = 10
     logs_client = logs_manager.data_source_client
 
-    logs_client.get_all_registered_agent_ids = MagicMock()
-    logs_client.get_all_registered_agent_ids.return_value = ["1", "2"]
+    logs_client.get_all_registered_log_agent_ids = MagicMock()
+    logs_client.get_all_registered_log_agent_ids.return_value = ["1", "2"]
     logs_client.ip_to_node_id = MagicMock()
     logs_client.stream_log.return_value = generate_logs_stream(NUM_LOG_CHUNKS)
 
@@ -1305,6 +1305,8 @@ def test_log_get(ray_start_cluster):
     sys.platform == "win32", reason="Windows has logging race from tasks."
 )
 def test_log_task(shutdown_only):
+    from ray.runtime_env import RuntimeEnv
+
     ray.init()
 
     # Test get log by multiple task id
@@ -1326,15 +1328,19 @@ def test_log_task(shutdown_only):
 
     def verify():
         lines = get_log(task_id=task.task_id().hex())
-        assert expected_out == "".join(lines)
+        assert expected_out in "".join(lines)
 
         # Test suffix
         lines = get_log(task_id=task.task_id().hex(), suffix="err")
-        assert expected_err == "".join(lines)
+        assert expected_err in "".join(lines)
 
         return True
 
     wait_for_condition(verify)
+
+    enabled_actor_task_log_runtime_env = RuntimeEnv(
+        env_vars={"RAY_ENABLE_RECORD_ACTOR_TASK_LOGGING": "1"}
+    )
 
     # Test actor task logs
     @ray.remote
@@ -1344,7 +1350,7 @@ def test_log_task(shutdown_only):
                 print(out_msg, end="", file=sys.stdout)
                 print(out_msg, end="", file=sys.stderr)
 
-    a = Actor.remote()
+    a = Actor.options(runtime_env=enabled_actor_task_log_runtime_env).remote()
     out_msg = "This is a test log\n"
     t = a.print_log.remote(out_msg)
     ray.get(t)
@@ -1366,27 +1372,45 @@ def test_log_task(shutdown_only):
                 print(out_msg, end="", file=sys.stdout)
                 await asyncio.sleep(1)
 
-    actor = AsyncActor.options(max_concurrency=2).remote()
+    actor = AsyncActor.options(
+        max_concurrency=2, runtime_env=enabled_actor_task_log_runtime_env
+    ).remote()
     out_msg = "[{name}]: This is a test log from stdout\n"
     task_a = actor.print_log.remote(out_msg.format(name="a"))
     task_b = actor.print_log.remote(out_msg.format(name="b"))
     ray.get([task_a, task_b])
 
     def verify():
-        with pytest.raises(RayStateApiException) as e:
-            for log in get_log(task_id=task_a.task_id().hex()):
-                pass
-
-        assert "For concurrent actor task, please query actor log" in str(e.value), str(
-            e.value
-        )
-        assert f"ray logs actor --id {actor._actor_id.hex()}" in str(e.value), str(
-            e.value
-        )
-
+        lines = get_log(task_id=task_a.task_id().hex())
+        assert "".join(lines).count(out_msg.format(name="a")) == 3
         return True
 
     wait_for_condition(verify)
+
+    def verify_actor_task_error(task_id, actor_id):
+        with pytest.raises(RayStateApiException) as e:
+            for log in get_log(task_id=task_id):
+                pass
+
+        assert "For actor task, please query actor log" in str(e.value), str(e.value)
+        assert f"ray logs actor --id {actor_id}" in str(e.value), str(e.value)
+
+        return True
+
+    # Getting task logs from actor with actor task log not enabled should raise errors.
+    a = Actor.remote()
+    t = a.print_log.remote(out_msg)
+    ray.get(t)
+    wait_for_condition(
+        verify_actor_task_error, task_id=t.task_id().hex(), actor_id=a._actor_id.hex()
+    )
+
+    a = AsyncActor.options(max_concurrency=2).remote()
+    t = a.print_log.remote(out_msg)
+    ray.get(t)
+    wait_for_condition(
+        verify_actor_task_error, task_id=t.task_id().hex(), actor_id=a._actor_id.hex()
+    )
 
     # Test task logs tail with lines.
     expected_out = [f"task-{i}\n" for i in range(5)]

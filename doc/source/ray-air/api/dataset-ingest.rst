@@ -1,9 +1,9 @@
-Ray Data Ingest into AIR Trainers
-=================================
+Ray Data Ingest into Ray Train
+==============================
 
 .. seealso::
 
-    See this :ref:`AIR Data ingest guide <air-configure-ingest>` for usage examples.
+    See this :ref:`AIR Data ingest guide <data-ingest-torch>` for usage examples.
 
 .. currentmodule:: ray
 
@@ -11,7 +11,7 @@ Ray Data Ingest into AIR Trainers
 
     air.session.get_dataset_shard
     ~data.DataIterator
-    ~air.DatasetConfig
+    ray.train.DataConfig
 
 Debugging Utilities
 -------------------

@@ -126,7 +126,7 @@ class LogsManager:
             yield streamed_log.data
 
     def _verify_node_registered(self, node_id: str):
-        if node_id not in self.client.get_all_registered_agent_ids():
+        if node_id not in self.client.get_all_registered_log_agent_ids():
             raise DataSourceUnavailable(
                 f"Given node id {node_id} is not available. "
                 "It's either the node is dead, or it is not registered. "
@@ -323,10 +323,11 @@ class LogsManager:
             # This is a concurrent actor task. The logs will be interleaved.
             # So we return the log file of the actor instead.
             raise FileNotFoundError(
-                f"For concurrent actor task, please query actor log for "
-                f"actor({actor_id}): e.g. ray logs actor --id {actor_id} ."
-                "Because tasks from concurrent actor will have logs interleaved, "
-                "and Ray is not able to locate the exact log file for the task."
+                f"For actor task, please query actor log for "
+                f"actor({actor_id}): e.g. ray logs actor --id {actor_id} . Or "
+                "set RAY_ENABLE_RECORD_ACTOR_TASK_LOGGING=1 in actor's runtime env "
+                "or when starting the cluster. Recording actor task's log could be "
+                "expensive, so Ray turns it off by default."
             )
         elif log_info is None:
             raise FileNotFoundError(
