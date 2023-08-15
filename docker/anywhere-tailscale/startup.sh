@@ -287,6 +287,12 @@ elif [ "$NODETYPE" = "user" ]; then
   node_voting_only='-Cnode.voting_only=false \\'
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
 
+  #https://docs.ray.io/en/latest/ray-core/using-ray-with-jupyter.html#setting-up-notebook
+  echo 'c = get_config()
+  c.InteractiveShell.cache_size = 0 # disable cache
+  ' >>  ~/.ipython/profile_default/ipython_config.py
+
+
   ray start --address='nexus.chimp-beta.ts.net:6379' --num-cpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
   sudo chmod -R 777 /files
@@ -318,7 +324,7 @@ function term_handler(){
 
     if [ $(ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE") ]; then
         echo "***Stopping Ray***"
-        ray stop -g 5
+        ray stop -g 30
     fi
 
     if [ $(tailscale status -json | jq -r .BackendState | grep -q "Running") ]; then
@@ -336,7 +342,7 @@ function term_handler(){
 function error_handler(){
     echo "***Error***"
     echo "***Stopping Ray***"
-    ray stop -g 5
+    ray stop -g 30
     #echo "Running Cluster Election"
     #/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
     echo "Running Decommission"
