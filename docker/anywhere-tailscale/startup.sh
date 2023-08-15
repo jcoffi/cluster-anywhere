@@ -287,10 +287,8 @@ elif [ "$NODETYPE" = "user" ]; then
   node_voting_only='-Cnode.voting_only=false \\'
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
 
-  #https://docs.ray.io/en/latest/ray-core/using-ray-with-jupyter.html#setting-up-notebook
-  echo 'c = get_config()
-  c.InteractiveShell.cache_size = 0 # disable cache
-  ' >>  ~/.ipython/profile_default/ipython_config.py
+  #todo: https://docs.ray.io/en/latest/ray-core/using-ray-with-jupyter.html#setting-up-notebook
+
 
 
   ray start --address='nexus.chimp-beta.ts.net:6379' --num-cpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net

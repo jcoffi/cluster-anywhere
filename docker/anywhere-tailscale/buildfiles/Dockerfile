@@ -1,5 +1,5 @@
 ARG IMAGETYPE=cpu
-FROM rayproject/ray:latest-py39-$IMAGETYPE
+FROM rayproject/ray-ml:latest-py39-$IMAGETYPE
 ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         MODIN_ENGINE=ray \
         MODIN_RAY_CLUSTER=True \
@@ -32,7 +32,7 @@ ARG AWS_SECRET_ACCESS_KEY
 #        IPv6=false \
 #        DISABLE_IPV6=true \
 
-#we'll make the cluster name the github commit id, this way every new image is a new cluster but we keep state
+#idea: we'll make the cluster name the github commit id, this way every new image is a new cluster but we keep state
 
 RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo apt update \
