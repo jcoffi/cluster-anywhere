@@ -7,10 +7,11 @@ export CPU_COUNT='$(nproc)'
 # Set image type based on build argument
 docker buildx build \
 --ulimit 'memlock=-1' \
+--cache-from=rayproject/ray:latest-py39-$DOCKER_TAG \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 
 
 
 #--ulimit 'nofile=65535:65535' \
-#--cache-from=rayproject/ray:2.2.0-py39-$DOCKER_TAG \
+#--cache-from=rayproject/ray:latest-py39-$DOCKER_TAG \
