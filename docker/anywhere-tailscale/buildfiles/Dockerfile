@@ -75,11 +75,9 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
         pandas \
         pandas_market_calendars \
-#        modin[ray] \
         'sqlalchemy<2.0' \
         crate[sqlalchemy] \
         'distributed' \
-#       'ray[all]' \
         scikit-learn-intelex \
         torch \
         sympy \
@@ -96,6 +94,9 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         google-cloud-storage \
         smart_open \
         boto3
+
+#        modin[ray] \
+#       'ray[all]' \
 
 ##building juicefs ##
 #RUN JFS_LATEST_TAG=$(curl -s https://api.github.com/repos/juicedata/juicefs/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') && \
