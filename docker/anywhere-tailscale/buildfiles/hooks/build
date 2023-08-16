@@ -5,14 +5,11 @@ export MAKEFLAGS='-j$(nproc)'
 #used by conda
 export CPU_COUNT='$(nproc)'
 
-docker buildx create --use --driver=docker-container --name container
+#docker buildx create --use --driver=docker-container --name container
 
 # Set image type based on build argument
 docker buildx build \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
---push \
---cache-to type=registry,ref=jcoffi/ray:latest-py310-$DOCKER_TAG \
---cache-from type=registry,ref=jcoffi/ray:latest-py310-$DOCKER_TAG \
 --ulimit 'memlock=-1' \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 ##--ulimit 'nofile=65535:65535' \
