@@ -4,18 +4,20 @@ export NUMEXPR_MAX_THREADS='$(nproc)'
 export MAKEFLAGS='-j$(nproc)'
 #used by conda
 export CPU_COUNT='$(nproc)'
-docker buildx create --use --driver=docker-container
+#docker buildx create --use --driver=docker-container
 # Set image type based on build argument
 docker buildx build \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --push \
+--cache-to type=registry,ref=jcoffi/ray:latest-py39-$DOCKER_TAG-cache \
+--cache-from type=registry,ref=jcoffi/ray:latest-py39-$DOCKER_TAG-cache \
 --ulimit 'memlock=-1' \
---cache-to type=s3,region=us-west-2,bucket=cluster-anywhere,name=latest-py39-$DOCKER_TAG-cache \
---cache-from type=s3,region=us-west-2,bucket=cluster-anywhere,name=latest-py39-$DOCKER_TAG-cache \
 --build-arg IMAGETYPE=$DOCKER_TAG .
-
 ##--ulimit 'nofile=65535:65535' \
 ##--cache-from=rayproject/ray:latest-py39-$DOCKER_TAG \
+
+##--cache-to type=s3,region=us-west-2,bucket=cluster-anywhere,name=latest-py39-$DOCKER_TAG-cache \
+##--cache-from type=s3,region=us-west-2,bucket=cluster-anywhere,name=latest-py39-$DOCKER_TAG-cache \
 
 ##--cache-to type=registry,ref=jcoffi/ray:latest-py39-$DOCKER_TAG-cache \
 ##--cache-from type=registry,ref=jcoffi/ray:latest-py39-$DOCKER_TAG-cache \
