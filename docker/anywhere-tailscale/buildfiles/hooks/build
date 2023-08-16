@@ -4,6 +4,8 @@ export NUMEXPR_MAX_THREADS='$(nproc)'
 export MAKEFLAGS='-j$(nproc)'
 #used by conda
 export CPU_COUNT='$(nproc)'
+
+export IMAGETYPE=$DOCKER_TAG
 docker buildx create --use --driver=docker-container
 # Set image type based on build argument
 docker buildx build \
