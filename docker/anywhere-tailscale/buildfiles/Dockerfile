@@ -92,7 +92,10 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         alpaca_py \
         tiingo \
         yfinance \
-        openai
+        openai \
+        google-cloud-storage \
+        smart_open \
+        boto3
 
 ##building juicefs
 #RUN JFS_LATEST_TAG=$(curl -s https://api.github.com/repos/juicedata/juicefs/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') && \
