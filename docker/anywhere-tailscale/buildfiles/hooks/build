@@ -4,7 +4,7 @@ export NUMEXPR_MAX_THREADS='$(nproc)'
 export MAKEFLAGS='-j$(nproc)'
 #used by conda
 export CPU_COUNT='$(nproc)'
-#docker buildx create --use --driver=docker-container
+docker buildx create --use --driver=docker-container
 # Set image type based on build argument
 docker buildx build \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
