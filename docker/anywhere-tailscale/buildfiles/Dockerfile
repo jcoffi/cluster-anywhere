@@ -32,7 +32,7 @@ ARG AWS_SECRET_ACCESS_KEY
 #        IPv6=false \
 #        DISABLE_IPV6=true \
 
-#idea: we'll make the cluster name the github commit id, this way every new image is a new cluster but we keep state
+#we'll make the cluster name the github commit id, this way every new image is a new cluster but we keep state
 
 RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo apt update \
@@ -75,9 +75,9 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
         pandas \
         pandas_market_calendars \
+        modin[ray] \
         'sqlalchemy<2.0' \
         crate[sqlalchemy] \
-        modin[ray] \
         'distributed' \
         'ray[all]' \
         scikit-learn-intelex \
@@ -92,15 +92,9 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         alpaca_py \
         tiingo \
         yfinance \
-        openai \
-        google-cloud-storage \
-        smart_open \
-        boto3
+        openai
 
-#        modin[ray] \
-#       'ray[all]' \
-
-##building juicefs ##
+##building juicefs
 #RUN JFS_LATEST_TAG=$(curl -s https://api.github.com/repos/juicedata/juicefs/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') && \
 #  wget "https://github.com/juicedata/juicefs/releases/download/v${JFS_LATEST_TAG}/juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz" && \
 #  tar -zxf "juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz" && \
