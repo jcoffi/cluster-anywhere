@@ -34,6 +34,8 @@ ARG AWS_SECRET_ACCESS_KEY
 
 #we'll make the cluster name the github commit id, this way every new image is a new cluster but we keep state
 
+VOLUME /data
+
 RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo apt update \
 && sudo apt install -y --no-install-recommends ca-certificates curl bc jq lsb-release \
@@ -106,8 +108,6 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 
 #for direct connections from tailscale
 EXPOSE 41641/udp
-
-VOLUME /data
 
 ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
 #ENTRYPOINT ["curl", "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh | sudo -E bash"]
