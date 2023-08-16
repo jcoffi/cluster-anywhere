@@ -11,8 +11,8 @@ docker buildx create --use --driver=docker-container --name container
 docker buildx build \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --push \
---cache-to type=s3,region=us-west-2,bucket=cluster-anywhere,name=latest-py310-$DOCKER_TAG \
---cache-from type=s3,region=us-west-2,bucket=cluster-anywhere,name=latest-py310-$DOCKER_TAG \
+--cache-to type=registry,ref=jcoffi/ray:latest-py310-$DOCKER_TAG-cache \
+--cache-from type=registry,ref=jcoffi/ray:latest-py310-$DOCKER_TAG-cache \
 --ulimit 'memlock=-1' \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 ##--ulimit 'nofile=65535:65535' \
