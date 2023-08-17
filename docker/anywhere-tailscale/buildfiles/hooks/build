@@ -13,8 +13,8 @@ docker buildx build \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
---cache-from type=registry,ref=jcoffi/cluster-anywhere:$DOCKER_TAG \
---cache-to type=registry,ref=jcoffi/cluster-anywhere:$DOCKER_TAG \
+--cache-to type=s3,region=us-west-2,bucket=cluster-anywhere,name=cluster-anywhere-$DOCKER_TAG \
+--cache-from type=s3,region=us-west-2,bucket=cluster-anywhere,name=cluster-anywhere-$DOCKER_TAG \
 --cache-to type=registry,ref=us.gcr.io/cluster-anywhere/cluster-anywhere:$DOCKER_TAG \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 ##--ulimit 'nofile=65535:65535' \
