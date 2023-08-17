@@ -26,7 +26,6 @@ docker buildx build \
 --ulimit 'memlock=-1' \
 --cache-to type=s3,region=us-west-2,bucket=cluster-anywhere,name=cluster-anywhere-$DOCKER_TAG \
 --cache-from type=s3,region=us-west-2,bucket=cluster-anywhere,name=cluster-anywhere-$DOCKER_TAG \
---cache-to type=registry,ref=us-docker.pkg.dev/cluster-anywhere/cluster-anywhere:$DOCKER_TAG \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 ##--ulimit 'nofile=65535:65535' \
 ##--cache-from=rayproject/ray:latest-py310-$DOCKER_TAG \
