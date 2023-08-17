@@ -35,7 +35,7 @@ ARG AWS_SECRET_ACCESS_KEY
 #we'll make the cluster name the github commit id, this way every new image is a new cluster but we keep state
 
 # will put this line back one crate fixes their latest tag
-#        && CRATE_LATEST_TAG=$(curl -s https://api.github.com/repos/crate/crate/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') \
+#
 VOLUME /data
 
 RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
@@ -49,7 +49,7 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo apt clean \
 && sudo groupadd crate \
         && export PLATFORM="$( case $(uname --m) in x86_64) echo x64_linux ;; aarch64) echo aarch64_linux ;; esac)" \
-        && CRATE_LATEST_TAG=5.4.2 \
+        && CRATE_LATEST_TAG=$(curl -s https://api.github.com/repos/crate/crate/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') \
         && CRASH_LATEST_TAG=$(curl -s https://api.github.com/repos/crate/crash/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') \
         && sudo mkdir -p /crate \
         && sudo adduser ray crate \
