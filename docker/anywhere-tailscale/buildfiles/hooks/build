@@ -17,16 +17,13 @@ export MAKEFLAGS='-j$(nproc)'
 export CPU_COUNT='$(nproc)'
 
 export IMAGETYPE=$DOCKER_TAG
-docker buildx create --use --driver=docker-container --name container
+
 
 # Set image type based on build argument
 docker buildx build \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
---cache-to type=registry,ref=us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
---cache-to type=registry,ref=jcoffi/cluster-anywhere:$DOCKER_TAG \
---cache-from type=registry,ref=jcoffi/cluster-anywhere:$DOCKER_TAG \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 ##--ulimit 'nofile=65535:65535' \
 ##--cache-from=rayproject/ray:latest-py310-$DOCKER_TAG \
