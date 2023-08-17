@@ -1,5 +1,5 @@
 ARG IMAGETYPE=cpu
-FROM rayproject/ray-ml:latest-py310-$IMAGETYPE
+FROM rayproject/ray:latest-py310-$IMAGETYPE
 ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         MODIN_ENGINE=ray \
         MODIN_RAY_CLUSTER=True \
@@ -49,7 +49,7 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo apt clean \
 && sudo groupadd crate \
         && export PLATFORM="$( case $(uname --m) in x86_64) echo x64_linux ;; aarch64) echo aarch64_linux ;; esac)" \
-        && CRATE_LATEST_TAG=5.4.2
+        && CRATE_LATEST_TAG=5.4.2 \
         && CRASH_LATEST_TAG=$(curl -s https://api.github.com/repos/crate/crash/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') \
         && sudo mkdir -p /crate \
         && sudo adduser ray crate \
