@@ -13,8 +13,8 @@ docker buildx build \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
---cache-from type=registry,ref=jcoffi/cluster-anywhere:latest-py310-$DOCKER_TAG \
---cache-to type=registry,ref=jcoffi/cluster-anywhere:latest-py310-$DOCKER_TAG \
+--cache-from type=registry,ref=jcoffi/cluster-anywhere:$DOCKER_TAG \
+--cache-to type=registry,ref=jcoffi/cluster-anywhere:$DOCKER_TAG \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 ##--ulimit 'nofile=65535:65535' \
 ##--cache-from=rayproject/ray:latest-py310-$DOCKER_TAG \
