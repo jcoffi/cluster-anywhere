@@ -177,6 +177,8 @@ fi
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
 sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR
+sudo chgrp -R crate /crate
+sudo chgrp -R crate /data
 sudo chmod -R 7777 /data
 
 if [ -c /dev/net/tun ]; then
@@ -291,7 +293,7 @@ elif [ "$NODETYPE" = "user" ]; then
 
 
 
-  ray start --address='nexus.chimp-beta.ts.net:6379' --num-cpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  ray start --address='nexus.chimp-beta.ts.net:6379' --resources="{\"$location\": 1}" --num-cpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
   sudo chmod -R 777 /files
   conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
@@ -306,7 +308,7 @@ elif [ "$NODETYPE" = "user" ]; then
   && sudo tailscale funnel 443 on
 else
 
-  ray start --address='nexus.chimp-beta.ts.net:6379' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  ray start --address='nexus.chimp-beta.ts.net:6379' --resources="{\"$location\": 1}" --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
 fi
 
