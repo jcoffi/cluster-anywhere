@@ -34,8 +34,6 @@ ARG AWS_SECRET_ACCESS_KEY
 
 #we'll make the cluster name the github commit id, this way every new image is a new cluster but we keep state
 
-# will put this line back one crate fixes their latest tag
-#
 VOLUME /data
 
 RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
