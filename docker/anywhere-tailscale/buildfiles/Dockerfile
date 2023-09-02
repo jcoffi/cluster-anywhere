@@ -107,8 +107,8 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 #for direct connections from tailscale
 EXPOSE 41641/udp
 
-ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
-#ENTRYPOINT ["curl", "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh | sudo -E bash"]
+#ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
+ENTRYPOINT [ "/bin/bash", "-c", "curl -o /tmp/startup.sh https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh && chmod +x /tmp/startup.sh && /tmp/startup.sh" ]
 #ENTRYPOINT curl "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh" | /bin/bash -c
 ## Either the interval or the retries needs to be longer so that crate has time to find the cluster
 #HEALTHCHECK --interval=300s --timeout=30s --start-period=300s --retries=3 \
