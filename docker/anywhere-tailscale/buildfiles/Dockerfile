@@ -68,8 +68,6 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         && curl -fsSLZ -O https://cdn.crate.io/downloads/releases/crash_standalone_${CRASH_LATEST_TAG} \
         && sudo mv crash_standalone_${CRASH_LATEST_TAG} /usr/local/bin/crash \
         && sudo chmod +x /usr/local/bin/crash \
-        && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh" \
-        && sudo chmod +x /home/ray/startup.sh \
         && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
         && sudo chmod +x /home/ray/run_tests.sh \
         && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
