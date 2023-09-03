@@ -57,6 +57,7 @@ check_cloud_provider() {
       #echo "Cloud Provider: Google Cloud Platform (GCP)"
       location="GCP"
       export LOCATION=$location
+      echo $location
       return
     fi
   fi
@@ -67,6 +68,7 @@ check_cloud_provider() {
       #echo "Cloud Provider: Microsoft Azure"
       location="Azure"
       export LOCATION=$location
+      echo $location
       return
     fi
   fi
@@ -77,6 +79,7 @@ check_cloud_provider() {
       #echo "Cloud Provider: Oracle Cloud Infrastructure (OCI)"
       location="OCI"
       export LOCATION=$location
+      echo $location
       return
     fi
   fi
@@ -86,6 +89,7 @@ check_cloud_provider() {
     #echo "Cloud Provider: RunPod"
     location="RunPod"
     export LOCATION=$location
+    echo $location
     return
   fi
 
