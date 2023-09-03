@@ -311,7 +311,7 @@ elif [ "$NODETYPE" = "user" ]; then
   && sudo tailscale funnel 443 on
 else
 
-  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'":"'"$(nproc)"'"}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
 fi
 
