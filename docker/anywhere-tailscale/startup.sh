@@ -246,6 +246,7 @@ fi
 # fi
 
 # sudo chmod 774 -R /data/certs
+
 if [ -d "$TS_STATEDIR/certs/" ] && [ ! -e "/data/certs" ]; then
   sudo ln -s -T $TS_STATEDIR/certs/ /data/certs
 fi
