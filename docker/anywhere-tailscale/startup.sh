@@ -184,7 +184,9 @@ fi
 sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR
 sudo chgrp -R crate /crate
 sudo chgrp -R crate /data
-sudo chmod -R 7777 /data
+sudo chmod -R 774 /data
+sudo chmod -R 774 $TS_STATEDIR
+
 
 if [ -c /dev/net/tun ]; then
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR & #2>/dev/null&
@@ -243,13 +245,18 @@ fi
 #     && echo $KEYSTOREPASSWORD | sudo tee -a /crate/config/ssl_enabled
 # fi
 
-# sudo chmod 777 -R /data/certs
+# sudo chmod 774 -R /data/certs
+if [ -d "$TS_STATEDIR/certs/" ] && [ ! -e "/data/certs" ]; then
+  sudo ln -s -T $TS_STATEDIR/certs/ /data/certs
+fi
 
 while [ ! $tailscale_status = "Running" ]
     do
         echo "Waiting for tailscale to start..."
         tailscale_status="$(tailscale status -json | jq -r .BackendState)"
 done
+
+
 
 #current_node_master=$(crash --hosts ${CLUSTERHOSTS} -c "SELECT n.hostname FROM sys.cluster c JOIN sys.nodes n ON c.master_node = n.id;" --format raw | jq -r '.rows[] | .[0]')
 #export CURRENTNODEMASTER="$(crash --hosts ${CLUSTERHOSTS} -c "SELECT n.hostname FROM sys.cluster c JOIN sys.nodes n ON c.master_node = n.id;" --format raw | jq -r '.rows[] | .[0]')"
