@@ -12,6 +12,13 @@ fi
 #echo "vm.max_map_count = 262144" | sudo tee -a /etc/sysctl.conf
 #echo "vm.swappiness = 1" | sudo tee -a /etc/sysctl.conf
 
+# Make sure directories exist as they are not automatically created
+# This needs to happen at runtime, as the directory could be mounted.
+sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR
+sudo chgrp -R crate /crate
+sudo chgrp -R crate /data
+sudo chmod -R 774 /data
+sudo chmod -R 774 $TS_STATEDIR
 
 
 # Pull external IP
@@ -179,13 +186,7 @@ if [ ! -c $TS_STATEDIR ] && echo $CLUSTERHOSTS | grep -q $HOSTNAME ; then
   curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
 fi
 
-# Make sure directories exist as they are not automatically created
-# This needs to happen at runtime, as the directory could be mounted.
-sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR
-sudo chgrp -R crate /crate
-sudo chgrp -R crate /data
-sudo chmod -R 774 /data
-sudo chmod -R 774 $TS_STATEDIR
+
 
 
 if [ -c /dev/net/tun ]; then
@@ -248,7 +249,10 @@ fi
 # sudo chmod 774 -R /data/certs
 
 if [ -d "$TS_STATEDIR/certs/" ] && [ ! -e "/data/certs" ]; then
-  sudo ln -s -T $TS_STATEDIR/certs/ /data/certs
+  cd /data
+  sudo ln -s -T tailscale/certs/ certs
+  cd ~
+  #sudo chmod 774 -R $TS_STATEDIR/certs/
 fi
 
 while [ ! $tailscale_status = "Running" ]
@@ -319,6 +323,7 @@ elif [ "$NODETYPE" = "user" ]; then
   #but we can't move it to the head node right now because the only other port is 10001 and that conflicts with ray
   sudo tailscale serve https:8443 / http://localhost:8888 \
   && sudo tailscale funnel 8443 on
+  #eventually we can make the below lines available to all nodetypes for cluster health checks. but first we need to configured the instances to connect was a password when connecting remotely.
   sudo tailscale serve https:443 / http://localhost:4200 \
   && sudo tailscale funnel 443 on
 else
