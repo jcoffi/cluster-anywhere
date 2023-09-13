@@ -312,9 +312,10 @@ elif [ "$NODETYPE" = "user" ]; then
 
   ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": 1}' --num-cpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
-
-
-  sudo chmod -R 777 /files
+  if [-e "/files" ]; then
+    sudo chgrp -R crate /files
+    sudo chmod -R 777 /files
+  fi
   conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
 
   #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.crt --keyfile=/data/certs/$HOSTNAME.chimp-beta.ts.net.key --preferred-dir /files &
