@@ -1,14 +1,8 @@
 #!/bin/bash
 
-VERSION=2.1.14
-OS=linux  # or "darwin" for OSX, "windows" for Windows.
-ARCH=amd64  # or "386" for 32-bit OSs
-
-curl -fsSL "https://github.com/GoogleCloudPlatform/docker-credential-gcr/releases/download/v${VERSION}/docker-credential-gcr_${OS}_${ARCH}-${VERSION}.tar.gz" \
-| tar xz docker-credential-gcr \
-&& chmod +x docker-credential-gcr && mv docker-credential-gcr /usr/bin/
-
-docker-credential-gcr configure-docker --registries=us-west4-docker.pkg.dev,us-docker.pkg.dev
+DOCKER_GCR_VER=2.1.14
+DOCKER_GCR_OS=linux  # or "darwin" for OSX, "windows" for Windows.
+DOCKER_GCR_ARCH=amd64  # or "386" for 32-bit OSs
 
 export NUMEXPR_MAX_THREADS='$(nproc)'
 #used by conda to specify cpus for building packages
@@ -17,6 +11,16 @@ export MAKEFLAGS='-j$(nproc)'
 export CPU_COUNT='$(nproc)'
 
 export IMAGETYPE=$DOCKER_TAG
+
+
+
+
+curl -fsSL "https://github.com/GoogleCloudPlatform/docker-credential-gcr/releases/download/v${DOCKER_GCR_VER}/docker-credential-gcr_${DOCKER_GCR_OS}_${DOCKER_GCR_ARCH}-${DOCKER_GCR_VER}.tar.gz" \
+| tar xz docker-credential-gcr \
+&& chmod +x docker-credential-gcr && mv docker-credential-gcr /usr/bin/
+
+docker-credential-gcr configure-docker --registries=us-west4-docker.pkg.dev,us-docker.pkg.dev
+
 
 
 # Set image type based on build argument
