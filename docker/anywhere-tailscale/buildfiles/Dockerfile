@@ -60,11 +60,11 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         && sudo tar -xf crate-${CRATE_LATEST_TAG}.tar.gz -C /crate --strip-components=1 \
         && curl -fsSLZ -o /crate/config/crate.yml "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/crate.yml" \
         && sudo chown 1000 /crate/config/crate.yml \
-        && sudo chgrp ray /crate/config/crate.yml \
+        && sudo chgrp crate /crate/config/crate.yml \
         && rm crate-${CRATE_LATEST_TAG}.tar.gz \
         && curl -fsSLZ -o /crate/config/log4j2.properties "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/log4j2.properties" \
         && sudo chown 1000 /crate/config/log4j2.properties \
-        && sudo chgrp ray /crate/config/log4j2.properties \
+        && sudo chgrp crate /crate/config/log4j2.properties \
         && curl -fsSLZ -o /usr/local/bin/crash https://cdn.crate.io/downloads/releases/crash_standalone_${CRASH_LATEST_TAG} \
         && sudo chmod +x /usr/local/bin/crash \
         && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
