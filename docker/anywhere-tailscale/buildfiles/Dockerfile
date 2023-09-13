@@ -46,26 +46,29 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
 && sudo apt clean \
 && sudo groupadd crate \
-        && sudo adduser ray crate \
         && export PLATFORM="$( case $(uname --m) in x86_64) echo x64_linux ;; aarch64) echo aarch64_linux ;; esac)" \
         && CRATE_LATEST_TAG=$(curl -s https://api.github.com/repos/crate/crate/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') \
         && CRASH_LATEST_TAG=$(curl -s https://api.github.com/repos/crate/crash/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') \
         && sudo mkdir -p /crate \
+        && sudo adduser ray crate \
         && sudo chgrp -R crate /crate \
-        && sudo chmod -R 775 /crate \
+        && sudo chmod -R 774 /crate \
         && sudo chgrp -R crate /data \
-        && sudo chmod -R 775 /data \
+        && sudo chmod -R 774 /data \
         && export CRATE_URL=https://cdn.crate.io/downloads/releases/cratedb/${PLATFORM}/crate-${CRATE_LATEST_TAG}.tar.gz \
         && curl -fsSLZ -O ${CRATE_URL} \
+        && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/crate.yml" \
+        && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/log4j2.properties" \
         && sudo tar -xf crate-${CRATE_LATEST_TAG}.tar.gz -C /crate --strip-components=1 \
-        && curl -fsSLZ -o /crate/config/crate.yml "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/crate.yml" \
-        && sudo chown 1000 /crate/config/crate.yml \
-        && sudo chgrp crate /crate/config/crate.yml \
+        && sudo chown 1000 crate.yml \
+        && sudo chgrp crate crate.yml \
+        && sudo mv crate.yml /crate/config/crate.yml \
+        && sudo chown 1000 log4j2.properties \
+        && sudo chgrp crate log4j2.properties \
+        && sudo mv log4j2.properties /crate/config/log4j2.properties \
         && rm crate-${CRATE_LATEST_TAG}.tar.gz \
-        && curl -fsSLZ -o /crate/config/log4j2.properties "https://raw.githubusercontent.com/jcoffi/docker-crate/master/config/log4j2.properties" \
-        && sudo chown 1000 /crate/config/log4j2.properties \
-        && sudo chgrp crate /crate/config/log4j2.properties \
-        && curl -fsSLZ -o /usr/local/bin/crash https://cdn.crate.io/downloads/releases/crash_standalone_${CRASH_LATEST_TAG} \
+        && curl -fsSLZ -O https://cdn.crate.io/downloads/releases/crash_standalone_${CRASH_LATEST_TAG} \
+        && sudo mv crash_standalone_${CRASH_LATEST_TAG} /usr/local/bin/crash \
         && sudo chmod +x /usr/local/bin/crash \
         && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
         && sudo chmod +x /home/ray/run_tests.sh \
@@ -89,11 +92,9 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         alpaca_py \
         tiingo \
         yfinance \
-        statsmodels \
         openai \
         google-cloud-storage \
         smart_open \
-        ipywidgets \
         boto3
 
 ##building juicefs
