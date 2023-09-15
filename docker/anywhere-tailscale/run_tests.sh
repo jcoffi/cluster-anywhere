@@ -28,7 +28,6 @@ curl -s -X POST "http://localhost:4200/_sql?pretty" -H 'Content-Type: applicatio
 #i'm in a hurry. but these if statements could use the lines above as boolen responses like crate_pid
 echo $LOCATION
 if [ "$FAIL" = "1" ] && [ ! "$NODETYPE" = "user" ]; then
-    clear
     echo "Failed and restarting"
     crate_pid=$(pgrep -f crate)
     if [ $crate_pid ]; then
