@@ -13,9 +13,9 @@ FAIL=0
 
 tailscale status -json | jq -r .BackendState | grep -q "Running" || FAIL=1
 
-if [ ! "$LOCATION" = "OnPrem" ]; then
-    ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE" || FAIL=1
-fi
+
+ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE" || FAIL=1
+
 
 curl -s -X POST "http://localhost:4200/_sql?pretty" -H 'Content-Type: application/json' -d'
 {
