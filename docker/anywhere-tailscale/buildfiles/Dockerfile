@@ -93,6 +93,7 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         openai \
         google-cloud-storage \
         smart_open \
+        ipywidgets \
         boto3
 
         # && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
