@@ -12,8 +12,8 @@ FAIL=0
 
 
 tailscale status -json | jq -r .BackendState | grep -q "Running" || FAIL=1
-echo $LOCATION
-if [ "$LOCATION" != "OnPrem" ]; then
+
+if [ ! "$LOCATION" = "OnPrem" ]; then
     ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE" || FAIL=1
 fi
 
