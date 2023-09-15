@@ -21,6 +21,11 @@ sudo chmod -R 774 /data
 sudo chmod -R 774 $TS_STATEDIR
 
 
+curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh"
+sudo chmod +x /home/ray/run_tests.sh
+
+
+
 # Pull external IP
 IPADDRESS=$(curl -s http://ifconfig.me/ip)
 export IPADDRESS=$IPADDRESS
