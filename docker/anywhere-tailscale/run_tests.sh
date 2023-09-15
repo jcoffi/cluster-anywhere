@@ -12,7 +12,7 @@ FAIL=0
 
 
 tailscale status -json | jq -r .BackendState | grep -q "Running" || FAIL=1
-
+echo $LOCATION
 if [ "$LOCATION" != "OnPrem" ]; then
     ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE" || FAIL=1
 fi
@@ -26,7 +26,7 @@ curl -s -X POST "http://localhost:4200/_sql?pretty" -H 'Content-Type: applicatio
 
 
 #i'm in a hurry. but these if statements could use the lines above as boolen responses like crate_pid
-echo $LOCATION
+
 if [ "$FAIL" = "1" ] && [ ! "$NODETYPE" = "user" ]; then
     echo "Failed and restarting"
     crate_pid=$(pgrep -f crate)
