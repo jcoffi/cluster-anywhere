@@ -108,6 +108,7 @@ check_cloud_provider() {
   # Default fallback
   #echo "Unable to determine the Cloud Provider. Either it's a new CSP or it's OnPrem"
   location="OnPrem"
+  export LOCATION=$location
   echo $location
 }
 
