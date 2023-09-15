@@ -21,7 +21,7 @@ sudo chmod -R 774 /data
 sudo chmod -R 774 $TS_STATEDIR
 
 
-curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh"
+curl -fsSLZ -o /home/ray/run_tests.sh "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh"
 sudo chmod +x /home/ray/run_tests.sh
 
 
