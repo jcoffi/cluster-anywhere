@@ -318,7 +318,7 @@ elif [ "$NODETYPE" = "user" ]; then
 
 
 
-  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": 1}' --num-cpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": 1}' --num-cpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
   if [ -e "/files" ]; then
     sudo chgrp -R crate /files
