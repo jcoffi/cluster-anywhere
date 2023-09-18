@@ -22,7 +22,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "ray/common/id.h"
-#include "ray/common/scheduling/scheduling_resources.h"
+#include "ray/common/scheduling/resource_set.h"
 #include "ray/common/task/task.h"
 #include "ray/common/task/task_util.h"
 #include "ray/common/test_util.h"
@@ -989,6 +989,33 @@ TEST_F(ClusterTaskManagerTest, TestSpillAfterAssigned) {
             task.GetTaskSpecification().TaskId());
 
   AssertNoLeaks();
+}
+
+TEST_F(ClusterTaskManagerTest, TestIdleNode) {
+  RayTask task = CreateTask({{}});
+  rpc::RequestWorkerLeaseReply reply;
+  bool callback_occurred = false;
+  bool *callback_occurred_ptr = &callback_occurred;
+  auto callback = [callback_occurred_ptr](
+                      Status, std::function<void()>, std::function<void()>) {
+    *callback_occurred_ptr = true;
+  };
+
+  task_manager_.QueueAndScheduleTask(task, false, false, &reply, callback);
+  pool_.TriggerCallbacks();
+  ASSERT_TRUE(scheduler_->GetLocalResourceManager().IsLocalNodeIdle());
+  ASSERT_FALSE(callback_occurred);
+  ASSERT_EQ(leased_workers_.size(), 0);
+
+  std::shared_ptr<MockWorker> worker =
+      std::make_shared<MockWorker>(WorkerID::FromRandom(), 1234);
+  pool_.PushWorker(std::static_pointer_cast<WorkerInterface>(worker));
+  pool_.TriggerCallbacks();
+
+  ASSERT_TRUE(callback_occurred);
+  ASSERT_EQ(leased_workers_.size(), 1);
+  ASSERT_FALSE(scheduler_->GetLocalResourceManager().IsLocalNodeIdle());
+  ASSERT_EQ(node_info_calls_, 0);
 }
 
 TEST_F(ClusterTaskManagerTest, NotOKPopWorkerAfterDrainingTest) {
@@ -2022,7 +2049,7 @@ TEST_F(ClusterTaskManagerTest, TestResourceDiff) {
   ASSERT_FALSE(resource_data.resource_load_changed());
   // Resource changed.
   resource_data.set_resource_load_changed(false);
-  ResourceRequest res;
+  ResourceSet res;
   res.Set(ResourceID::CPU(), 100);
   node_resources->load = std::move(res);
   task_manager_.FillResourceUsage(resource_data, node_resources);
