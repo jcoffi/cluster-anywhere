@@ -333,12 +333,13 @@ elif [ "$NODETYPE" = "user" ]; then
   sudo tailscale serve https:8443 / http://localhost:8888 \
   && sudo tailscale funnel 8443 on
   #eventually we can make the below lines available to all nodetypes for cluster health checks. but first we need to configured the instances to connect was a password when connecting remotely.
-  sudo tailscale serve https:443 / http://localhost:4200 \
-  && sudo tailscale funnel 443 on
+
 else
 
   if [ "$LOCATION" != "OnPrem" ]; then
     ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+    sudo tailscale serve https:443 / http://localhost:4200 \
+    && sudo tailscale funnel 443 on
   fi
 
 fi
