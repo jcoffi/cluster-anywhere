@@ -316,7 +316,10 @@ elif [ "$NODETYPE" = "user" ]; then
 
   #todo: https://docs.ray.io/en/latest/ray-core/using-ray-with-jupyter.html#setting-up-notebook
 
-
+  sudo tailscale serve https:8443 / http://localhost:8888 \
+  && sudo tailscale funnel 8443 on
+  sudo tailscale serve https:443 / http://localhost:4200 \
+  && sudo tailscale funnel 443 on
 
   #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": 1}' --num-cpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
@@ -330,17 +333,13 @@ elif [ "$NODETYPE" = "user" ]; then
 
   #look into using /lab or /admin or whatever so that they can live on the same port (on the head node perhaps)
   #but we can't move it to the head node right now because the only other port is 10001 and that conflicts with ray
-  sudo tailscale serve https:8443 / http://localhost:8888 \
-  && sudo tailscale funnel 8443 on
   #eventually we can make the below lines available to all nodetypes for cluster health checks. but first we need to configured the instances to connect was a password when connecting remotely.
 
 else
 
-  if [ "$LOCATION" != "OnPrem" ]; then
-    ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
-    sudo tailscale serve https:443 / http://localhost:4200 \
-    && sudo tailscale funnel 443 on
-  fi
+  #if [ "$LOCATION" != "OnPrem" ]; then
+  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  #fi
 
 fi
 
