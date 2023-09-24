@@ -19,7 +19,7 @@ if [ "$tailscale_status" != "Running" ]; then FAIL=1; fi
 
 
 # Check Ray status if not user node. Want to confine all non gpu processing to the cloud
-if [ "$NODETYPE" != "user" ]; then
+if [ "$LOCATION" != "OnPrem" ]; then
     ray_status=$(ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE")
     if [ -z "$ray_status" ]; then FAIL=1; fi
 fi
