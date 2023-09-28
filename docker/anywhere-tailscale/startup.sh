@@ -255,6 +255,7 @@ fi
 # fi
 
 # sudo chmod 774 -R /data/certs
+sudo chmod 774 -R $TS_STATEDIR/certs/
 
 if [ -d "$TS_STATEDIR/certs/" ] && [ ! -e "/data/certs" ]; then
   cd /data
