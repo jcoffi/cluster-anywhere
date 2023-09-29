@@ -143,12 +143,12 @@ functiontodetermine_cpu
 
 #set -ae
 
-## add in code to search and remove the machine name from tailscale if it already exists
-#deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
-#export deviceid=$deviceid
+# add in code to search and remove the machine name from tailscale if it already exists
+deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
+export deviceid=$deviceid
 
-#echo "Deleting the device from Tailscale"
-#curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
+echo "Deleting the device from Tailscale"
+curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
 
 
 
@@ -198,8 +198,9 @@ fi
 
 
 if [ -c /dev/net/tun ]; then
-    sudo tailscaled -port 41641 -statedir $TS_STATEDIR 2>/dev/null&
-    sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
+    sudo tailscaled -port 41641 -statedir $TS_STATEDIR & # 2>/dev/null&
+    #sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
+    tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --operator ray
 else
     echo "tun doesn't exist"
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 &
