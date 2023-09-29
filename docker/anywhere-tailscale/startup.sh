@@ -200,7 +200,7 @@ fi
 if [ -c /dev/net/tun ]; then
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR & # 2>/dev/null&
     #sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
-    tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --operator ray
+    tailscale up --operator=$USER --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
 else
     echo "tun doesn't exist"
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 &
