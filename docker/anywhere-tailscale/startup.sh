@@ -263,8 +263,8 @@ while [ ! $tailscale_status = "Running" ]
         tailscale_status="$(tailscale status -json | jq -r .BackendState)"
 done
 
+sudo chmod 774 -R $TS_STATEDIR/
 if [ -d "$TS_STATEDIR/certs/" ] && [ ! -e "/data/certs" ]; then
-  sudo chmod 774 -R $TS_STATEDIR/
   cd /data
   sudo ln -s ./tailscale/certs/ certs
   cd ~
