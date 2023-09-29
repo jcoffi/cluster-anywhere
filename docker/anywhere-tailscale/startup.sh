@@ -257,6 +257,12 @@ fi
 # sudo chmod 774 -R /data/certs
 
 
+while [ ! $tailscale_status = "Running" ]
+    do
+        echo "Waiting for tailscale to start..."
+        tailscale_status="$(tailscale status -json | jq -r .BackendState)"
+done
+
 if [ -d "$TS_STATEDIR/certs/" ] && [ ! -e "/data/certs" ]; then
   sudo chmod 774 -R $TS_STATEDIR/
   cd /data
@@ -264,14 +270,6 @@ if [ -d "$TS_STATEDIR/certs/" ] && [ ! -e "/data/certs" ]; then
   cd ~
   #sudo chmod 774 -R $TS_STATEDIR/certs/
 fi
-
-while [ ! $tailscale_status = "Running" ]
-    do
-        echo "Waiting for tailscale to start..."
-        tailscale_status="$(tailscale status -json | jq -r .BackendState)"
-done
-
-
 
 #current_node_master=$(crash --hosts ${CLUSTERHOSTS} -c "SELECT n.hostname FROM sys.cluster c JOIN sys.nodes n ON c.master_node = n.id;" --format raw | jq -r '.rows[] | .[0]')
 #export CURRENTNODEMASTER="$(crash --hosts ${CLUSTERHOSTS} -c "SELECT n.hostname FROM sys.cluster c JOIN sys.nodes n ON c.master_node = n.id;" --format raw | jq -r '.rows[] | .[0]')"
