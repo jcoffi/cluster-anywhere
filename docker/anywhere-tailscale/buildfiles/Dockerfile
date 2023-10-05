@@ -83,6 +83,7 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         sympy \
         numba \
         numpy \
+        statsmodels \
         datetime \
         icecream \
         geojson \
