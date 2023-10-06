@@ -16,17 +16,17 @@ if [ "$LOCATION" = "AWS" ]; then
 fi
 
 # Check for GCP Spot Instance Termination
-if [ "$LOCATION" = "GCP" ]; then
-    result=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/maintenance-event -H "Metadata-Flavor: Google")
-    if [ "$result" != "NONE" ]; then
-        /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '$HOSTNAME';" &
-        ray stop -g 30
-        sudo tailscale logout
-        sudo tailscale down
-        sudo tailscaled -cleanup
-        exit 0
-    fi
-fi
+#if [ "$LOCATION" = "GCP" ]; then
+#    result=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/maintenance-event -H "Metadata-Flavor: Google")
+#    if [ "$result" != "NONE" ]; then
+#        /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '$HOSTNAME';" &
+#        ray stop -g 30
+#        sudo tailscale logout
+#        sudo tailscale down
+#        sudo tailscaled -cleanup
+#        exit 0
+#    fi
+#fi
 
 
 
