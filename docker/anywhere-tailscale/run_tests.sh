@@ -11,7 +11,6 @@ if [ "$LOCATION" = "AWS" ]; then
         sudo tailscale logout
         sudo tailscale down
         sudo tailscaled -cleanup
-        exit 0
     fi
 fi
 
@@ -24,7 +23,6 @@ if [ "$LOCATION" = "GCP" ]; then
        sudo tailscale logout
        sudo tailscale down
        sudo tailscaled -cleanup
-       exit 0
    fi
 fi
 
