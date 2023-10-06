@@ -48,6 +48,5 @@ if [ -z "$crate_status" ]; then FAIL=1; fi
 # Other test commands here
 
 if [ $FAIL -eq 1 ]; then
-    echo "Tests failed."
     exit 1
 fi
