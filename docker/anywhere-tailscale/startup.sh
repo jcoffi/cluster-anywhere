@@ -336,8 +336,8 @@ elif [ "$NODETYPE" = "user" ]; then
 else
 
   #if [ "$LOCATION" != "OnPrem" ]; then
-  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
-  sudo tailscale serve tcp:52365 tcp://localhost:52365 \
+  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net \
+  && sudo tailscale serve tcp:52365 tcp://localhost:52365 \
   && sudo tailscale funnel 52365 on
   #fi
 
