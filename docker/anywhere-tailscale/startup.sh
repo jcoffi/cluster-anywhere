@@ -197,7 +197,7 @@ fi
 
 
 
-if [ -c /dev/net/tun ]; then
+if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR 2>/dev/null&
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
 else
