@@ -26,9 +26,9 @@ sudo chmod +x /home/ray/run_tests.sh
 
 
 
-# Pull external IP
-IPADDRESS=$(curl -s http://ifconfig.me/ip)
-export IPADDRESS=$IPADDRESS
+## Pull external IP
+#IPADDRESS=$(curl -s http://ifconfig.me/ip)
+#export IPADDRESS=$IPADDRESS
 
 
 echo "export NUMEXPR_MAX_THREADS='$(nproc)'" | sudo tee -a ~/.bashrc
@@ -198,7 +198,7 @@ fi
 
 
 if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
-    sudo tailscaled -port 41641 -statedir $TS_STATEDIR 2>/dev/null&
+    sudo tailscaled -port 41641 -statedir $TS_STATEDIR #2>/dev/null&
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
 else
     echo "tun doesn't exist"
