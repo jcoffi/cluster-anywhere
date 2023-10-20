@@ -203,9 +203,9 @@ if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
 else
     echo "tun doesn't exist"
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 &
-    export socks_proxy=socks5h://localhost:1055/
-    export SOCKS_PROXY=socks5h://localhost:1055/
-    export ALL_PROXY=socks5h://localhost:1055/
+    export socks_proxy=socks5://localhost:1055/
+    export SOCKS_PROXY=socks5://localhost:1055/
+    export ALL_PROXY=socks5://localhost:1055/
     export http_proxy=http://localhost:1055/
     export HTTP_PROXY=http://localhost:1055/
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
