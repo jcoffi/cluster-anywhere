@@ -32,7 +32,7 @@ prepare_build_directory() {
     cd "$builddir/"
     sudo rm -rf *
   else
-    sudo mkdir -p "$builddir" /home/tripps/data && cd "$builddir"
+    sudo mkdir -p "$builddir" /home/$USER/data && cd "$builddir"
   fi
 }
 
@@ -115,7 +115,7 @@ handle_nvidia_gpu() {
         cuda_version="116"
       fi
     elif [[ -n $CUDA ]] && ! [ -f /usr/local/cuda/version.json ]; then
-      #we will default to 11.2
+      #we will default to 11.8
       cuda_version="gpu"
     fi
   fi
@@ -123,6 +123,10 @@ handle_nvidia_gpu() {
 
 install_nvidia_cuda() {
   local repo="$1"
+  if ! [ -x "$(command -v gcc)" ]; then
+    sudo apt -y install gcc make
+  fi
+  curl https://developer.download.nvidia.com/compute/cuda/11.2.2/local_installers/cuda_11.2.2_460.32.03_linux.run | sudo sh &1 --silent --driver --toolkit --no-drm --no-man-page
   sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
   wget https://developer.download.nvidia.com/compute/cuda/repos/$repo/$(uname --m)/cuda-keyring_1.0-1_all.deb -O cuda-keyring_1.0-1_all.deb && sudo chmod +x cuda-keyring_1.0-1_all.deb
   sudo dpkg -i cuda-keyring_1.0-1_all.deb
@@ -161,5 +165,5 @@ check_installed_executables
 configure_system_settings
 install_dependencies
 handle_nvidia_gpu
-download_docker_files
-build_and_push_docker_image
+#download_docker_files
+#build_and_push_docker_image
