@@ -213,7 +213,7 @@ else
     server = 127.0.0.1
     server_type = 5
     server_port = 1055
-    EOL
+    EOF
 
     export TSOCKS_CONF_FILE=/data/tsocks.conf
 fi
