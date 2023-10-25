@@ -345,7 +345,7 @@ else
   #&& sudo tailscale funnel 52365 on
   #fi
 
-  if [ TSOCKS_CONF_FILE ]; then
+  if [ $TSOCKS_CONF_FILE ]; then
     tsocks ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
   fi
 fi
