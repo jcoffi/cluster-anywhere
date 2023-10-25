@@ -209,6 +209,7 @@ else
     export http_proxy=http://localhost:1055/
     export HTTP_PROXY=http://localhost:1055/
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
+    sudo apt install tsocks
     echo -e "server = 127.0.0.1\\nserver_type = 5\\nserver_port = 1055" > /data/tsocks.conf
 
     export TSOCKS_CONF_FILE=/data/tsocks.conf
