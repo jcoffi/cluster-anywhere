@@ -209,10 +209,7 @@ else
     export http_proxy=http://localhost:1055/
     export HTTP_PROXY=http://localhost:1055/
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
-    sudo apt install tsocks
-    echo -e "server = 127.0.0.1\\nserver_type = 5\\nserver_port = 1055" > /data/tsocks.conf
 
-    export TSOCKS_CONF_FILE=/data/tsocks.conf
 fi
 
 
@@ -345,10 +342,6 @@ else
   #&& sudo tailscale funnel 52365 on
   #fi
 
-  if [ $TSOCKS_CONF_FILE ]; then
-    echo "Using tsocks"
-    tsocks ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
-  fi
 fi
 
 
