@@ -219,10 +219,10 @@ else
     export HTTP_PROXY=http://localhost:1055/
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
 
-    awk 'NR==1 && /^127.0.0.1/ {print $0 " nexus"} NR!=1 || !/^127.0.0.1/ {print $0}' /etc/hosts > /etc/temp_hosts && sudo mv /etc/temp_hosts /etc/hosts
+    awk 'NR==1 && /^127.0.0.1/ {print $0 " nexus"} NR!=1 || !/^127.0.0.1/ {print $0}' /etc/hosts > ~/temp_hosts && sudo mv ~/temp_hosts /etc/hosts
 
 
-    ssh -N -L localhost:6379:localhost:1055 $USER@localhost
+    ssh -N -L nexus:6379:nexus:1055 $USER@nexus
 fi
 
 
