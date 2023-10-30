@@ -105,6 +105,15 @@ check_cloud_provider() {
     return
   fi
 
+  # Check Vast
+  if [ $VAST_CONTAINERLABEL ]; then
+    #echo "Cloud Provider: RunPod"
+    location="Vast"
+    export LOCATION=$location
+    echo $location
+    return
+  fi
+
   # Default fallback
   #echo "Unable to determine the Cloud Provider. Either it's a new CSP or it's OnPrem"
   location="OnPrem"
@@ -336,8 +345,11 @@ elif [ "$NODETYPE" = "user" ]; then
 
 else
 
-  #if [ "$LOCATION" != "OnPrem" ]; then
-  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  if [ ! "$LOCATION" = "OnPrem" ] && [ $ALL_PROXY ]; then
+    sudo iptables -t nat -A OUTPUT -p tcp --dport 0:65535 -j REDIRECT --to-port 1055
+    #ssh -N -L localhost:6379:localhost:1055 $USER@localhost
+  fi
+    ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
   #&& sudo tailscale serve tcp:52365 tcp://localhost:52365 \
   #&& sudo tailscale funnel 52365 on
   #fi
