@@ -218,7 +218,11 @@ else
     export http_proxy=http://localhost:1055/
     export HTTP_PROXY=http://localhost:1055/
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
-    sudo iptables -t nat -A OUTPUT -p tcp --dport 0:65535 -j REDIRECT --to-port 1055
+
+    awk 'NR==1 && /^127.0.0.1/ {print $0 " nexus"} NR!=1 || !/^127.0.0.1/ {print $0}' /etc/hosts > /etc/temp_hosts && sudo mv /etc/temp_hosts /etc/hosts
+
+
+    ssh -N -L localhost:6379:localhost:1055 $USER@localhost
 fi
 
 
@@ -345,7 +349,12 @@ elif [ "$NODETYPE" = "user" ]; then
 
 else
 
-  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  if [ ! "$LOCATION" = "OnPrem" ] && [ $ALL_PROXY ]; then
+    ray start --address='nexus:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+    #ssh -N -L localhost:6379:localhost:1055 $USER@localhost
+  else
+    ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  fi
   #&& sudo tailscale serve tcp:52365 tcp://localhost:52365 \
   #&& sudo tailscale funnel 52365 on
   #fi
