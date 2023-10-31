@@ -218,8 +218,6 @@ else
     export http_proxy=http://localhost:1055/
     export HTTP_PROXY=http://localhost:1055/
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
-
-    ssh -N -L nexus:6379:nexus:1055 $USER@nexus
 fi
 
 
