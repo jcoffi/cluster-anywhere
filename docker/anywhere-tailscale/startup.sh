@@ -350,8 +350,8 @@ else
     ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
   fi
 
-  sudo tailscale serve http / http://localhost:8265 \
-  && sudo tailscale funnel 8265 on
+  sudo tailscale serve --bg --https 8265 http://localhost:8265
+  && sudo tailscale funnel --bg 8265
 
   #&& sudo tailscale serve tcp:52365 tcp://localhost:52365 \
   #&& sudo tailscale funnel 52365 on
