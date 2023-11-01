@@ -314,8 +314,8 @@ if [ "$NODETYPE" = "head" ]; then
 
   ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --system-config='{"object_spilling_config":"{\"type\":\"smart_open\",\"params\":{\"uri\":\"gs://cluster-anywhere/ray_job_spill\"}}"}'
 
-  sudo tailscale serve https / http://localhost:8265 \
-  && sudo tailscale funnel 443 on
+  # sudo tailscale serve https / http://localhost:8265 \
+  # && sudo tailscale funnel 443 on
 
 elif [ "$NODETYPE" = "user" ]; then
   node_master='-Cnode.master=false \\'
@@ -345,11 +345,15 @@ elif [ "$NODETYPE" = "user" ]; then
 else
 
   if [ ! "$LOCATION" = "OnPrem" ] && [ $ALL_PROXY ]; then
-    ray start --address='nexus:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+    ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
     #ssh -N -L localhost:6379:localhost:1055 $USER@localhost
   else
     ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
   fi
+
+  sudo tailscale serve http / http://localhost:8265 \
+  && sudo tailscale funnel 8265 on
+
   #&& sudo tailscale serve tcp:52365 tcp://localhost:52365 \
   #&& sudo tailscale funnel 52365 on
   #fi
