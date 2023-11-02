@@ -207,11 +207,11 @@ fi
 
 
 if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
-    sudo tailscaled -port 41641 -statedir $TS_STATEDIR 2>/dev/null&
+    sudo tailscaled -port 41641 -statedir $TS_STATEDIR #2>/dev/null&
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
 else
     echo "tun doesn't exist"
-    sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 2>/dev/null&
+    sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 #2>/dev/null&
     export socks_proxy=socks5://localhost:1055/
     export SOCKS_PROXY=socks5://localhost:1055/
     export ALL_PROXY=socks5://localhost:1055/
@@ -314,8 +314,8 @@ if [ "$NODETYPE" = "head" ]; then
 
   ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --system-config='{"object_spilling_config":"{\"type\":\"smart_open\",\"params\":{\"uri\":\"gs://cluster-anywhere/ray_job_spill\"}}"}'
 
-  sudo tailscale serve --bg --https 443 http://localhost:8265 \
-  && sudo tailscale funnel --bg 443
+  sudo tailscale serve --bg --http 8265 \
+  && sudo tailscale funnel --bg --http http://localhost:8265
 
 elif [ "$NODETYPE" = "user" ]; then
   node_master='-Cnode.master=false \\'
@@ -324,8 +324,8 @@ elif [ "$NODETYPE" = "user" ]; then
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
 
   #todo: https://docs.ray.io/en/latest/ray-core/using-ray-with-jupyter.html#setting-up-notebook
-  sudo tailscale serve --bg --https 8443 http://localhost:8888 \
-  && sudo tailscale funnel --bg 8443
+  sudo tailscale serve --bg 8888 \
+  && sudo tailscale funnel --bg --https https://localhost:8888
 
   #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": 0}' --num-cpus=0 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
