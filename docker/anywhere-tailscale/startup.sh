@@ -107,7 +107,7 @@ check_cloud_provider() {
 
   # Check Vast
   if [ $VAST_CONTAINERLABEL ]; then
-    #echo "Cloud Provider: RunPod"
+    #echo "Cloud Provider: Vast.ai"
     location="Vast"
     export LOCATION=$location
     echo $location
