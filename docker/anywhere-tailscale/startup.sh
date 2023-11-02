@@ -324,8 +324,8 @@ elif [ "$NODETYPE" = "user" ]; then
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
 
   #todo: https://docs.ray.io/en/latest/ray-core/using-ray-with-jupyter.html#setting-up-notebook
-  sudo tailscale serve --bg --https 8888 \
-  && sudo tailscale funnel --bg --https https://localhost:8888
+  sudo tailscale serve --yes --bg --https 8888 \
+  && sudo tailscale funnel --yes --bg --https https://localhost:8888
 
   #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": 0}' --num-cpus=0 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
