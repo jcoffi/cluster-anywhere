@@ -358,26 +358,26 @@ fi
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 function term_handler(){
     crate_pid=$(pgrep -f crate)
-
-    if [ $(tailscale status -json | jq -r .BackendState | grep -q "Running") ] && [ $crate_pid ]; then
+    if [ $(tailscale status -json | jq -r .BackendState | grep -q "Running") ]; then
+      if [ $crate_pid ]; then
         echo "Running Cluster Decommission"
         /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
-    fi
+      fi
 
-    if [ $(ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE") ]; then
-        echo "***Stopping Ray***"
-        ray stop -g 30
-    fi
+      if [ $(ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE") ]; then
+          echo "***Stopping Ray***"
+          ray stop -g 30
+      fi
 
-    if [ $(tailscale status -json | jq -r .BackendState | grep -q "Running") ]; then
-        echo "tailscale logout"
-        sudo tailscale logout
-        sudo tailscale down
-        sudo tailscaled -cleanup
-    fi
 
-    if [ $crate_pid ]; then
-        sudo kill -TERM $crate_pid
+      echo "tailscale logout"
+      sudo tailscale logout
+      sudo tailscale down
+      sudo tailscaled -cleanup
+
+      if [ $crate_pid ]; then
+          sudo kill -TERM $crate_pid
+      fi
     fi
     exit 0
 }
@@ -393,6 +393,7 @@ function error_handler(){
 
     echo "tailscale logout"
     sudo tailscale logout
+    sudo tailscale down
     sudo tailscaled -cleanup
     crate_pid=$(pgrep -f crate)
     sudo kill -TERM 1
