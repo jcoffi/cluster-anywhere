@@ -318,6 +318,8 @@ elif [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
   node_voting_only='-Cnode.voting_only=false \\'
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
 
+  export RAY_OBJECT_STORE_ALLOW_SLOW_STORAGE=1
+  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store
 
 elif [ "$NODETYPE" = "user" ]; then
   node_master='-Cnode.master=false \\'
