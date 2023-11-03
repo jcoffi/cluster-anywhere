@@ -299,8 +299,8 @@ if [ -d "$CRATE_HEAP_DUMP_PATH" ]; then
         crate_state_data=$false
 	fi
 else
-	echo "Directory $CRATE_HEAP_DUMP_PATH not found."
-    exit 1
+	    echo "Directory $CRATE_HEAP_DUMP_PATH not found."
+      exit 1
 fi
 
 
@@ -348,16 +348,15 @@ elif [ "$NODETYPE" = "user" ]; then
   #eventually we can make the below lines available to all nodetypes for cluster health checks. but first we need to configured the instances to connect was a password when connecting remotely.
 else
 
-  # if [ ! "$LOCATION" = "OnPrem" ] && [ $ALL_PROXY ]; then
-  #   ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
-  #   #ssh -N -L localhost:6379:localhost:1055 $USER@localhost
-  # else
-  export RAY_OBJECT_STORE_ALLOW_SLOW_STORAGE=1
-  #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
-  # fi
+    # if [ ! "$LOCATION" = "OnPrem" ] && [ $ALL_PROXY ]; then
+    #   ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+    #   #ssh -N -L localhost:6379:localhost:1055 $USER@localhost
+    # else
+    export RAY_OBJECT_STORE_ALLOW_SLOW_STORAGE=1
+    #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+    # fi
 
-
-  #sudo tailscale funnel --bg --https 443 http://localhost:8265
+    #sudo tailscale funnel --bg --https 443 http://localhost:8265
 
 fi
 
