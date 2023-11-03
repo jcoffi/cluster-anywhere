@@ -43,7 +43,7 @@ shm_memory=$(echo "scale=0; $gb_memory / 1" | bc)
 
 
 # Convert to B from kB and set size at 80% of total memory
-ray_object_store=$(echo "scale=0; $memory * 10240 *.80 / 1" | bc)
+ray_object_store=$(echo "scale=0; $memory * 1024 *.80 / 1" | bc)
 
 
 #settings number of cpus for optimial (local) speed
