@@ -346,14 +346,13 @@ elif [ "$NODETYPE" = "user" ]; then
   #look into using /lab or /admin or whatever so that they can live on the same port (on the head node perhaps)
   #but we can't move it to the head node right now because the only other port is 10001 and that conflicts with ray
   #eventually we can make the below lines available to all nodetypes for cluster health checks. but first we need to configured the instances to connect was a password when connecting remotely.
-
 else
 
   # if [ ! "$LOCATION" = "OnPrem" ] && [ $ALL_PROXY ]; then
   #   ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
   #   #ssh -N -L localhost:6379:localhost:1055 $USER@localhost
   # else
-  #export RAY_OBJECT_STORE_ALLOW_SLOW_STORAGE=1
+  export RAY_OBJECT_STORE_ALLOW_SLOW_STORAGE=1
   #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
   # fi
 
