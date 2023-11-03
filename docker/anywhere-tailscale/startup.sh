@@ -38,7 +38,7 @@ echo "export CPU_COUNT='$(nproc)'" | sudo tee -a ~/.bashrc
 memory=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 
 # Convert to B from kB and set size at 80% of total memory
-ray_object_store=$(echo "scale=0; $memory * 1024 *.80 / 1" | bc)
+ray_object_store=$(echo "scale=0; $memory *.80 / 1" | bc)
 
 # Convert kB to GB
 gb_memory=$(echo "scale=2; $memory / 1048576" | bc)
