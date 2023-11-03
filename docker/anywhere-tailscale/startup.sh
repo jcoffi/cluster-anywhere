@@ -37,6 +37,9 @@ echo "export CPU_COUNT='$(nproc)'" | sudo tee -a ~/.bashrc
 
 memory=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 
+# Convert to B from kB and set size at 80% of total memory
+ray_object_store=$(echo "scale=0; $memory * 1024 *.80 / 1" | bc)
+
 # Convert kB to GB
 gb_memory=$(echo "scale=2; $memory / 1048576" | bc)
 shm_memory=$(echo "scale=0; $gb_memory / 1" | bc)
@@ -312,7 +315,7 @@ if [ "$NODETYPE" = "head" ]; then
   node_master='-Cnode.master=true \\'
   node_data='-Cnode.data=false \\'
 
-  ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --system-config='{"object_spilling_config":"{\"type\":\"smart_open\",\"params\":{\"uri\":\"gs://cluster-anywhere/ray_job_spill\"}}"}'
+  ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store --system-config='{"object_spilling_config":"{\"type\":\"smart_open\",\"params\":{\"uri\":\"gs://cluster-anywhere/ray_job_spill\"}}"}'
 
   sudo tailscale funnel --bg --https 443 http://localhost:8265
 
@@ -326,7 +329,7 @@ elif [ "$NODETYPE" = "user" ]; then
 
   sudo tailscale funnel --bg --https 8443 https+insecure://localhost:8888
 
-  #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": 0}' --num-cpus=0 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": 0}' --num-cpus=0 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store
 
   if [ -e "/files" ]; then
     sudo chgrp -R crate /files
@@ -342,12 +345,12 @@ elif [ "$NODETYPE" = "user" ]; then
 
 else
 
-  if [ ! "$LOCATION" = "OnPrem" ] && [ $ALL_PROXY ]; then
-    ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
-    #ssh -N -L localhost:6379:localhost:1055 $USER@localhost
-  else
-    ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
-  fi
+  # if [ ! "$LOCATION" = "OnPrem" ] && [ $ALL_PROXY ]; then
+  #   ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  #   #ssh -N -L localhost:6379:localhost:1055 $USER@localhost
+  # else
+  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store
+  # fi
 
 
   #sudo tailscale funnel --bg --https 443 http://localhost:8265
