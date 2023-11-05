@@ -7,7 +7,7 @@ if [ -z "$TSAPIKEY" ]; then
 fi
 
 
-echo "healthy" > /tmp/health_status.html
+echo "healthy" | | sudo tee /tmp/health_status.html
 
 
 #echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
