@@ -1,6 +1,8 @@
 #!/bin/bash
 
 FAIL=0
+#This needs to stay if we're to actually have a location to use since environmental variables are only passed from parent to child and this file isn't run from the startup shell
+export $(grep "LOCATION=" /etc/environment)
 
 # Check for AWS Spot Instance Termination
 if [ "$LOCATION" = "AWS" ]; then
