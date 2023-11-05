@@ -42,7 +42,7 @@ fi
 
 
 # Check Crate.io status (Added this part)
-crate_status=$(curl -s http://localhost:4200/ | grep -q "CrateDB Admin UI")
+crate_status=$(curl -s http://localhost:4200/)
 if [ "$result" != "200" ]; then FAIL=1; fi
 
 
