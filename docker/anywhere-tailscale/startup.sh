@@ -6,6 +6,10 @@ if [ -z "$TSAPIKEY" ]; then
   exit 1
 fi
 
+
+echo "healthy" > /tmp/health_status.html
+
+
 #echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
 #echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
 #echo "net.ipv6.conf.lo.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
