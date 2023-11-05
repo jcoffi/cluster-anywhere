@@ -48,7 +48,7 @@ if [ -z "$crate_status" ]; then FAIL=1; fi
 
 # Write status to a file
 if [ $FAIL -eq 1 ]; then
-    echo "unhealthy" > /tmp/health_status.txt
+    echo "unhealthy" > /tmp/health_status.html
     exit 1
 else
     exit 0
