@@ -33,17 +33,15 @@ fi
 tailscale_status=$(tailscale status -json | jq -r .BackendState)
 if [ "$tailscale_status" != "Running" ]; then FAIL=1; fi
 
-
 # Check Ray status if not OnPrem node. Want to confine all non gpu processing to the cloud
 if [ "$LOCATION" != "OnPrem" ]; then
-    ray_status=$(ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE")
+    ray_status=$(ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep "ALIVE")
     if [ -z "$ray_status" ]; then FAIL=1; fi
 fi
 
-
-# Check Crate.io status (Added this part)
-crate_status=$(curl -s http://localhost:4200/)
-if [ "$result" != "200" ]; then FAIL=1; fi
+# Check Crate.io status
+crate_status=$(curl -s -I http://localhost:4200/ | grep HTTP/1.1)
+if [[ "$crate_status" != *"200 OK"* ]]; then FAIL=1; fi
 
 
 # Write status to a file
