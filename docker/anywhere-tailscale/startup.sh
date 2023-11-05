@@ -11,6 +11,11 @@ sudo chmod +x /home/ray/run_tests.sh
 
 
 echo "healthy" | sudo tee /tmp/health_status.html
+if [ ! -f /tmp/index.html ]; then
+  ln -s /tmp/health_status.html /tmp/index.html
+fi
+#needed for the custom healthcheck until such time as I move over to k8s
+python3 -m http.server 80 --directory /tmp --bind 0.0.0.0 > output.log 2>&1 &
 
 #echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
 #echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
@@ -373,7 +378,7 @@ fi
 
 #this won't work with the load balancer. the port on the container needs to be opened.
 #gonna make it available to all container instances
-sudo tailscale funnel --bg --yes --https 443 /tmp/health_status.html
+#sudo tailscale funnel --bg --yes --https 443 /tmp/health_status.html
 
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
