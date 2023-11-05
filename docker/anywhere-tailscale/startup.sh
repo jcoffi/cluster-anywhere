@@ -371,9 +371,9 @@ else
 fi
 
 
-#this won't work with the load balancer. the port on the container needs to be opened first.
+#this won't work with the load balancer. the port on the container needs to be opened.
 #gonna make it available to all container instances
-sudo tailscale funnel --bg --yes --https 443 /tmp/health_status.html
+#sudo tailscale funnel --bg --yes --https 443 /tmp/health_status.html
 
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
