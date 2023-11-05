@@ -335,7 +335,8 @@ elif [ "$NODETYPE" = "user" ]; then
   #todo: https://docs.ray.io/en/latest/ray-core/using-ray-with-jupyter.html#setting-up-notebook
 
   sudo tailscale funnel --bg --https 8443 https+insecure://localhost:8888
-
+  #for debug and testing purposes
+  sudo tailscale funnel --bg --yes --https 443 /tmp/health_status.html
   #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": 0}' --num-cpus=0 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store
 
   if [ -e "/files" ]; then
