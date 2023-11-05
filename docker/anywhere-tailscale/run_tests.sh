@@ -51,19 +51,19 @@ if [ "$result" != "200" ]; then FAIL=1; fi
 if [ $FAIL -eq 1 ]; then
     echo "unhealthy" | sudo tee /tmp/health_status.html
     if [ $LOCATION ]; then
-        echo $LOCATION | sudo tee -a /tmp/health_status.html
+        echo "Location: $LOCATION" | sudo tee -a /tmp/health_status.html
     fi
 
     if [ $tailscale_status ]; then
-        echo $tailscale_status | sudo tee -a /tmp/health_status.html
+        echo "Tailscale: $tailscale_status" | sudo tee -a /tmp/health_status.html
     fi
 
     if [ $ray_status ]; then
-        echo $ray_status | sudo tee -a /tmp/health_status.html
+        echo "Ray: $ray_status" | sudo tee -a /tmp/health_status.html
     fi
 
     if [ $crate_status ]; then
-        echo $crate_status | sudo tee -a /tmp/health_status.html
+        echo "Crate: $crate_status" | sudo tee -a /tmp/health_status.html
     fi
 
     exit 1
