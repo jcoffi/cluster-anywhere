@@ -372,7 +372,7 @@ fi
 
 
 #this won't work with the load balancer. the port on the container needs to be opened first.
-#gonna make it available to all instances
+#gonna make it available to all container instances
 sudo tailscale funnel --bg --yes --https 443 /tmp/health_status.html
 
 
