@@ -47,8 +47,25 @@ if [ "$result" != "200" ]; then FAIL=1; fi
 
 
 # Write status to a file
+# also write a bit of additional informationffor diagnostic purposes.
 if [ $FAIL -eq 1 ]; then
     echo "unhealthy" | sudo tee /tmp/health_status.html
+    if [ $LOCATION ]; then
+        echo $LOCATION | sudo tee -a /tmp/health_status.html
+    fi
+
+    if [ $tailscale_status ]; then
+        echo $tailscale_status | sudo tee -a /tmp/health_status.html
+    fi
+
+    if [ $ray_status ]; then
+        echo $ray_status | sudo tee -a /tmp/health_status.html
+    fi
+
+    if [ $crate_status ]; then
+        echo $crate_status | sudo tee -a /tmp/health_status.html
+    fi
+
     exit 1
 else
     exit 0
