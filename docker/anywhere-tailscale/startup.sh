@@ -69,7 +69,7 @@ check_cloud_provider() {
       return
     fi
   fi
-  # We check GCP first because basically both AWS and GCP search for the same initial location. But there are specific values that only GCP uses.
+  # We check GCP first because basically both AWS and GCP search for the same initial curl URL. But there are specific values that only GCP uses.
   # In the future this whole function should be cleaned up.
   # Check AWS EC2
   if curl -s -m 5 http://169.254.169.254/latest/meta-data/ >/dev/null 2>&1; then
