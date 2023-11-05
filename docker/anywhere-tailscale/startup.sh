@@ -321,8 +321,7 @@ if [ "$NODETYPE" = "head" ]; then
   ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --system-config='{"object_spilling_config":"{\"type\":\"smart_open\",\"params\":{\"uri\":\"gs://cluster-anywhere/ray_job_spill\"}}"}'
 
   sudo tailscale funnel --bg --https 8443 http://localhost:8265
-  #this won't work with the load balancer. the port on the container needs to be opened first.
-  sudo tailscale funnel --bg --yes --https 443 /tmp/health_status.html
+
 
 elif [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
   node_master='-Cnode.master=false \\'
@@ -333,7 +332,6 @@ elif [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
   export RAY_OBJECT_STORE_ALLOW_SLOW_STORAGE=1
   ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
-  sudo tailscale funnel --bg --https 443 /tmp/health_status.html
 
 elif [ "$NODETYPE" = "user" ]; then
   node_master='-Cnode.master=false \\'
@@ -344,8 +342,7 @@ elif [ "$NODETYPE" = "user" ]; then
   #todo: https://docs.ray.io/en/latest/ray-core/using-ray-with-jupyter.html#setting-up-notebook
 
   sudo tailscale funnel --bg --https 8443 https+insecure://localhost:8888
-  #for debug and testing purposes
-  sudo tailscale funnel --bg --yes --https 443 /tmp/health_status.html
+
   #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": 0}' --num-cpus=0 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store
 
   if [ -e "/files" ]; then
@@ -372,6 +369,11 @@ else
     #sudo tailscale funnel --bg --https 443 http://localhost:8265
 
 fi
+
+
+#this won't work with the load balancer. the port on the container needs to be opened first.
+#gonna make it available to all instances
+sudo tailscale funnel --bg --yes --https 443 /tmp/health_status.html
 
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
