@@ -6,9 +6,11 @@ if [ -z "$TSAPIKEY" ]; then
   exit 1
 fi
 
+curl -fsSLZ -o /home/ray/run_tests.sh "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh"
+sudo chmod +x /home/ray/run_tests.sh
+
 
 echo "healthy" | sudo tee /tmp/health_status.html
-
 
 #echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
 #echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
@@ -23,12 +25,6 @@ sudo chgrp -R crate /crate
 sudo chgrp -R crate /data
 sudo chmod -R 774 /data
 sudo chmod -R 774 $TS_STATEDIR
-
-
-curl -fsSLZ -o /home/ray/run_tests.sh "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh"
-sudo chmod +x /home/ray/run_tests.sh
-
-
 
 ## Pull external IP
 #IPADDRESS=$(curl -s http://ifconfig.me/ip)
