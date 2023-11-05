@@ -63,6 +63,8 @@ if [ $FAIL -eq 1 ]; then
     if [ $crate_status ]; then
         echo "Crate: $crate_status" | sudo tee -a /tmp/health_status.html
     fi
+    #so we can see what happened if the problem resolved itself
+    sudo cp /tmp/health_status.html /tmp/health_status_last_unhealthy.html
 
     exit 1
 else
