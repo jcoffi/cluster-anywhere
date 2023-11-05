@@ -58,21 +58,24 @@ export CRATE_HEAP_SIZE="${shm_memory}G"
 export shm_memory="${shm_memory}G"
 
 check_cloud_provider() {
-  # Check AWS EC2
-  if curl -s -m 5 http://169.254.169.254/latest/meta-data/ >/dev/null 2>&1; then
-    if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 http://169.254.169.254/latest/meta-data/) != "404" ]; then
-      #echo "Cloud Provider: Amazon Web Services (AWS)"
-      location="AWS"
-      export LOCATION=$location
-      return
-    fi
-  fi
 
   # Check Google Cloud Platform (GCP)
   if curl -s -m 5 -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/ >/dev/null 2>&1; then
     if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/) != "404" ]; then
       #echo "Cloud Provider: Google Cloud Platform (GCP)"
       location="GCP"
+      export LOCATION=$location
+      echo $location
+      return
+    fi
+  fi
+  # We check GCP first because basically both AWS and GCP search for the same initial location. But there are specific values that only GCP uses.
+  # In the future this whole function should be cleaned up.
+  # Check AWS EC2
+  if curl -s -m 5 http://169.254.169.254/latest/meta-data/ >/dev/null 2>&1; then
+    if [ $(curl -s -o /dev/null -w "%{http_code}" -m 5 http://169.254.169.254/latest/meta-data/) != "404" ]; then
+      #echo "Cloud Provider: Amazon Web Services (AWS)"
+      location="AWS"
       export LOCATION=$location
       echo $location
       return
