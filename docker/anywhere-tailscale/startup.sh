@@ -135,7 +135,7 @@ check_cloud_provider() {
 if ! grep -q "LOCATION=" /etc/environment; then
   echo "LOCATION=$(check_cloud_provider)" | sudo tee -a /etc/environment
 fi
-export LOCATION="$(check_cloud_provider)"
+export $(grep "LOCATION=" /etc/environment)
 
 functiontodetermine_cpu() {
   # Check if lscpu command exists
