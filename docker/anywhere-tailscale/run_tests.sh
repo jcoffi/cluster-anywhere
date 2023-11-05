@@ -48,9 +48,7 @@ if [[ "$crate_status" != *"200 OK"* ]]; then FAIL=1; fi
 # also write a bit of additional informationffor diagnostic purposes.
 if [ $FAIL -eq 1 ]; then
     echo "unhealthy" | sudo tee /tmp/health_status.html
-    if [ $LOCATION ]; then
-        echo "Location: $LOCATION" | sudo tee -a /tmp/health_status.html
-    fi
+    echo "Location: $LOCATION" | sudo tee -a /tmp/health_status.html
 
     if [ $tailscale_status ]; then
         echo "Tailscale: $tailscale_status" | sudo tee -a /tmp/health_status.html
