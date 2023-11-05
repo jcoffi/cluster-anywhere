@@ -137,6 +137,7 @@ if ! grep -q "LOCATION=" /etc/environment; then
 fi
 export $(grep "LOCATION=" /etc/environment)
 
+
 functiontodetermine_cpu() {
   # Check if lscpu command exists
   if command -v lscpu >/dev/null 2>&1 ; then
@@ -146,17 +147,21 @@ functiontodetermine_cpu() {
       # Check if vendor is AMD or Intel
       if [ "$vendor" == "AuthenticAMD" ]; then
         export CPU_VENDOR=$vendor
+        echo $vendor
       elif [ "$vendor" == "GenuineIntel" ]; then
         export CPU_VENDOR=$vendor
+        echo $vendor
       else
-          echo "CPU vendor could not be determined."
+        echo "Unknown"
       fi
-  else
-      echo "lscpu command not found. Unable to determine CPU vendor."
   fi
 }
 
-functiontodetermine_cpu
+
+if ! grep -q "CPU_VENDOR=" /etc/environment; then
+  echo "CPU_VENDOR=$(functiontodetermine_cpu)" | sudo tee -a /etc/environment
+fi
+export $(grep "CPU_VENDOR=" /etc/environment)
 
 #set -ae
 
