@@ -45,8 +45,11 @@ fi
 crate_status=$(curl -s http://localhost:4200/ | grep -q "CrateDB Admin UI")
 if [ -z "$crate_status" ]; then FAIL=1; fi
 
-# Other test commands here
 
+# Write status to a file
 if [ $FAIL -eq 1 ]; then
+    echo "unhealthy" > /tmp/health_status.txt
     exit 1
+else
+    exit 0
 fi
