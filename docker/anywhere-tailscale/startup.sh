@@ -349,7 +349,7 @@ elif [ "$NODETYPE" = "user" ]; then
   sudo tailscale funnel --bg --https 8443 https+insecure://localhost:8888
 
 
-  ray start --address='nexus.chimp-beta.ts.net:6379' --num-gpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store
+  #ray start --address='nexus.chimp-beta.ts.net:6379' --num-gpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store
 
   if [ -e "/files" ]; then
     sudo chgrp -R crate /files
