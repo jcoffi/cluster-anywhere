@@ -371,7 +371,7 @@ else
 
     #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
     # fi
-
+    echo "Done"
     #sudo tailscale funnel --bg --https 443 http://localhost:8265
 
 fi
