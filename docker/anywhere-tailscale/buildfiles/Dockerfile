@@ -92,6 +92,7 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         tiingo \
         yfinance \
         openai \
+        google-api-python-client \
         google-cloud-storage \
         smart_open \
         ipywidgets \
