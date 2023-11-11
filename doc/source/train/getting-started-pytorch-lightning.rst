@@ -17,21 +17,22 @@ Quickstart
 
 For reference, the final code is as follows:
 
-.. code-block:: python
+.. testcode::
+    :skipif: True
 
     from ray.train.torch import TorchTrainer
     from ray.train import ScalingConfig
 
     def train_func(config):
         # Your PyTorch Lightning training code here.
-    
+
     scaling_config = ScalingConfig(num_workers=2, use_gpu=True)
     trainer = TorchTrainer(train_func, scaling_config=scaling_config)
     result = trainer.fit()
 
-1. Your `train_func` is the Python code that each distributed training :ref:`worker <train-overview-worker>` executes.
-2. Your `ScalingConfig` defines the number of distributed training workers and whether to use GPUs.
-3. Your `TorchTrainer` launches the distributed training job.
+1. `train_func` is the Python code that executes on each distributed training worker.
+2. :class:`~ray.train.ScalingConfig` defines the number of distributed training workers and whether to use GPUs.
+3. :class:`~ray.train.torch.TorchTrainer` launches the distributed training job.
 
 Compare a PyTorch Lightning training script with and without Ray Train.
 
@@ -39,14 +40,17 @@ Compare a PyTorch Lightning training script with and without Ray Train.
 
     .. group-tab:: PyTorch Lightning
 
-        .. code-block:: python
+        .. This snippet isn't tested because it doesn't use any Ray code.
+
+        .. testcode::
+            :skipif: True
 
             import torch
             from torchvision.models import resnet18
             from torchvision.datasets import FashionMNIST
             from torchvision.transforms import ToTensor, Normalize, Compose
             from torch.utils.data import DataLoader
-            import pytorch_lightning as pl
+            import lightning.pytorch as pl
 
             # Model, Loss, Optimizer
             class ImageClassifier(pl.LightningModule):
@@ -84,13 +88,14 @@ Compare a PyTorch Lightning training script with and without Ray Train.
     .. group-tab:: PyTorch Lightning + Ray Train
 
         .. code-block:: python
+            :emphasize-lines: 8-10, 34, 43, 48-50, 52, 53, 55-60
 
             import torch
             from torchvision.models import resnet18
             from torchvision.datasets import FashionMNIST
             from torchvision.transforms import ToTensor, Normalize, Compose
             from torch.utils.data import DataLoader
-            import pytorch_lightning as pl
+            import lightning.pytorch as pl
 
             from ray.train.torch import TorchTrainer
             from ray.train import ScalingConfig
@@ -153,7 +158,8 @@ Set up a training function
 First, update your training code to support distributed training. 
 Begin by wrapping your code in a :ref:`training function <train-overview-training-function>`:
 
-.. code-block:: python
+.. testcode::
+    :skipif: True
 
     def train_func(config):
         # Your PyTorch Lightning training code here.
@@ -166,7 +172,7 @@ make a few changes to your Lightning Trainer definition.
 
 .. code-block:: diff
 
-     import pytorch_lightning as pl
+     import lightning.pytorch as pl
     -from pl.strategies import DDPStrategy
     -from pl.plugins.environments import LightningEnvironment
     +import ray.train.lightning 
@@ -206,7 +212,7 @@ sampler arguments.
 
 .. code-block:: diff
 
-     import pytorch_lightning as pl
+     import lightning.pytorch as pl
     -from pl.strategies import DDPStrategy
     +import ray.train.lightning
 
@@ -230,7 +236,7 @@ local, global, and node rank and world size.
 
 .. code-block:: diff
 
-     import pytorch_lightning as pl
+     import lightning.pytorch as pl
     -from pl.plugins.environments import LightningEnvironment
     +import ray.train.lightning
 
@@ -255,7 +261,7 @@ GPUs by setting ``devices="auto"`` and ``acelerator="auto"``.
 
 .. code-block:: diff
 
-     import pytorch_lightning as pl
+     import lightning.pytorch as pl
 
      def train_func(config):
          ...
@@ -279,7 +285,7 @@ To persist your checkpoints and monitor training progress, add a
                     
 .. code-block:: diff
 
-     import pytorch_lightning as pl
+     import lightning.pytorch as pl
      from ray.train.lightning import RayTrainReportCallback
 
      def train_func(config):
@@ -305,7 +311,7 @@ your configurations.
 
 .. code-block:: diff
 
-     import pytorch_lightning as pl
+     import lightning.pytorch as pl
      import ray.train.lightning
 
      def train_func(config):
@@ -323,7 +329,7 @@ Outside of your training function, create a :class:`~ray.train.ScalingConfig` ob
 1. `num_workers` - The number of distributed training worker processes.
 2. `use_gpu` - Whether each worker should use a GPU (or CPU).
 
-.. code-block:: python
+.. testcode::
 
     from ray.train import ScalingConfig
     scaling_config = ScalingConfig(num_workers=2, use_gpu=True)
@@ -337,7 +343,15 @@ Launch a training job
 Tying this all together, you can now launch a distributed training job 
 with a :class:`~ray.train.torch.TorchTrainer`.
 
-.. code-block:: python
+.. testcode::
+    :hide:
+
+    from ray.train import ScalingConfig
+
+    train_func = lambda: None
+    scaling_config = ScalingConfig(num_workers=1)
+
+.. testcode::
 
     from ray.train.torch import TorchTrainer
 
@@ -352,7 +366,7 @@ Access training results
 After training completes, Ray Train returns a :class:`~ray.train.Result` object, which contains
 information about the training run, including the metrics and checkpoints reported during training.
 
-.. code-block:: python
+.. testcode::
 
     result.metrics     # The metrics reported during training.
     result.checkpoint  # The latest checkpoint reported during training.
@@ -376,6 +390,10 @@ Version Compatibility
 Ray Train is tested with `pytorch_lightning` versions `1.6.5` and `2.0.4`. For full compatibility, use ``pytorch_lightning>=1.6.5`` . 
 Earlier versions aren't prohibited but may result in unexpected issues. If you run into any compatibility issues, consider upgrading your PyTorch Lightning version or 
 `file an issue <https://github.com/ray-project/ray/issues>`_. 
+
+.. note::
+
+    If you are using Lightning 2.x, please use the import path `lightning.pytorch.xxx` instead of `pytorch_lightning.xxx`.
 
 .. _lightning-trainer-migration-guide:
 
@@ -402,9 +420,11 @@ control over their native Lightning code.
 
     .. group-tab:: (Deprecating) LightningTrainer
 
+        .. This snippet isn't tested because it raises a hard deprecation warning.
 
-        .. code-block:: python
-            
+        .. testcode::
+            :skipif: True
+
             from ray.train.lightning import LightningConfigBuilder, LightningTrainer
 
             config_builder = LightningConfigBuilder()
@@ -444,9 +464,13 @@ control over their native Lightning code.
 
     .. group-tab:: (New API) TorchTrainer
 
-        .. code-block:: python
+        .. This snippet isn't tested because it runs with 4 GPUs, and CI is only run with 1.
+
+        .. testcode::
+            :skipif: True
             
-            import pytorch_lightning as pl
+            import lightning.pytorch as pl
+            from ray.air import CheckpointConfig, RunConfig
             from ray.train.torch import TorchTrainer
             from ray.train.lightning import (
                 RayDDPStrategy, 
@@ -486,7 +510,7 @@ control over their native Lightning code.
 
             # [5] Explicitly define and run the training function
             ray_trainer = TorchTrainer(
-                train_func_per_worker,
+                train_func,
                 scaling_config=ScalingConfig(num_workers=4, use_gpu=True),
                 run_config=RunConfig(
                     checkpoint_config=CheckpointConfig(

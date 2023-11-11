@@ -10,6 +10,10 @@ from typing import Dict, List, Optional
 NODE_DEATH_CAUSE_RAYLET_DIED = "NodeTerminated"
 
 
+# e.g., cpu_4_ondemand.
+NodeType = str
+
+
 @dataclass
 class ResourceUsage:
     # Resource name.
@@ -48,6 +52,8 @@ class NodeInfo:
     failure_detail: Optional[str] = None
     # Descriptive details.
     details: Optional[str] = None
+    # Activity on the node.
+    node_activity: Optional[List[str]] = None
 
     def total_resources(self) -> Dict[str, float]:
         if self.resource_usage is None:
@@ -177,8 +183,10 @@ class Stats:
 
 @dataclass
 class ClusterStatus:
-    # Healthy nodes information (alive)
-    healthy_nodes: List[NodeInfo] = field(default_factory=list)
+    # Healthy nodes information (non-idle)
+    active_nodes: List[NodeInfo] = field(default_factory=list)
+    # Idle node information
+    idle_nodes: List[NodeInfo] = field(default_factory=list)
     # Pending launches.
     pending_launches: List[LaunchRequest] = field(default_factory=list)
     # Failed launches.
