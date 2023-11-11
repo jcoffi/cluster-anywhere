@@ -126,7 +126,7 @@ install_nvidia_cuda() {
   if ! [ -x "$(command -v gcc)" ]; then
     sudo apt -y install gcc make
   fi
-  curl https://developer.download.nvidia.com/compute/cuda/11.2.2/local_installers/cuda_11.2.2_460.32.03_linux.run | sudo sh &1 --silent --driver --toolkit --no-drm --no-man-page
+  #curl https://developer.download.nvidia.com/compute/cuda/11.2.2/local_installers/cuda_11.2.2_460.32.03_linux.run | sudo sh &1 --silent --driver --toolkit --no-drm --no-man-page
   sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
   wget https://developer.download.nvidia.com/compute/cuda/repos/$repo/$(uname --m)/cuda-keyring_1.0-1_all.deb -O cuda-keyring_1.0-1_all.deb && sudo chmod +x cuda-keyring_1.0-1_all.deb
   sudo dpkg -i cuda-keyring_1.0-1_all.deb
