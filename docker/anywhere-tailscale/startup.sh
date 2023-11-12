@@ -67,8 +67,8 @@ export RAY_USE_TLS=0
 export RAY_TLS_SERVER_CERT=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt
 export RAY_TLS_SERVER_KEY=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key
 if [ ! -f /data/certs/isrgrootx1.crt ]; then
-  curl -s https://letsencrypt.org/certs/isrgrootx1.txt -o /data/certs/isrgrootx1.crt
-  sudo chmod 777 /data/certs/isrgrootx1.crt
+  sudo curl -s https://letsencrypt.org/certs/isrgrootx1.txt -o /data/certs/isrgrootx1.crt \
+  && sudo chmod 777 /data/certs/isrgrootx1.crt
 fi
 export RAY_TLS_CA_CERT=/data/certs/isrgrootx1.crt
 
@@ -365,7 +365,7 @@ elif [ "$NODETYPE" = "user" ]; then
   sudo tailscale funnel --bg --https 8443 https+insecure://localhost:8888
 
 
-  #ray start --address='nexus.chimp-beta.ts.net:6379' --num-gpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store
+  ray start --address='nexus.chimp-beta.ts.net:6379' --num-gpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store
 
   if [ -e "/files" ]; then
     sudo chgrp -R crate /files
@@ -391,6 +391,17 @@ else
     #sudo tailscale funnel --bg --https 443 http://localhost:8265
 
 fi
+
+KEY_STORAGE_URL="https://desktop-p0ank2p.chimp-beta.ts.net:8888/lab/tree/cluster-anywhere-26784947a5ae.json"
+
+# Specify the local path where the key should be stored
+LOCAL_KEY_PATH="/data/gcpkey.json"
+
+# Download the key from cloud storage
+curl -o ${LOCAL_KEY_PATH} ${KEY_STORAGE_URL}
+
+# Set the environment variable for Google Application Credentials
+export GOOGLE_APPLICATION_CREDENTIALS=${LOCAL_KEY_PATH}
 
 
 #this won't work with the load balancer. the port on the container needs to be opened.
