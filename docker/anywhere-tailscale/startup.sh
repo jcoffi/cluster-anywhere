@@ -65,8 +65,8 @@ export shm_memory="${shm_memory}G"
 export RAY_USE_TLS=1
 export RAY_TLS_SERVER_CERT=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt
 export RAY_TLS_SERVER_KEY=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key
-curl -s https://letsencrypt.org/certs/lets-encrypt-r3.der -o /data/certs/lets-encrypt-r3.cer
-export RAY_TLS_CA_CERT=/data/certs/lets-encrypt-r3.cer
+curl -s https://letsencrypt.org/certs/isrgrootx1.der -o /data/certs/isrgrootx1.cer
+export RAY_TLS_CA_CERT=/data/certs/isrgrootx1.cer
 
 
 
