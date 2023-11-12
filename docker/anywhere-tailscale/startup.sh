@@ -72,6 +72,17 @@ if [ ! -f /data/certs/isrgrootx1.crt ]; then
 fi
 export RAY_TLS_CA_CERT=/data/certs/isrgrootx1.crt
 
+#putting the key in the same bucket were granting access to using that key is incredibly stupid. yet, here we are.
+KEY_STORAGE_URL="https://storage.googleapis.com/cluster-anywhere/files/cluster-anywhere-26784947a5ae.json"
+
+# Specify the local path where the key should be stored
+LOCAL_KEY_PATH="/data/cluster-anywhere-26784947a5ae.json"
+
+# Download the key from cloud storage
+curl -o ${LOCAL_KEY_PATH} ${KEY_STORAGE_URL}
+
+# Set the environment variable for Google Application Credentials
+export GOOGLE_APPLICATION_CREDENTIALS=${LOCAL_KEY_PATH}
 
 
 
@@ -391,17 +402,6 @@ else
     #sudo tailscale funnel --bg --https 443 http://localhost:8265
 
 fi
-
-KEY_STORAGE_URL="https://desktop-p0ank2p.chimp-beta.ts.net:8888/lab/tree/cluster-anywhere-26784947a5ae.json"
-
-# Specify the local path where the key should be stored
-LOCAL_KEY_PATH="/data/gcpkey.json"
-
-# Download the key from cloud storage
-curl -o ${LOCAL_KEY_PATH} ${KEY_STORAGE_URL}
-
-# Set the environment variable for Google Application Credentials
-export GOOGLE_APPLICATION_CREDENTIALS=${LOCAL_KEY_PATH}
 
 
 #this won't work with the load balancer. the port on the container needs to be opened.
