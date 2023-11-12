@@ -67,8 +67,8 @@ export RAY_TLS_SERVER_CERT=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt
 export RAY_TLS_SERVER_KEY=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key
 if [ ! -f /data/certs/isrgrootx1.crt ]; then
   curl -s https://letsencrypt.org/certs/isrgrootx1.pem -o /data/certs/isrgrootx1.pem
-  sudo chmod 777 /data/certs/isrgrootx1.crt
   sudo openssl x509 -in /data/certs/isrgrootx1.pem -outform der -out /data/certs/isrgrootx1.crt
+  sudo chmod 777 /data/certs/isrgrootx1.crt
 fi
 export RAY_TLS_CA_CERT=/data/certs/isrgrootx1.crt
 
