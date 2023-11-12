@@ -355,6 +355,15 @@ if [ "$NODETYPE" = "head" ]; then
   sudo tailscale funnel --bg --https 443 http://localhost:8265
   sudo tailscale funnel --bg --tcp 8443 tcp://localhost:6379
 
+elif [ "$LOCATION" = "Vast" ]; then
+  node_master='-Cnode.master=false \\'
+  node_data='-Cnode.data=false \\'
+  node_voting_only='-Cnode.voting_only=false \\'
+  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
+
+
+  ray start --address='nexus.chimp-beta.ts.net:8443' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+
 
 elif [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
   node_master='-Cnode.master=false \\'
