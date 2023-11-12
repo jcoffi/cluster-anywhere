@@ -260,9 +260,7 @@ else
     export http_proxy=http://localhost:1055/
     export HTTP_PROXY=http://localhost:1055/
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
-    #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
-    network_host='-Cnetwork.host=_eth0_,_local_ \\'
-    network_publish_host='-Cnetwork.publish_host=_eth0_ \\'
+
 fi
 
 
@@ -359,8 +357,10 @@ elif [ "$LOCATION" = "Vast" ]; then
   node_master='-Cnode.master=false \\'
   node_data='-Cnode.data=false \\'
   node_voting_only='-Cnode.voting_only=false \\'
-  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
-
+  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
+  #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
+  network_host='-Cnetwork.host=_eth0_,_local_ \\'
+  network_publish_host='-Cnetwork.publish_host=_eth0_ \\'
 
   ray start --address='nexus.chimp-beta.ts.net:8443' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
@@ -369,7 +369,7 @@ elif [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
   node_master='-Cnode.master=false \\'
   node_data='-Cnode.data=false \\'
   node_voting_only='-Cnode.voting_only=false \\'
-  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
+  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
 
 
   ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
@@ -379,7 +379,7 @@ elif [ "$NODETYPE" = "user" ]; then
   node_master='-Cnode.master=false \\'
   node_data='-Cnode.data=false \\'
   node_voting_only='-Cnode.voting_only=false \\'
-  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3'
+  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
 
   #todo: https://docs.ray.io/en/latest/ray-core/using-ray-with-jupyter.html#setting-up-notebook
 
