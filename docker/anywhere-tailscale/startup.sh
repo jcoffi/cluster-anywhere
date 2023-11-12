@@ -62,6 +62,15 @@ export CPU_COUNT="$(nproc)"
 export CRATE_HEAP_SIZE="${shm_memory}G"
 export shm_memory="${shm_memory}G"
 
+export RAY_USE_TLS=1
+export RAY_TLS_SERVER_CERT=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt
+export RAY_TLS_SERVER_KEY=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key
+curl -s https://letsencrypt.org/certs/lets-encrypt-r3.der -o /data/certs/lets-encrypt-r3.cer
+export RAY_TLS_CA_CERT=/data/certs/lets-encrypt-r3.cer
+
+
+
+
 check_cloud_provider() {
 
   # Check Google Cloud Platform (GCP)
@@ -236,6 +245,9 @@ else
     export http_proxy=http://localhost:1055/
     export HTTP_PROXY=http://localhost:1055/
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
+    #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
+    network_host='-Cnetwork.host=_eth0_,_local_ \\'
+    network_publish_host='-Cnetwork.publish_host=_eth0_ \\'
 fi
 
 
@@ -446,6 +458,9 @@ trap 'error_handler' SIGSEGV
             ${node_data}
             ${node_voting_only}
             ${node_store_allow_mmap}
+            ${network_host}
+            ${network_publish_host}
+
 
 #/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'all';" &
 #CREATE REPOSITORY s3backup TYPE s3
