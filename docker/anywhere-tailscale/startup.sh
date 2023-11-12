@@ -62,11 +62,12 @@ export CPU_COUNT="$(nproc)"
 export CRATE_HEAP_SIZE="${shm_memory}G"
 export shm_memory="${shm_memory}G"
 
-export RAY_USE_TLS=1
+export RAY_USE_TLS=0
 export RAY_TLS_SERVER_CERT=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt
 export RAY_TLS_SERVER_KEY=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key
-curl -s https://letsencrypt.org/certs/isrgrootx1.der -o /data/certs/isrgrootx1.cer
-export RAY_TLS_CA_CERT=/data/certs/isrgrootx1.cer
+curl -s https://letsencrypt.org/certs/isrgrootx1.der -o /data/certs/isrgrootx1.crt
+sudo chmod 777 /data/certs/isrgrootx1.crt
+export RAY_TLS_CA_CERT=/data/certs/isrgrootx1.crt
 
 
 
