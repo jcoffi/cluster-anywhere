@@ -250,7 +250,7 @@ fi
 
 if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR 2>/dev/null&
-    sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
+    sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
 else
     echo "tun doesn't exist"
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 2>/dev/null&
@@ -259,7 +259,7 @@ else
     export ALL_PROXY=socks5h://localhost:1055/
     export http_proxy=http://localhost:1055/
     export HTTP_PROXY=http://localhost:1055/
-    sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes
+    sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
 
 fi
 
@@ -361,7 +361,6 @@ elif [ "$LOCATION" = "Vast" ]; then
   #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
   network_host='-Cnetwork.host=_eth0_,_local_ \\'
   network_publish_host='-Cnetwork.publish_host=_eth0_ \\'
-
   ray start --address='nexus.chimp-beta.ts.net:8443' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
 
