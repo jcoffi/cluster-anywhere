@@ -359,7 +359,7 @@ elif [ "$LOCATION" = "Vast" ]; then
   node_voting_only='-Cnode.voting_only=false \\'
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
   #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
-  sed -i "s/_tailscale0_/$IPADDRESS/g" /crate/config/crate.yml
+  sudo sed -i "s/_tailscale0_/$IPADDRESS/g" /crate/config/crate.yml
   ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $IPADDRESS --node-name $HOSTNAME.chimp-beta.ts.net
 
 
