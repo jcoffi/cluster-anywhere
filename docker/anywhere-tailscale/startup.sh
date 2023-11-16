@@ -32,8 +32,8 @@ sudo chmod -R 774 /data
 sudo chmod -R 774 $TS_STATEDIR
 
 ## Pull external IP
-#IPADDRESS=$(curl -s http://ifconfig.me/ip)
-#export IPADDRESS=$IPADDRESS
+IPADDRESS=$(curl -s http://ifconfig.me/ip)
+export IPADDRESS=$IPADDRESS
 
 
 echo "export NUMEXPR_MAX_THREADS='$(nproc)'" | sudo tee -a ~/.bashrc
@@ -253,13 +253,13 @@ if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
 else
     echo "tun doesn't exist"
-    sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 2>/dev/null&
-    export socks_proxy=socks5h://localhost:1055/
-    export SOCKS_PROXY=socks5h://localhost:1055/
-    export ALL_PROXY=socks5h://localhost:1055/
-    export http_proxy=http://localhost:1055/
-    export HTTP_PROXY=http://localhost:1055/
-    sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
+    #sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 2>/dev/null&
+    #export socks_proxy=socks5h://localhost:1055/
+    #export SOCKS_PROXY=socks5h://localhost:1055/
+    #export ALL_PROXY=socks5h://localhost:1055/
+    #export http_proxy=http://localhost:1055/
+    #export HTTP_PROXY=http://localhost:1055/
+    #sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
 
 fi
 
@@ -359,9 +359,9 @@ elif [ "$LOCATION" = "Vast" ]; then
   node_voting_only='-Cnode.voting_only=false \\'
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
   #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
-  network_host='-Cnetwork.host=_eth0_,_local_ \\'
-  network_publish_host='-Cnetwork.publish_host=_eth0_ \\'
-  ray start --address='nexus.chimp-beta.ts.net:8443' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  network_host="-Cnetwork.host=$(echo $IPADDRESS),_eth0_,_local_ \\"
+  network_publish_host="-Cnetwork.publish_host=$(echo $IPADDRESS) \\"
+  ray start --address='nexus.chimp-beta.ts.net:8443' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $IPADDRESS --node-name $HOSTNAME.chimp-beta.ts.net
 
 
 elif [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
