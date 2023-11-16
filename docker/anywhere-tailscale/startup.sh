@@ -351,7 +351,7 @@ if [ "$NODETYPE" = "head" ]; then
   ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net #--system-config='{"object_spilling_config":"{\"type\":\"smart_open\",\"params\":{\"uri\":\"gs://cluster-anywhere/ray_job_spill\"}}"}'
 
   sudo tailscale funnel --bg --https 443 http://localhost:8265
-  sudo tailscale funnel --bg --tcp 8443 tcp://localhost:6379
+  sudo tailscale funnel --bg --tcp 6379 tcp://localhost:6379
 
 elif [ "$LOCATION" = "Vast" ]; then
   node_master='-Cnode.master=false \\'
@@ -359,9 +359,8 @@ elif [ "$LOCATION" = "Vast" ]; then
   node_voting_only='-Cnode.voting_only=false \\'
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
   #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
-  network_host="-Cnetwork.host=$(echo $IPADDRESS),_eth0_,_local_ \\"
-  network_publish_host="-Cnetwork.publish_host=$(echo $IPADDRESS) \\"
-  ray start --address='nexus.chimp-beta.ts.net:8443' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $IPADDRESS --node-name $HOSTNAME.chimp-beta.ts.net
+  sed -i "s/_tailscale0_/$IPADDRESS/g" /crate/config/crate.yml
+  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $IPADDRESS --node-name $HOSTNAME.chimp-beta.ts.net
 
 
 elif [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
@@ -482,8 +481,6 @@ trap 'error_handler' SIGSEGV
             ${node_data}
             ${node_voting_only}
             ${node_store_allow_mmap}
-            ${network_host}
-            ${network_publish_host}
 
 
 #/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'all';" &
