@@ -253,14 +253,16 @@ if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
 else
     echo "tun doesn't exist"
-    #sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 2>/dev/null&
-    #export socks_proxy=socks5h://localhost:1055/
-    #export SOCKS_PROXY=socks5h://localhost:1055/
-    #export ALL_PROXY=socks5h://localhost:1055/
-    #export http_proxy=http://localhost:1055/
-    #export HTTP_PROXY=http://localhost:1055/
-    #sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
-
+    sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 2>/dev/null&
+    export socks_proxy=socks5h://localhost:1055/
+    export SOCKS_PROXY=socks5h://localhost:1055/
+    export ALL_PROXY=socks5h://localhost:1055/
+    export http_proxy=http://localhost:1055/
+    export HTTP_PROXY=http://localhost:1055/
+    sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
+    sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
+    echo SOCKS_PROXY=socks5h://localhost:1055/ | sudo tee -a /crate/config/crate.yml
+    echo HTTP_PROXY=http://localhost:1055/ | sudo tee -a /crate/config/crate.yml
 fi
 
 
@@ -351,15 +353,15 @@ if [ "$NODETYPE" = "head" ]; then
   ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net #--system-config='{"object_spilling_config":"{\"type\":\"smart_open\",\"params\":{\"uri\":\"gs://cluster-anywhere/ray_job_spill\"}}"}'
 
   sudo tailscale funnel --bg --https 443 http://localhost:8265
-  sudo tailscale funnel --bg --https 8443 https+insecure://localhost:6379
+  sudo tailscale funnel --bg --tcp 8443 tcp://localhost:6379
+
 
 elif [ "$LOCATION" = "Vast" ]; then
   node_master='-Cnode.master=false \\'
   node_data='-Cnode.data=false \\'
   node_voting_only='-Cnode.voting_only=false \\'
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
-  #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
-  sudo sed -i "s/network.publish_host: _tailscale0_/network.publish_host: $IPADDRESS/g" /crate/config/crate.yml
+  # #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
   sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
   ray start --address='nexus.chimp-beta.ts.net:8443' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $IPADDRESS --node-name $HOSTNAME.chimp-beta.ts.net
 
