@@ -351,7 +351,7 @@ if [ "$NODETYPE" = "head" ]; then
   node_data='-Cnode.data=false \\'
 
 
-  ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store #--system-config='{"object_spilling_config":"{\"type\":\"smart_open\",\"params\":{\"uri\":\"gs://cluster-anywhere/ray_job_spill\"}}"}'
+  ray start --head --num-cpus=0 --num-gpus=0 --disable-usage-stats --include-dashboard=True --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net #--object-store-memory=$ray_object_store #--system-config='{"object_spilling_config":"{\"type\":\"smart_open\",\"params\":{\"uri\":\"gs://cluster-anywhere/ray_job_spill\"}}"}'
 
   sudo tailscale funnel --bg --https 443 http://localhost:8265
   sudo tailscale funnel --bg --tcp 8443 tcp://localhost:6379
@@ -364,7 +364,7 @@ elif [ "$LOCATION" = "Vast" ]; then
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
   # #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
   sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
-  ray start --address='nexus.chimp-beta.ts.net:8443' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $IPADDRESS --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store
+  ray start --address='nexus.chimp-beta.ts.net:8443' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $IPADDRESS --node-name $HOSTNAME.chimp-beta.ts.net #--object-store-memory=$ray_object_store
 
 
 elif [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
@@ -374,7 +374,7 @@ elif [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
 
 
-  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net --object-store-memory=$ray_object_store
+  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net #--object-store-memory=$ray_object_store
 
 
 elif [ "$NODETYPE" = "user" ]; then
