@@ -64,14 +64,14 @@ export shm_memory="${shm_memory}G"
 export ray_object_store=${ray_object_store}
 
 #Disabled the TLS for ray because it requires the port in the cert name.
-export RAY_USE_TLS=0
+export RAY_USE_TLS=1
 export RAY_TLS_SERVER_CERT=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt
 export RAY_TLS_SERVER_KEY=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key
-if [ ! -f /data/certs/isrgrootx1.crt ]; then
-  sudo curl -s https://letsencrypt.org/certs/isrgrootx1.txt -o /data/certs/isrgrootx1.crt \
-  && sudo chmod 777 /data/certs/isrgrootx1.crt
+if [ ! -f /data/certs/lets-encrypt-r3.crt ]; then
+  sudo curl -s https://letsencrypt.org/certs/lets-encrypt-r3.txt -o /data/certs/lets-encrypt-r3.crt \
+  && sudo chmod 777 /data/certs/lets-encrypt-r3.crt
 fi
-export RAY_TLS_CA_CERT=/data/certs/isrgrootx1.crt
+export RAY_TLS_CA_CERT=/data/certs/lets-encrypt-r3.crt
 
 #putting the key in the same bucket were granting access to using that key is incredibly stupid. yet, here we are.
 KEY_STORAGE_URL="https://storage.googleapis.com/cluster-anywhere/files/cluster-anywhere-26784947a5ae.json"
