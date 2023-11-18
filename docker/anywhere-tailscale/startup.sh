@@ -67,10 +67,10 @@ export ray_object_store=${ray_object_store}
 export RAY_USE_TLS=1
 export RAY_TLS_SERVER_CERT=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt
 export RAY_TLS_SERVER_KEY=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key
-if [ ! -f /data/certs/lets-encrypt-r3.crt ]; then
-  sudo curl -s https://letsencrypt.org/certs/lets-encrypt-r3.pem -o /data/certs/lets-encrypt-r3.crt \
-  && sudo chmod 777 /data/certs/lets-encrypt-r3.crt
-fi
+#if [ ! -f /data/certs/lets-encrypt-r3.crt ]; then
+sudo curl -s https://letsencrypt.org/certs/lets-encrypt-r3.pem -o /data/certs/lets-encrypt-r3.crt \
+&& sudo chmod 777 /data/certs/lets-encrypt-r3.crt
+#fi
 export RAY_TLS_CA_CERT=/data/certs/lets-encrypt-r3.crt
 
 #putting the key in the same bucket were granting access to using that key is incredibly stupid. yet, here we are.
