@@ -64,7 +64,7 @@ export shm_memory="${shm_memory}G"
 export ray_object_store=${ray_object_store}
 
 #Disabled the TLS for ray because it requires the port in the cert name.
-export RAY_USE_TLS=1
+export RAY_USE_TLS=0
 export RAY_TLS_SERVER_CERT=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt
 export RAY_TLS_SERVER_KEY=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key
 #if [ ! -f /data/certs/lets-encrypt-r3.crt ]; then
