@@ -264,6 +264,7 @@ else
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
     echo SOCKS_PROXY=socks5h://localhost:1055/ | sudo tee -a /crate/config/crate.yml
     echo HTTP_PROXY=http://localhost:1055/ | sudo tee -a /crate/config/crate.yml
+    export RAY_grpc_enable_http_proxy="1"
 fi
 
 
