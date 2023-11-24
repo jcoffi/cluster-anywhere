@@ -254,17 +254,17 @@ if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
 else
     echo "tun doesn't exist"
-    sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 2>/dev/null&
+    sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:3080 2>/dev/null&
     export socks_proxy=socks5h://localhost:1055/
     export SOCKS_PROXY=socks5h://localhost:1055/
     export ALL_PROXY=socks5h://localhost:1055/
-    export http_proxy=http://localhost:1055/
-    export HTTP_PROXY=http://localhost:1055/
-    export https_proxy=http://localhost:1055/
-    export HTTPS_PROXY=http://localhost:1055/
+    export http_proxy=http://localhost:3080/
+    export HTTP_PROXY=http://localhost:3080/
+    export https_proxy=http://localhost:3080/
+    export HTTPS_PROXY=http://localhost:3080/
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
-    export CRATE_JAVA_OPTS="$CRATE_JAVA_OPTS -Dhttps.proxyHost=localhost -Dhttps.proxyPort=1055 -Dhttp.proxyHost=localhost -Dhttp.proxyPort=1055 -DsocksProxyHost=localhost -DsocksProxyPort=1055 -Dhttp.nonProxyHosts=localhost|$HOSTNAME"
+    export CRATE_JAVA_OPTS="$CRATE_JAVA_OPTS -Dhttps.proxyHost=localhost -Dhttps.proxyPort=3080 -Dhttps.nonProxyHosts=localhost|$HOSTNAME -Dhttp.proxyHost=localhost -Dhttp.proxyPort=3080 -Dhttp.nonProxyHosts=localhost|$HOSTNAME -DsocksProxyHost=localhost -DsocksProxyPort=1055"
     echo "nameserver 100.100.100.100" | sudo tee /etc/resolv.conf
     echo "search chimp-beta.ts.net" | sudo tee -a /etc/resolv.conf
     export RAY_grpc_enable_http_proxy="1"
