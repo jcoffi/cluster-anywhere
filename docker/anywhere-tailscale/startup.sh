@@ -262,7 +262,7 @@ else
     export HTTP_PROXY=http://localhost:3080/
     export https_proxy=http://localhost:3080/
     export HTTPS_PROXY=http://localhost:3080/
-    deviceips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq -r '.addresses[]' data.json | paste -sd, -)
+    deviceips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq -r '.addresses[]' | paste -sd, -)
     discovery_seed_hosts=$deviceips
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
