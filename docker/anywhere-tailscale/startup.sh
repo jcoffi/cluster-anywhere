@@ -260,10 +260,13 @@ else
     export ALL_PROXY=socks5h://localhost:1055/
     export http_proxy=http://localhost:1055/
     export HTTP_PROXY=http://localhost:1055/
+    export https_proxy=https://localhost:1055/
+    export HTTPS_PROXY=https://localhost:1055/
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
-    echo SOCKS_PROXY=socks5h://localhost:1055/ | sudo tee -a /crate/config/crate.yml
-    echo HTTP_PROXY=http://localhost:1055/ | sudo tee -a /crate/config/crate.yml
+    export CRATE_JAVA_OPTS="$CRATE_JAVA_OPTS -Dhttps.proxyHost=localhost -Dhttps.proxyPort=1055 -Dhttp.proxyHost=localhost -Dhttp.proxyPort=1055 -DsocksProxyHost=localhost -DsocksProxyPort=1055"
+    # echo SOCKS_PROXY=socks5h://localhost:1055/ | sudo tee -a /crate/config/crate.yml
+    # echo HTTP_PROXY=http://localhost:1055/ | sudo tee -a /crate/config/crate.yml
     export RAY_grpc_enable_http_proxy="1"
 fi
 
