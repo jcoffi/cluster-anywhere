@@ -264,7 +264,7 @@ else
     export HTTPS_PROXY=http://localhost:3080/
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
-    export CRATE_JAVA_OPTS="$CRATE_JAVA_OPTS -Dhttps.proxyHost=localhost -Dhttps.proxyPort=3080 -Dhttps.nonProxyHosts=localhost|$HOSTNAME -Dhttp.proxyHost=localhost -Dhttp.proxyPort=3080 -Dhttp.nonProxyHosts=localhost|$HOSTNAME -DsocksProxyHost=localhost -DsocksProxyPort=1055"
+    export CRATE_JAVA_OPTS="$CRATE_JAVA_OPTS -Dhttps.proxyHost=localhost -Dhttps.proxyPort=3080 -Dhttp.proxyHost=localhost -Dhttp.proxyPort=3080 -DsocksProxyHost=localhost -DsocksProxyPort=1055"
     echo "nameserver 100.100.100.100" | sudo tee /etc/resolv.conf
     echo "search chimp-beta.ts.net" | sudo tee -a /etc/resolv.conf
     export RAY_grpc_enable_http_proxy="1"
