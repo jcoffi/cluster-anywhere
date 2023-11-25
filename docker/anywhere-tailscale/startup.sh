@@ -255,6 +255,11 @@ if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
 else
     echo "tun doesn't exist"
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 2>/dev/null&
+    alldevicesips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq -r '.devices[].addresses[]'| awk '/:/ {print "["$0"]"; next} 1' | paste -sd, -)
+    export alldevicesips=$alldevicesips
+    discovery_seed_hosts="-Cdiscovery.seed_hosts=$alldevicesips \\"
+    #cluster_initial_master_nodes="-Ccluster.initial_master_nodes=$alldevicesips \\"
+    sudo tailscale up --operator=ray --auth-key=$TS_AUTHKEY --accept-dns=true --accept-risk=all --accept-routes --ssh
     export socks_proxy=socks5h://localhost:1055/
     export SOCKS_PROXY=socks5h://localhost:1055/
     export ALL_PROXY=socks5h://localhost:1055/
@@ -262,11 +267,6 @@ else
     export HTTP_PROXY=http://localhost:1055/
     export https_proxy=http://localhost:1055/
     export HTTPS_PROXY=http://localhost:1055/
-    alldevicesips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq -r '.devices[].addresses[]'| awk '/:/ {print "["$0"]"; next} 1' | paste -sd, -)
-    export alldevicesips=$alldevicesips
-    discovery_seed_hosts="-Cdiscovery.seed_hosts=$alldevicesips \\"
-    #cluster_initial_master_nodes="-Ccluster.initial_master_nodes=$alldevicesips \\"
-    sudo tailscale up --operator=ray --auth-key=$TS_AUTHKEY --accept-dns=true --accept-risk=all --accept-routes --ssh
     #thisdevicesips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .addresses[] | awk '/:/ {print "["$0"]"; next} 1' | paste -sd, -)
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
     export CRATE_JAVA_OPTS="-DsocksProxyHost=localhost -DsocksProxyPort=1055 $CRATE_JAVA_OPTS"
