@@ -269,7 +269,7 @@ else
     sudo tailscale up --operator=ray --auth-key=$TS_AUTHKEY --accept-dns=true --accept-risk=all --accept-routes --ssh
     #thisdevicesips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .addresses[] | awk '/:/ {print "["$0"]"; next} 1' | paste -sd, -)
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
-    export CRATE_JAVA_OPTS="$CRATE_JAVA_OPTS -DsocksProxyHost=localhost -DsocksProxyPort=1055"
+    export CRATE_JAVA_OPTS="-DsocksProxyHost=localhost -DsocksProxyPort=1055 $CRATE_JAVA_OPTS"
     echo "nameserver 100.100.100.100" | sudo tee /etc/resolv.conf
     echo "search chimp-beta.ts.net" | sudo tee -a /etc/resolv.conf
     export RAY_grpc_enable_http_proxy="1"
