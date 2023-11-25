@@ -485,16 +485,23 @@ trap 'term_handler' EXIT
 trap 'error_handler' ERR
 trap 'error_handler' SIGSEGV
 
-/crate/bin/crate \
-            ${cluster_initial_master_nodes}
-            ${discovery_zen_minimum_master_nodes}
-            ${discovery_seed_hosts}
-            ${node_name}
-            ${node_master}
-            ${node_data}
-            ${node_voting_only}
-            ${node_store_allow_mmap}
-
+#launch crate unless we're running it Vast, then just don't launch crate
+if [ ! "$LOCATION" = "Vast" ]; then
+    /crate/bin/crate \
+                ${cluster_initial_master_nodes}
+                ${discovery_zen_minimum_master_nodes}
+                ${discovery_seed_hosts}
+                ${node_name}
+                ${node_master}
+                ${node_data}
+                ${node_voting_only}
+                ${node_store_allow_mmap}
+else
+  while true
+  do
+    tail -f /dev/null & wait ${!}
+  done
+fi
 
 #/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'all';" &
 #CREATE REPOSITORY s3backup TYPE s3
