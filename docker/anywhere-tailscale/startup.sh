@@ -265,7 +265,7 @@ else
     alldevicesips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq -r '.devices[].addresses[]'| awk '/:/ {print "["$0"]"; next} 1' | paste -sd, -)
     export alldevicesips=$alldevicesips
     discovery_seed_hosts="-Cdiscovery.seed_hosts=$alldevicesips \\"
-    cluster_initial_master_nodes="-Ccluster.initial_master_nodes=$alldevicesips"
+    cluster_initial_master_nodes="-Ccluster.initial_master_nodes=$alldevicesips \\"
     thisdevicesips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .addresses[] | awk '/:/ {print "["$0"]"; next} 1' | paste -sd, -)
     sudo tailscale up --operator='ray' --auth-key=$TS_AUTHKEY --accept-dns=true --accept-risk=all --accept-routes --ssh
     sudo sed -i "s/_tailscale0_/$thisdevicesips/g" /crate/config/crate.yml
