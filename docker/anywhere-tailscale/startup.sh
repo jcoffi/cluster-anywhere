@@ -265,8 +265,6 @@ else
     deviceips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq -r '.devices[].addresses[]'| awk '/:/ {print "["$0"]"; next} 1' | paste -sd, -)
     export deviceips=$deviceips
     discovery_seed_hosts="-Cdiscovery.seed_hosts=$deviceips \\"
-    cluster_initial_master_nodes="-Ccluster.initial_master_nodes=$deviceips \\"
-
 
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
