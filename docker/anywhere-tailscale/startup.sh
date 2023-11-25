@@ -269,6 +269,8 @@ else
     export HTTPS_PROXY=http://localhost:1055/
     #thisdevicesips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .addresses[] | awk '/:/ {print "["$0"]"; next} 1' | paste -sd, -)
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
+    echo 'http.proxy.host=localhost' | sudo tee -a /crate/config/crate.yml
+    echo 'http.proxy.port=1055' | sudo tee -a /crate/config/crate.yml
     #export CRATE_JAVA_OPTS="-DsocksProxyHost=localhost -DsocksProxyPort=1055 $CRATE_JAVA_OPTS"
     export RAY_grpc_enable_http_proxy="1"
 fi
@@ -485,23 +487,16 @@ trap 'term_handler' EXIT
 trap 'error_handler' ERR
 trap 'error_handler' SIGSEGV
 
-#launch crate unless we're running it Vast, then just don't launch crate
-if [ ! "$LOCATION" = "Vast" ]; then
-    /crate/bin/crate \
-                ${cluster_initial_master_nodes}
-                ${discovery_zen_minimum_master_nodes}
-                ${discovery_seed_hosts}
-                ${node_name}
-                ${node_master}
-                ${node_data}
-                ${node_voting_only}
-                ${node_store_allow_mmap}
-else
-  while true
-  do
-    tail -f /dev/null & wait ${!}
-  done
-fi
+/crate/bin/crate \
+            ${cluster_initial_master_nodes}
+            ${discovery_zen_minimum_master_nodes}
+            ${discovery_seed_hosts}
+            ${node_name}
+            ${node_master}
+            ${node_data}
+            ${node_voting_only}
+            ${node_store_allow_mmap}
+
 
 #/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'all';" &
 #CREATE REPOSITORY s3backup TYPE s3
