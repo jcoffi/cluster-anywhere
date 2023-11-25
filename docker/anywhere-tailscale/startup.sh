@@ -266,7 +266,7 @@ else
     export deviceips=$deviceips
     discovery_seed_hosts="-Cdiscovery.seed_hosts=$deviceips \\"
 
-    sudo tailscale up --operator='ray' --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
+    sudo tailscale up --operator='ray' --auth-key=$TS_AUTHKEY --accept-dns=true --accept-risk=all --accept-routes --ssh
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
     export CRATE_JAVA_OPTS="$CRATE_JAVA_OPTS -Dhttps.proxyHost=localhost -Dhttps.proxyPort=1055 -Dhttp.proxyHost=localhost -Dhttp.proxyPort=1055 -DsocksProxyHost=localhost -DsocksProxyPort=1055"
     echo "nameserver 100.100.100.100" | sudo tee /etc/resolv.conf
