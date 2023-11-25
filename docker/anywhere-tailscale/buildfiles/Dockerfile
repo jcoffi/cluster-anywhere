@@ -18,7 +18,6 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         PATH=/crate/bin/:$PATH \
         CRATE_HEAP_SIZE="10G" \
         CRATE_HOME=/crate/bin/ \
-        CRATE_USE_IPV4=true \
         SQLALCHEMY_SILENCE_UBER_WARNING=1 \
         HOME=/home/ray \
         TS_STATEDIR="/data/tailscale" \
@@ -93,10 +92,12 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         yfinance \
         openai \
         google-api-python-client \
+        gcsfs \
         google-cloud-storage \
         smart_open \
         ipywidgets \
         boto3
+
 
         # && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
         # && sudo chmod +x /home/ray/run_tests.sh \
