@@ -270,8 +270,6 @@ else
     #thisdevicesips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .addresses[] | awk '/:/ {print "["$0"]"; next} 1' | paste -sd, -)
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
     export CRATE_JAVA_OPTS="-DsocksProxyHost=localhost -DsocksProxyPort=1055 $CRATE_JAVA_OPTS"
-    echo "nameserver 100.100.100.100" | sudo tee /etc/resolv.conf
-    echo "search chimp-beta.ts.net" | sudo tee -a /etc/resolv.conf
     export RAY_grpc_enable_http_proxy="1"
 fi
 
@@ -371,6 +369,8 @@ elif [ "$LOCATION" = "Vast" ]; then
   node_data='-Cnode.data=false \\'
   node_voting_only='-Cnode.voting_only=false \\'
   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
+  echo "nameserver 100.100.100.100" | sudo tee /etc/resolv.conf
+  echo "search chimp-beta.ts.net" | sudo tee -a /etc/resolv.conf
   # #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
   sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
   ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $IPADDRESS --node-name $HOSTNAME.chimp-beta.ts.net #--object-store-memory=$ray_object_store
