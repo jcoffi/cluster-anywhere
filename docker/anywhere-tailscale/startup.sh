@@ -254,18 +254,20 @@ if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
 else
     echo "tun doesn't exist"
-    sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:3080 2>/dev/null&
+    sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 2>/dev/null&
     export socks_proxy=socks5h://localhost:1055/
     export SOCKS_PROXY=socks5h://localhost:1055/
     export ALL_PROXY=socks5h://localhost:1055/
-    export http_proxy=http://localhost:3080/
-    export HTTP_PROXY=http://localhost:3080/
-    export https_proxy=http://localhost:3080/
-    export HTTPS_PROXY=http://localhost:3080/
+    export http_proxy=http://localhost:1055/
+    export HTTP_PROXY=http://localhost:1055/
+    export https_proxy=http://localhost:1055/
+    export HTTPS_PROXY=http://localhost:1055/
     deviceips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq -r '.devices[].addresses[]'| awk '/:/ {print "["$0"]"; next} 1' | paste -sd, -)
     export deviceips=$deviceips
     discovery_seed_hosts="-Cdiscovery.seed_hosts=$deviceips \\"
     cluster_initial_master_nodes="-Ccluster.initial_master_nodes=$deviceips \\"
+
+
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
     sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
     export CRATE_JAVA_OPTS="$CRATE_JAVA_OPTS -Dhttps.proxyHost=localhost -Dhttps.proxyPort=3080 -Dhttp.proxyHost=localhost -Dhttp.proxyPort=3080 -DsocksProxyHost=localhost -DsocksProxyPort=1055"
