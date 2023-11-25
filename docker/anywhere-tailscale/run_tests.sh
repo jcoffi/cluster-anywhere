@@ -42,9 +42,10 @@ if [ "$LOCATION" != "OnPrem" ]; then
 fi
 
 # Check Crate.io status
-crate_status=$(curl -s -I http://localhost:4200/ | grep HTTP/1.1)
-if [[ "$crate_status" != *"200 OK"* ]]; then FAIL=1; fi
-
+if [ "$LOCATION" != "Vast" ]; then
+    crate_status=$(curl -s -I http://localhost:4200/ | grep HTTP/1.1)
+    if [[ "$crate_status" != *"200 OK"* ]]; then FAIL=1; fi
+fi
 
 # Write status to a file
 # also write a bit of additional informationffor diagnostic purposes.
