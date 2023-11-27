@@ -73,17 +73,17 @@ sudo curl -s https://letsencrypt.org/certs/lets-encrypt-r3.pem -o /data/certs/le
 #fi
 export RAY_TLS_CA_CERT=/data/certs/lets-encrypt-r3.crt
 
-#putting the key in the same bucket were granting access to using that key is incredibly stupid. yet, here we are.
-KEY_STORAGE_URL="https://storage.googleapis.com/cluster-anywhere/files/cluster-anywhere-26784947a5ae.json"
+# #putting the key in the same bucket were granting access to using that key is incredibly stupid. yet, here we are.
+# KEY_STORAGE_URL="https://storage.googleapis.com/cluster-anywhere/files/cluster-anywhere-26784947a5ae.json"
 
-# Specify the local path where the key should be stored
-LOCAL_KEY_PATH="/data/cluster-anywhere-26784947a5ae.json"
+# # Specify the local path where the key should be stored
+# LOCAL_KEY_PATH="/data/cluster-anywhere-26784947a5ae.json"
 
-# Download the key from cloud storage
-curl -o ${LOCAL_KEY_PATH} ${KEY_STORAGE_URL}
+# # Download the key from cloud storage
+# curl -o ${LOCAL_KEY_PATH} ${KEY_STORAGE_URL}
 
-# Set the environment variable for Google Application Credentials
-export GOOGLE_APPLICATION_CREDENTIALS=${LOCAL_KEY_PATH}
+# # Set the environment variable for Google Application Credentials
+# export GOOGLE_APPLICATION_CREDENTIALS=${LOCAL_KEY_PATH}
 
 
 
@@ -366,16 +366,16 @@ if [ "$NODETYPE" = "head" ]; then
   #sudo tailscale funnel --bg --tcp 8443 tcp://localhost:6379
 
 
-elif [ "$LOCATION" = "Vast" ]; then
-  node_master='-Cnode.master=false \\'
-  node_data='-Cnode.data=false \\'
-  node_voting_only='-Cnode.voting_only=false \\'
-  discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
-  echo "nameserver 100.100.100.100" | sudo tee /etc/resolv.conf
-  echo "search chimp-beta.ts.net" | sudo tee -a /etc/resolv.conf
-  # #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
-  sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
-  ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $IPADDRESS --node-name $HOSTNAME.chimp-beta.ts.net #--object-store-memory=$ray_object_store
+# elif [ "$LOCATION" = "Vast" ]; then
+#   node_master='-Cnode.master=false \\'
+#   node_data='-Cnode.data=false \\'
+#   node_voting_only='-Cnode.voting_only=false \\'
+#   discovery_zen_minimum_master_nodes='-Cdiscovery.zen.minimum_master_nodes=3 \\'
+#   echo "nameserver 100.100.100.100" | sudo tee /etc/resolv.conf
+#   echo "search chimp-beta.ts.net" | sudo tee -a /etc/resolv.conf
+#   # #There isn't a tun so we can't create a tunnel interface. So we've told cratedb to use eth0.
+#   sudo sed -i "s/_tailscale0_/_eth0_/g" /crate/config/crate.yml
+#   ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $IPADDRESS --node-name $HOSTNAME.chimp-beta.ts.net #--object-store-memory=$ray_object_store
 
 
 elif [ ! "$LOCATION" = "OnPrem" ] && [ ! "$NODETYPE" = "head" ]; then
