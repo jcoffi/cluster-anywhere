@@ -73,17 +73,17 @@ sudo curl -s https://letsencrypt.org/certs/lets-encrypt-r3.pem -o /data/certs/le
 #fi
 export RAY_TLS_CA_CERT=/data/certs/lets-encrypt-r3.crt
 
-# #putting the key in the same bucket were granting access to using that key is incredibly stupid. yet, here we are.
-# KEY_STORAGE_URL="https://storage.googleapis.com/cluster-anywhere/files/cluster-anywhere-26784947a5ae.json"
+#putting the key in the same bucket were granting access to using that key is incredibly stupid. yet, here we are.
+KEY_STORAGE_URL="https://storage.googleapis.com/cluster-anywhere/files/cluster-anywhere-26784947a5ae.json"
 
-# # Specify the local path where the key should be stored
-# LOCAL_KEY_PATH="/data/cluster-anywhere-26784947a5ae.json"
+# Specify the local path where the key should be stored
+LOCAL_KEY_PATH="/data/cluster-anywhere-26784947a5ae.json"
 
-# # Download the key from cloud storage
-# curl -o ${LOCAL_KEY_PATH} ${KEY_STORAGE_URL}
+# Download the key from cloud storage
+curl -o ${LOCAL_KEY_PATH} ${KEY_STORAGE_URL}
 
-# # Set the environment variable for Google Application Credentials
-# export GOOGLE_APPLICATION_CREDENTIALS=${LOCAL_KEY_PATH}
+# Set the environment variable for Google Application Credentials
+export GOOGLE_APPLICATION_CREDENTIALS=${LOCAL_KEY_PATH}
 
 
 
