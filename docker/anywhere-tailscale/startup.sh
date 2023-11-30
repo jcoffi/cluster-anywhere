@@ -67,6 +67,7 @@ export ray_object_store=${ray_object_store}
 export RAY_USE_TLS=0
 export RAY_TLS_SERVER_CERT=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt
 export RAY_TLS_SERVER_KEY=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key
+
 #if [ ! -f /data/certs/lets-encrypt-r3.crt ]; then
 sudo curl -s https://letsencrypt.org/certs/lets-encrypt-r3.pem -o /data/certs/lets-encrypt-r3.crt \
 && sudo chmod 777 /data/certs/lets-encrypt-r3.crt
@@ -399,7 +400,7 @@ elif [ "$NODETYPE" = "user" ]; then
   sudo tailscale funnel --bg --https 8443 https+insecure://localhost:8888
 
 
-  ray start --address='nexus.chimp-beta.ts.net:6379' --num-gpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  ray start --address='nexus.chimp-beta.ts.net:6379' --num-cpus=1 --num-gpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
   if [ -e "/files" ]; then
     sudo chgrp -R crate /files
