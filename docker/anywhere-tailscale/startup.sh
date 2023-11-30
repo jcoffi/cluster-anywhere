@@ -365,6 +365,7 @@ if [ "$NODETYPE" = "head" ]; then
 
   sudo tailscale funnel --bg --https 443 http://localhost:8265
   #sudo tailscale funnel --bg --tcp 8443 tcp://localhost:6379
+  sudo tailscale funnel --bg --tcp 5432 tcp://localhost:5432
 
 
 # elif [ "$LOCATION" = "Vast" ]; then
@@ -398,9 +399,9 @@ elif [ "$NODETYPE" = "user" ]; then
   #todo: https://docs.ray.io/en/latest/ray-core/using-ray-with-jupyter.html#setting-up-notebook
 
   sudo tailscale funnel --bg --https 8443 https+insecure://localhost:8888
+  sudo tailscale funnel --bg --https 443 https+insecure://localhost:4200
 
-
-  ray start --address='nexus.chimp-beta.ts.net:6379' --num-cpus=1 --num-gpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  #ray start --address='nexus.chimp-beta.ts.net:6379' --num-cpus=1 --num-gpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
   if [ -e "/files" ]; then
     sudo chgrp -R crate /files
