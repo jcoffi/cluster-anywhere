@@ -47,7 +47,8 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo groupadd crate \
 && CRATE_LATEST_TAG=$(curl -fsSLZ https://api.github.com/repos/crate/crate/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') \
 && CRASH_LATEST_TAG=$(curl -fsSLZ https://api.github.com/repos/crate/crash/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') \
-&& export PLATFORM='$( case $(uname --m) in x86_64) echo x64_linux ;; aarch64) echo aarch64_linux ;; esac)' \
+#&& export PLATFORM='$( case $(uname --m) in x86_64) echo x64_linux ;; aarch64) echo aarch64_linux ;; esac)' \
+&& export PLATFORM=aarch64_linux \
 && sudo mkdir -p /crate \
 && sudo adduser ray crate \
 && sudo chgrp -R crate /crate \
