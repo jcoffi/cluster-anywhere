@@ -70,7 +70,7 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo mv crash_standalone_${CRASH_LATEST_TAG} /usr/local/bin/crash \
 && sudo chmod +x /usr/local/bin/crash \
 && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
-        cupy-cuda11x \
+        --extra-index-url=https://pypi.nvidia.com cupy-cuda11x \
         pandas \
         pandas_market_calendars \
         modin[ray] \
