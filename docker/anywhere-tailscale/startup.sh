@@ -401,7 +401,7 @@ elif [ "$NODETYPE" = "user" ]; then
   sudo tailscale funnel --bg --https 8443 https+insecure://localhost:8888
   sudo tailscale funnel --bg --https 443 https+insecure://localhost:4200
 
-  #ray start --address='nexus.chimp-beta.ts.net:6379' --num-cpus=1 --num-gpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+  ray start --address='nexus.chimp-beta.ts.net:6379' --num-cpus=1 --num-gpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
   if [ -e "/files" ]; then
     sudo chgrp -R crate /files
@@ -420,10 +420,10 @@ else
     #   #ssh -N -L localhost:6379:localhost:1055 $USER@localhost
     # else
 
-    #ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
+    ray start --address='nexus.chimp-beta.ts.net:6379' --resources='{"'"$LOCATION"'": '$(nproc)'}' --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
     # fi
     echo "Done"
-    #sudo tailscale funnel --bg --https 443 http://localhost:8265
+    sudo tailscale funnel --bg --https 443 https+insecure://localhost:8265
 
 fi
 
