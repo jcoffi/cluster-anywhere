@@ -66,8 +66,8 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo chgrp crate log4j2.properties \
 && sudo mv log4j2.properties /crate/config/log4j2.properties \
 && rm crate-${CRATE_LATEST_TAG}.tar.gz \
-&& curl -fsSLZ -O https://cdn2.crate.io/downloads/releases/crash_standalone_${CRASH_LATEST_TAG} \
-&& sudo mv crash_standalone_${CRASH_LATEST_TAG} /usr/local/bin/crash \
+&& curl -fsSLZ -O https://cdn2.crate.io/downloads/releases/crash_standalone_latest \
+&& sudo mv crash_standalone_latest /usr/local/bin/crash \
 && sudo chmod +x /usr/local/bin/crash \
 && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
         cupy-cuda11x \
