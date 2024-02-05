@@ -89,7 +89,7 @@ RUN sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
         icecream \
         geojson \
         fredapi \
-        'alpaca_py>=0.14.0' \
+        'alpaca_py==0.14.0' \
         tiingo \
         yfinance \
         openai \
