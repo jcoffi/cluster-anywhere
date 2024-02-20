@@ -37,4 +37,4 @@ docker buildx build \
 ##--cache-from type=s3,region=us-west-2,bucket=cluster-anywhere,name=latest-py310-$DOCKER_TAG-cache \
 
 docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG
-docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG
+#docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG
