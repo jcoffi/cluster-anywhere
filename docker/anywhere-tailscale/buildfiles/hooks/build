@@ -28,7 +28,7 @@ docker buildx build \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
---build-arg IMAGETYPE=$DOCKER_TAG .
+--build-arg IMAGETYPE=$DOCKER_TAG . \
 ##--ulimit 'nofile=65535:65535' \
 ##--cache-from=rayproject/ray:latest-py310-$DOCKER_TAG \
 ##--cache-to type=registry,ref=jcoffi/cluster-anywhere:$DOCKER_TAG \
@@ -36,5 +36,5 @@ docker buildx build \
 ##--cache-to type=s3,region=us-west-2,bucket=cluster-anywhere,name=latest-py310-$DOCKER_TAG-cache \
 ##--cache-from type=s3,region=us-west-2,bucket=cluster-anywhere,name=latest-py310-$DOCKER_TAG-cache \
 
-docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG
-#docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG
+&& docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
+&& docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG

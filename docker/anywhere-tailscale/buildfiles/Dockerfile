@@ -35,8 +35,7 @@ ARG AWS_SECRET_ACCESS_KEY
 
 VOLUME /data
 
-RUN --mount=type=cache,target=/var/cache/apt \
-&& sudo apt update \
+RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
 && sudo apt install -y --no-install-recommends ca-certificates curl bc jq lsb-release \
 && curl -fsSLZ https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null \
 && curl -fsSLZ https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list \
