@@ -74,7 +74,6 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         pandas \
         pandas_market_calendars \
         modin[ray] \
-        'sqlalchemy<2.0' \
         crate[sqlalchemy] \
         'distributed' \
         'ray[all]' \
