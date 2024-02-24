@@ -79,13 +79,10 @@ RUN --mount=type=cache,target=/var/cache/pip sudo -H $HOME/anaconda3/bin/pip ins
         'distributed' \
         'ray[all]' \
         scikit-learn-intelex \
-        torch \
         sympy \
-        numba \
         numpy \
         statsmodels \
         datetime \
-        icecream \
         geojson \
         fredapi \
         'alpaca_py==0.14.0' \
