@@ -69,7 +69,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
 && curl -fsSLZ -O https://cdn2.crate.io/downloads/releases/crash_standalone_latest \
 && sudo mv crash_standalone_latest /usr/local/bin/crash \
 && sudo chmod +x /usr/local/bin/crash
-RUN --mount=type=cache,target=/var/cache/pip sudo -H $HOME/anaconda3/bin/pip install --cache-dir /var/cache/pip -U pip \
+RUN --mount=type=cache,target=/var/cache/pip $HOME/anaconda3/bin/pip install --cache-dir /var/cache/pip -U pip \
         cupy-cuda11x \
         pyarrow-hotfix \
         pandas \
