@@ -31,6 +31,8 @@ export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
+--cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
+--cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
 --ulimit 'memlock=-1' \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 
@@ -45,6 +47,8 @@ export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
+--cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
+--cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
 --ulimit 'memlock=-1' \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 
@@ -58,6 +62,8 @@ export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
+--cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
+--cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
 --ulimit 'memlock=-1' \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 
@@ -71,6 +77,8 @@ export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
+--cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
+--cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
 --ulimit 'memlock=-1' \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 
@@ -84,6 +92,8 @@ export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
+--cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
+--cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
 --ulimit 'memlock=-1' \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 
