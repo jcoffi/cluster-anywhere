@@ -71,6 +71,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
 && sudo chmod +x /usr/local/bin/crash \
 && $HOME/anaconda3/bin/pip install -q --no-cache-dir -U pip \
         cupy-cuda11x \
+	'pyarrow>=14.0.1'
         pandas \
         pandas_market_calendars \
         modin[ray] \
