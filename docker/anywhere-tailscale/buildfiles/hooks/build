@@ -23,6 +23,21 @@ docker-credential-gcr configure-docker --registries=us-west4-docker.pkg.dev,us-d
 
 
 
+
+# Set image type based on build argument
+export IMAGETYPE=gpu
+# This is done for reverse compatibiilty during testing.
+export DOCKER_TAG=$IMAGETYPE
+docker buildx build \
+--push \
+-t jcoffi/cluster-anywhere:$DOCKER_TAG \
+--ulimit 'memlock=-1' \
+--build-arg IMAGETYPE=$DOCKER_TAG .
+
+docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
+&& docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG &
+
+
 # Set image type based on build argument
 export IMAGETYPE=cpu
 # This is done for reverse compatibiilty during testing.
@@ -38,18 +53,6 @@ docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-a
 
 
 # Set image type based on build argument
-export IMAGETYPE=gpu
-export DOCKER_TAG=$IMAGETYPE
-docker buildx build \
---push \
--t jcoffi/cluster-anywhere:$DOCKER_TAG \
---ulimit 'memlock=-1' \
---build-arg IMAGETYPE=$DOCKER_TAG .
-
-docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
-&& docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG &
-
-# Set image type based on build argument
 export IMAGETYPE=cu118
 export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
@@ -60,6 +63,7 @@ docker buildx build \
 
 docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
 && docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG &
+
 
 # Set image type based on build argument
 export IMAGETYPE=cu112
@@ -72,6 +76,7 @@ docker buildx build \
 
 docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
 && docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG &
+
 
 # Set image type based on build argument
 export IMAGETYPE=cu116
