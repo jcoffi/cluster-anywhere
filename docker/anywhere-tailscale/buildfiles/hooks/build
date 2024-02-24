@@ -29,10 +29,10 @@ export IMAGETYPE=gpu
 # This is done for reverse compatibiilty during testing.
 export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
---push \
--t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
 --cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
+--push \
+-t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 
@@ -41,14 +41,30 @@ docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-a
 
 
 # Set image type based on build argument
+export IMAGETYPE=cu118
+export DOCKER_TAG=$IMAGETYPE
+docker buildx build \
+--cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
+--cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
+--push \
+-t jcoffi/cluster-anywhere:$DOCKER_TAG \
+--ulimit 'memlock=-1' \
+--build-arg IMAGETYPE=$DOCKER_TAG .
+
+docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
+&& docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG &
+docker buildx rm --all-inactive --force
+
+
+# Set image type based on build argument
 export IMAGETYPE=cpu
 # This is done for reverse compatibiilty during testing.
 export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
---push \
--t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
 --cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
+--push \
+-t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 
@@ -57,28 +73,13 @@ docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-a
 docker buildx rm --all-inactive --force
 
 # Set image type based on build argument
-export IMAGETYPE=cu118
-export DOCKER_TAG=$IMAGETYPE
-docker buildx build \
---push \
--t jcoffi/cluster-anywhere:$DOCKER_TAG \
---cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
---cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
---ulimit 'memlock=-1' \
---build-arg IMAGETYPE=$DOCKER_TAG .
-
-docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
-&& docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG &
-
-
-# Set image type based on build argument
 export IMAGETYPE=cu112
 export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
---push \
--t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
 --cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
+--push \
+-t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 
@@ -90,10 +91,10 @@ docker buildx rm --all-inactive --force
 export IMAGETYPE=cu116
 export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
---push \
--t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
 --cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
+--push \
+-t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
 --build-arg IMAGETYPE=$DOCKER_TAG .
 
