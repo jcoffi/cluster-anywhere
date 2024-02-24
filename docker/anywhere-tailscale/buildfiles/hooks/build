@@ -54,7 +54,7 @@ docker buildx build \
 
 docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
 && docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG &
-
+docker buildx rm --all-inactive --force
 
 # Set image type based on build argument
 export IMAGETYPE=cu118
@@ -84,7 +84,7 @@ docker buildx build \
 
 docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
 && docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG &
-
+docker buildx rm --all-inactive --force
 
 # Set image type based on build argument
 export IMAGETYPE=cu116
@@ -99,6 +99,7 @@ docker buildx build \
 
 docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
 && docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG
+docker buildx rm --all-inactive --force
 
 # # Set image type based on build argument
 # docker buildx build \
