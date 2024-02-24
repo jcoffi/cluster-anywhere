@@ -67,18 +67,18 @@ docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-a
 docker buildx prune --force --filter=until=10m
 
 
-# Set image type based on build argument
-export IMAGETYPE=cu116
-export DOCKER_TAG=$IMAGETYPE
-docker buildx build \
---push \
--t jcoffi/cluster-anywhere:$DOCKER_TAG \
---ulimit 'memlock=-1' \
---build-arg IMAGETYPE=$DOCKER_TAG .
+# # Set image type based on build argument
+# export IMAGETYPE=cu116
+# export DOCKER_TAG=$IMAGETYPE
+# docker buildx build \
+# --push \
+# -t jcoffi/cluster-anywhere:$DOCKER_TAG \
+# --ulimit 'memlock=-1' \
+# --build-arg IMAGETYPE=$DOCKER_TAG .
 
-docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
-&& docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG
-docker buildx prune --force --filter=until=10m
+# docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
+# && docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG
+# docker buildx prune --force --filter=until=10m
 
 
 # Set image type based on build argument
