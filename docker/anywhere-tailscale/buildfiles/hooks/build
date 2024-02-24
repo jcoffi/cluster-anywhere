@@ -29,8 +29,6 @@ export IMAGETYPE=gpu
 # This is done for reverse compatibiilty during testing.
 export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
---cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
---cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
@@ -44,8 +42,6 @@ docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-a
 export IMAGETYPE=cu118
 export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
---cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
---cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
@@ -61,8 +57,6 @@ export IMAGETYPE=cpu
 # This is done for reverse compatibiilty during testing.
 export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
---cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
---cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
@@ -76,8 +70,6 @@ docker buildx rm --all-inactive --force
 export IMAGETYPE=cu112
 export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
---cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
---cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
@@ -91,8 +83,6 @@ docker buildx rm --all-inactive --force
 export IMAGETYPE=cu116
 export DOCKER_TAG=$IMAGETYPE
 docker buildx build \
---cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
---cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
@@ -100,7 +90,6 @@ docker buildx build \
 
 docker tag jcoffi/cluster-anywhere:$DOCKER_TAG us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG \
 && docker push us-west4-docker.pkg.dev/cluster-anywhere/jcoffi/cluster-anywhere:$DOCKER_TAG
-docker buildx rm --all-inactive --force
 
 # # Set image type based on build argument
 # docker buildx build \
