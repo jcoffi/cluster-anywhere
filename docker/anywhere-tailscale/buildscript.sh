@@ -7,7 +7,7 @@ if [ -z "$DOCKER_PASSWORD" ]; then
 fi
 
 # Variables
-builddir="/home/tripps/build"
+builddir="/home/$USER/build"
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
 distro=${distribution//\./}
 
