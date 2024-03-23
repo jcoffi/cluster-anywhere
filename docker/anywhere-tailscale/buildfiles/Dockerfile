@@ -77,7 +77,6 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         modin[ray] \
         crate[sqlalchemy] \
         'distributed' \
-        'ray[all]' \
         scikit-learn-intelex \
         sympy \
         numpy \
@@ -96,7 +95,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         ipywidgets \
         boto3
 
-
+        #'ray[all]' \
         # && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
         # && sudo chmod +x /home/ray/run_tests.sh \
 
