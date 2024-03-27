@@ -86,7 +86,7 @@ curl -o ${LOCAL_KEY_PATH} ${KEY_STORAGE_URL}
 # Set the environment variable for Google Application Credentials
 export GOOGLE_APPLICATION_CREDENTIALS=${LOCAL_KEY_PATH}
 
-conda config --set default_threads $(nproc)
+
 
 check_cloud_provider() {
 
