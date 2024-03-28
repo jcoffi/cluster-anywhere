@@ -365,7 +365,7 @@ if [ "$NODETYPE" = "head" ]; then
 
   sudo tailscale funnel --bg --https 443 http://localhost:8265
   #sudo tailscale funnel --bg --tcp 8443 tcp://localhost:6379
-  sudo tailscale funnel --bg --tcp 5432 tcp://localhost:5432
+  #sudo tailscale funnel --bg --tcp 5432 tcp://localhost:5432
 
 
 # elif [ "$LOCATION" = "Vast" ]; then
@@ -400,7 +400,7 @@ elif [ "$NODETYPE" = "user" ]; then
 
   sudo tailscale funnel --bg --https 8443 https+insecure://localhost:8888
   sudo tailscale funnel --bg --https 443 https+insecure://localhost:4200
-  sudo tailscale funnel --bg --tcp 5432 tcp://localhost:5432
+  #sudo tailscale funnel --bg --tcp 5432 tcp://localhost:5432
 
   ray start --address='nexus.chimp-beta.ts.net:6379' --num-cpus=1 --num-gpus=1 --disable-usage-stats --dashboard-host 0.0.0.0 --node-ip-address $HOSTNAME.chimp-beta.ts.net --node-name $HOSTNAME.chimp-beta.ts.net
 
@@ -408,9 +408,9 @@ elif [ "$NODETYPE" = "user" ]; then
     sudo chgrp -R crate /files
     sudo chmod -R 777 /files
   fi
-  #conda install -c conda-forge -y jupyterlab nano && jupyter-lab --allow-root --ServerApp.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --preferred-dir /files &
+
   conda config --set default_threads $(nproc)
-  conda install -c conda-forge -y ipympl jupyterlab libta-lib nodejs nano && jupyter-lab --allow-root --IdentityProvider.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt --keyfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key --preferred-dir /files &
+  conda install -c conda-forge -y ipympl jupyterlab libta-lib nodejs nano ta-lib && jupyter-lab --allow-root --IdentityProvider.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt --keyfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key --preferred-dir /files &
   #look into using /lab or /admin or whatever so that they can live on the same port (on the head node perhaps)
   #but we can't move it to the head node right now because the only other port is 10001 and that conflicts with ray
   #eventually we can make the below lines available to all nodetypes for cluster health checks. but first we need to configured the instances to connect was a password when connecting remotely.
