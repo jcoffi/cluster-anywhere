@@ -86,6 +86,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         fredapi \
         'alpaca_py==0.14.0' \
         tiingo \
+        eodhd \
         yfinance \
         openai \
         google-api-python-client \
