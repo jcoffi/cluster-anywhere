@@ -16,7 +16,7 @@ if [ "$LOCATION" = "AWS" ]; then
     fi
 fi
 
-Check for GCP Spot Instance Termination
+# Check for GCP Spot Instance Termination
 if [ "$LOCATION" = "GCP" ]; then
    result=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/maintenance-event -H "Metadata-Flavor: Google")
    if [ "$result" != "NONE" ]; then
