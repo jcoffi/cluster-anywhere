@@ -56,7 +56,6 @@ class GcsClientTest : public ::testing::TestWithParam<bool> {
   void SetUp() override {
     if (!no_redis_) {
       config_.redis_address = "127.0.0.1";
-      config_.enable_sharding_conn = false;
       config_.redis_port = TEST_REDIS_SERVER_PORTS.front();
     } else {
       config_.redis_port = 0;
@@ -67,7 +66,6 @@ class GcsClientTest : public ::testing::TestWithParam<bool> {
     config_.grpc_server_name = "MockedGcsServer";
     config_.grpc_server_thread_num = 1;
     config_.node_ip_address = "127.0.0.1";
-    config_.enable_sharding_conn = false;
 
     // Tests legacy code paths. The poller and broadcaster have their own dedicated unit
     // test targets.
@@ -353,23 +351,6 @@ class GcsClientTest : public ::testing::TestWithParam<bool> {
     RAY_CHECK_OK(gcs_client_->Nodes().AsyncDrainNode(
         node_id, [&promise](Status status) { promise.set_value(status.ok()); }));
     return WaitReady(promise.get_future(), timeout_ms_);
-  }
-
-  gcs::NodeResourceInfoAccessor::ResourceMap GetResources(const NodeID &node_id) {
-    gcs::NodeResourceInfoAccessor::ResourceMap resource_map;
-    std::promise<bool> promise;
-    RAY_CHECK_OK(gcs_client_->NodeResources().AsyncGetResources(
-        node_id,
-        [&resource_map, &promise](
-            Status status,
-            const boost::optional<gcs::NodeResourceInfoAccessor::ResourceMap> &result) {
-          if (result) {
-            resource_map.insert(result->begin(), result->end());
-          }
-          promise.set_value(true);
-        }));
-    EXPECT_TRUE(WaitReady(promise.get_future(), timeout_ms_));
-    return resource_map;
   }
 
   std::vector<rpc::AvailableResources> GetAllAvailableResources() {
@@ -970,6 +951,30 @@ TEST_P(GcsClientTest, TestEvictExpiredDeadNodes) {
   auto nodes = GetNodeInfoList();
   for (const auto &node : nodes) {
     EXPECT_TRUE(node_ids.contains(NodeID::FromBinary(node.node_id())));
+  }
+}
+
+TEST_P(GcsClientTest, TestRegisterHeadNode) {
+  // Test at most only one head node is alive in GCS server
+  auto head_node_info = Mocker::GenNodeInfo(1);
+  head_node_info->set_is_head_node(true);
+  ASSERT_TRUE(RegisterNode(*head_node_info));
+
+  auto worker_node_info = Mocker::GenNodeInfo(1);
+  ASSERT_TRUE(RegisterNode(*worker_node_info));
+
+  auto head_node_info_2 = Mocker::GenNodeInfo(1);
+  head_node_info_2->set_is_head_node(true);
+  ASSERT_TRUE(RegisterNode(*head_node_info_2));
+
+  // check only one head node alive
+  auto nodes = GetNodeInfoList();
+  for (auto &node : nodes) {
+    if (node.node_id() != head_node_info->node_id()) {
+      ASSERT_TRUE(node.state() == rpc::GcsNodeInfo::ALIVE);
+    } else {
+      ASSERT_TRUE(node.state() == rpc::GcsNodeInfo::DEAD);
+    }
   }
 }
 

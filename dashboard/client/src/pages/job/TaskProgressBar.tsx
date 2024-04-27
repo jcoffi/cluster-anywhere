@@ -1,11 +1,12 @@
-import { Theme } from "@material-ui/core";
-import { useTheme } from "@material-ui/styles";
+import { Theme } from "@mui/material";
+import { useTheme } from "@mui/styles";
 import React from "react";
 import { ProgressBar, ProgressBarSegment } from "../../components/ProgressBar";
 import { TaskProgress } from "../../type/job";
 
 export type TaskProgressBarProps = TaskProgress & {
   showAsComplete?: boolean;
+  showLegend?: boolean;
   showTooltip?: boolean;
   expanded?: boolean;
   onClick?: () => void;
@@ -23,6 +24,7 @@ export const TaskProgressBar = ({
   numCancelled = 0,
   numUnknown = 0,
   showAsComplete = false,
+  showLegend = true,
   showTooltip = true,
   expanded,
   onClick,
@@ -71,6 +73,7 @@ export const TaskProgressBar = ({
     <ProgressBar
       progress={progress}
       expanded={expanded}
+      showLegend={showLegend}
       showTooltip={showTooltip}
       onClick={onClick}
       showTotalProgress={numFinished}

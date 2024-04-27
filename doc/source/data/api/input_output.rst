@@ -64,6 +64,15 @@ Text
 
    read_text
 
+Avro
+----
+
+.. autosummary::
+   :nosignatures:
+   :toctree: doc/
+
+   read_avro
+
 Images
 ------
 
@@ -256,7 +265,6 @@ Datasource API
    read_datasource
    Datasource
    ReadTask
-   datasource.Reader
    datasource.FilenameProvider
 
 Datasink API
@@ -268,8 +276,9 @@ Datasink API
 
    Dataset.write_datasink
    Datasink
-   RowBasedFileDatasink
-   BlockBasedFileDatasink
+   datasource.RowBasedFileDatasink
+   datasource.BlockBasedFileDatasink
+   datasource.FileBasedDatasource
 
 Partitioning API
 ----------------
@@ -282,7 +291,6 @@ Partitioning API
    datasource.PartitionStyle
    datasource.PathPartitionParser
    datasource.PathPartitionFilter
-   datasource.FileExtensionFilter
 
 .. _metadata_provider:
 
@@ -300,16 +308,4 @@ MetadataProvider API
    datasource.DefaultParquetMetadataProvider
    datasource.FastFileMetadataProvider
 
-
-.. _block_write_path_provider:
-
-BlockWritePathProvider API
---------------------------
-
-.. autosummary::
-   :nosignatures:
-   :toctree: doc/
-
-   datasource.BlockWritePathProvider
-   datasource.DefaultBlockWritePathProvider
    

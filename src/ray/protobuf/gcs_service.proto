@@ -217,15 +217,6 @@ message GetInternalConfigReply {
   string config = 2;
 }
 
-message GetResourcesRequest {
-  bytes node_id = 1;
-}
-
-message GetResourcesReply {
-  GcsStatus status = 1;
-  map<string, ResourceTableData> resources = 2;
-}
-
 message DeleteResourcesReply {
   GcsStatus status = 1;
 }
@@ -289,6 +280,17 @@ message UpdateWorkerDebuggerPortReply {
   GcsStatus status = 1;
 }
 
+message UpdateWorkerNumPausedThreadsRequest {
+  // ID of this worker.
+  bytes worker_id = 1;
+  // The delta of the number of paused threads.
+  int32 num_paused_threads_delta = 2;
+}
+
+message UpdateWorkerNumPausedThreadsReply {
+  GcsStatus status = 1;
+}
+
 // Service for worker info access.
 service WorkerInfoGcsService {
   // Report a worker failure to GCS Service.
@@ -302,6 +304,9 @@ service WorkerInfoGcsService {
   // Update worker debugger port in the GCS Service.
   rpc UpdateWorkerDebuggerPort(UpdateWorkerDebuggerPortRequest)
       returns (UpdateWorkerDebuggerPortReply);
+  // Update the worker number of paused threads in the GCS Service.
+  rpc UpdateWorkerNumPausedThreads(UpdateWorkerNumPausedThreadsRequest)
+      returns (UpdateWorkerNumPausedThreadsReply);
 }
 
 message CreateActorRequest {
@@ -551,12 +556,12 @@ message GcsPublishReply {
 message GcsSubscriberPollRequest {
   /// The id of the subscriber.
   bytes subscriber_id = 1;
-  /// The max squence_id that has been processed by the subscriber. The Publisher
+  /// The max sequence_id that has been processed by the subscriber. The Publisher
   /// will drop queued messages with smaller sequence_id for this subscriber.
   int64 max_processed_sequence_id = 2;
   /// The expected publisher_id. The publisher will ignore the
   /// max_processed_sequence_id if the publisher_id doesn't match.
-  /// This usuall happens when gcs failover.
+  /// This usually happens when gcs failover.
   bytes publisher_id = 3;
 }
 
@@ -585,6 +590,12 @@ message GcsSubscriberCommandBatchReply {
   GcsStatus status = 100;
 }
 
+message GcsUnregisterSubscriberRequest {
+  bytes subscriber_id = 1;
+}
+
+message GcsUnregisterSubscriberReply {}
+
 /// This supports subscribing updates from GCS with long poll, and registering /
 /// de-registering subscribers.
 service InternalPubSubGcsService {
@@ -598,6 +609,10 @@ service InternalPubSubGcsService {
   /// A batch of subscribe / unsubscribe requests sent by the subscriber.
   rpc GcsSubscriberCommandBatch(GcsSubscriberCommandBatchRequest)
       returns (GcsSubscriberCommandBatchReply);
+  /// Unregister a subscriber from GCS, removing all subscriptions as well as the
+  /// subscriber itself.
+  rpc GcsUnregisterSubscriber(GcsUnregisterSubscriberRequest)
+      returns (GcsUnregisterSubscriberReply);
 }
 
 message GetAllResourceUsageRequest {}
@@ -613,15 +628,19 @@ message GetAllResourceUsageReply {
 
 message GetDrainingNodesRequest {}
 
+message DrainingNode {
+  bytes node_id = 1;
+  /// Timestamp when the draining node will be force killed.
+  int64 draining_deadline_timestamp_ms = 2;
+}
+
 message GetDrainingNodesReply {
   GcsStatus status = 1;
-  repeated bytes node_ids = 2;
+  repeated DrainingNode draining_nodes = 2;
 }
 
 // Service for node resource info access.
 service NodeResourceInfoGcsService {
-  // Get node's resources from GCS Service.
-  rpc GetResources(GetResourcesRequest) returns (GetResourcesReply);
   // Get available resources of all nodes.
   rpc GetAllAvailableResources(GetAllAvailableResourcesRequest)
       returns (GetAllAvailableResourcesReply);
@@ -646,7 +665,7 @@ service NodeInfoGcsService {
   // When the RPC is replied,
   // - It is guaranteed that the requested nodes are going to be drained eventually.
   // - It is guaranteed that GCS has persisted the draining states.
-  // - It is **not** guarateed that nodes receive the drain requests from GCS.
+  // - It is **not** guaranteed that nodes receive the drain requests from GCS.
   rpc DrainNode(DrainNodeRequest) returns (DrainNodeReply);
   // Get information of all nodes from GCS Service.
   rpc GetAllNodeInfo(GetAllNodeInfoRequest) returns (GetAllNodeInfoReply);
@@ -697,6 +716,13 @@ message GetTaskEventsReply {
   int32 num_profile_task_events_dropped = 3;
   // Number of status events dropped at GCS and worker for the queried events.
   int32 num_status_task_events_dropped = 4;
+  // Total number of task events in the storage before truncation and source side
+  // filtering.
+  int64 num_total_stored = 5;
+  // Number of task events filtered on the source.
+  int64 num_filtered_on_gcs = 6;
+  // Number of task events truncated due to the limit.
+  int64 num_truncated = 7;
 }
 
 // Service for task info access.
