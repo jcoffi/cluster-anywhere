@@ -84,7 +84,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         datetime \
         geojson \
         fredapi \
-        'alpaca_py==0.14.0' \
+        'alpaca_py==0.20.02' \
         tiingo \
         eodhd \
         yfinance \
