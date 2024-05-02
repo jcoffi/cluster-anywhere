@@ -251,11 +251,11 @@ fi
 
 
 if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
-    sudo tailscaled -port 41641 -statedir $TS_STATEDIR 2>/dev/null&
+    sudo tailscaled -port 41641 -statedir $TS_STATEDIR & # 2>/dev/null&
     sudo tailscale up --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
 else
     echo "tun doesn't exist"
-    sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 2>/dev/null&
+    sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 & # 2>/dev/null&
     alldevicesips=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq -r '.devices[].addresses[]'| awk '/:/ {print "["$0"]"; next} 1' | paste -sd, -)
     export alldevicesips=$alldevicesips
     discovery_seed_hosts="-Cdiscovery.seed_hosts=$alldevicesips \\"
