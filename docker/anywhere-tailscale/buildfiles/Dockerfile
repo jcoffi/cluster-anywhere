@@ -80,6 +80,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         scikit-learn-intelex \
         sympy \
         numpy \
+        numba \
         statsmodels \
         datetime \
         geojson \
@@ -87,7 +88,6 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         'alpaca_py==0.20.02' \
         tiingo \
         eodhd \
-        numba \
         openai \
         google-api-python-client \
         gcsfs \
