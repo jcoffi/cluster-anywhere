@@ -28,6 +28,7 @@ python3 -m http.server 80 --directory /tmp --bind 0.0.0.0 > output.log 2>&1 &
 sudo mkdir -pv $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR
 sudo chgrp -R crate /crate
 sudo chgrp -R crate /data
+sudo chown -R 1000 $CRATE_GC_LOG_DIR $CRATE_HEAP_DUMP_PATH $TS_STATEDIR
 sudo chmod -R 774 /data
 sudo chmod -R 774 $TS_STATEDIR
 
