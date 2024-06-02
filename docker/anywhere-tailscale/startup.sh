@@ -431,7 +431,7 @@ fi
 
 sudo sudo apt install -y --no-install-recommends davfs2
 sudo mkdir -pv /data/tailscale/drive
-echo -e '\n\n' | sudo mount -t davfs http://100.100.100.100:8080/jcoffi.github/ /data/tailscale/drive -o uid='1000',gid='crate'
+echo -e '\n\n' | sudo mount -t davfs http://100.100.100.100:8080/jcoffi.github/ /data/tailscale/drive -o uid=1000,gid=crate,SUID=1000
 
 
 
