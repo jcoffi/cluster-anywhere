@@ -42,6 +42,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
 && curl -fsSLZ https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list \
 && sudo apt update \
 && sudo apt install -yq --no-install-recommends iptables nftables tailscale iproute2 procps inotify-tools davfs2 \
+&& echo -e 'yes' | sudo apt install -yq --no-install-recommends davfs2 \
 && sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
 && sudo apt clean \
