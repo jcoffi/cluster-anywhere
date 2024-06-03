@@ -21,7 +21,8 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         SQLALCHEMY_SILENCE_UBER_WARNING=1 \
         HOME=/home/ray \
         TS_STATEDIR="/data/tailscale" \
-        TS_ACCEPT_DNS=true
+        TS_ACCEPT_DNS=true \
+        DEBIAN_FRONTEND=noninteractive
 ARG TS_AUTHKEY
 ARG TSAPIKEY
 ARG OPENAPI_KEY
@@ -36,12 +37,11 @@ ARG AWS_SECRET_ACCESS_KEY
 VOLUME /data
 
 RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
-&& sudo apt install -y --no-install-recommends ca-certificates curl bc jq lsb-release debconf-utils \
+&& sudo apt install -yq --no-install-recommends ca-certificates curl bc jq lsb-release \
 && curl -fsSLZ https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null \
 && curl -fsSLZ https://pkgs.tailscale.com/stable/ubuntu/focal.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list \
 && sudo apt update \
-&& echo "davfs2 davfs2/suid_file boolean true" | debconf-set-selections \
-&& sudo apt install -y --no-install-recommends iptables nftables tailscale iproute2 procps inotify-tools davfs2 \
+&& sudo apt install -yq --no-install-recommends iptables nftables tailscale iproute2 procps inotify-tools davfs2 \
 && sudo mkdir -p $CRATE_HEAP_DUMP_PATH $CRATE_GC_LOG_DIR $TS_STATEDIR \
 && sudo mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale \
 && sudo apt clean \
