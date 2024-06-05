@@ -443,6 +443,7 @@ echo -e '\n\n' | sudo mount -t davfs http://100.100.100.100:8080/jcoffi.github/ 
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 function term_handler(){
+    davfs2_pid=$(pgrep -f davfs)
     crate_pid=$(pgrep -f crate)
     if [ $(tailscale status -json | jq -r .BackendState | grep -q "Running") ]; then
       if [ $crate_pid ]; then
@@ -464,6 +465,10 @@ function term_handler(){
       if [ $crate_pid ]; then
           sudo kill -TERM $crate_pid
       fi
+      if [ $davfs2_pid ]; then
+          sudo umount /data/tailscale/drive
+          sudo kill -TERM $davfs2_pid
+      fi
     fi
     exit 0
 }
@@ -482,9 +487,15 @@ function error_handler(){
     sudo tailscale down
     sudo tailscaled -cleanup
     crate_pid=$(pgrep -f crate)
+    davfs2_pid=$(pgrep -f davfs)
     sudo kill -TERM 1
     if [ $crate_pid ]; then
         sudo kill -TERM $crate_pid
+    fi
+
+    if [ $davfs2_pid ]; then
+        sudo umount /data/tailscale/drive
+        sudo kill -TERM $davfs2_pid
     fi
     exit 1
 }
