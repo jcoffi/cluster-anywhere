@@ -411,6 +411,7 @@ elif [ "$NODETYPE" = "user" ]; then
   fi
 
   conda config --set default_threads $(nproc)
+  conda update --solver=classic -n base -y conda conda-libmamba-solver
   conda install -c conda-forge -y ipympl jupyterlab libta-lib nodejs nano ta-lib && jupyter-lab --allow-root --IdentityProvider.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt --keyfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key --preferred-dir /files &
   #look into using /lab or /admin or whatever so that they can live on the same port (on the head node perhaps)
   #but we can't move it to the head node right now because the only other port is 10001 and that conflicts with ray
@@ -489,14 +490,16 @@ function error_handler(){
     crate_pid=$(pgrep -f crate)
     davfs2_pid=$(pgrep -f davfs)
     sudo kill -TERM 1
-    if [ $crate_pid ]; then
-        sudo kill -TERM $crate_pid
-    fi
 
     if [ $davfs2_pid ]; then
         sudo umount /data/tailscale/drive
         sudo kill -TERM $davfs2_pid
     fi
+
+    if [ $crate_pid ]; then
+        sudo kill -TERM $crate_pid
+    fi
+
     exit 1
 }
 
