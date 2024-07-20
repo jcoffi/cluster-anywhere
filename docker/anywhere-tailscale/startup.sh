@@ -454,7 +454,7 @@ function term_handler(){
 
       if [ $(ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE") ]; then
           echo "***Stopping Ray***"
-          ray stop -g 30
+          ray stop -g 20
       fi
 
 
@@ -477,7 +477,7 @@ function term_handler(){
 function error_handler(){
     echo "***Error***"
     echo "***Stopping Ray***"
-    ray stop -g 30
+    ray stop -g 20
     #echo "Running Cluster Election"
     #/usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "SET GLOBAL TRANSIENT 'cluster.routing.allocation.enable' = 'new_primaries';" &
     echo "Running Decommission"
