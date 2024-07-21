@@ -87,7 +87,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         datetime \
         geojson \
         fredapi \
-        'alpaca_py==0.20.02' \
+        'alpaca_py>=0.20.02' \
         tiingo \
         eodhd \
         openai \

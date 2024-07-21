@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: your-pod-name
+spec:
+  volumes:
+    - name: juicefs-volume
+      # JuiceFS volume config
+  containers:
+    - name: cratedb
+      image: crate/crate:latest
+      ports:
+        - containerPort: 4200
+    - name: rayio
+      image: rayproject/ray:latest
+      # Ray specific settings
+
+    - name: juicefs
+      image: juicefs/juicefs:latest
+      volumeMounts:
+        - name: juicefs-volume
+          mountPath: /data
+      # JuiceFS specific settings
+
+    - name: tailscale
+      image: tailscale/tailscale:latest
+      securityContext:
+        privileged: true
+      # Tailscale specific settings
