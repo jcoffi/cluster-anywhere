@@ -48,7 +48,7 @@ if [ "$LOCATION" != "Vast" ]; then
 fi
 
 # Write status to a file
-# also write a bit of additional informationffor diagnostic purposes.
+# also write a bit of additional information for diagnostic purposes.
 if [ $FAIL -eq 1 ]; then
     echo "unhealthy" | sudo tee /tmp/health_status.html
     echo "Location: $LOCATION" | sudo tee -a /tmp/health_status.html
