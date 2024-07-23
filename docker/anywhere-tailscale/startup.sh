@@ -494,6 +494,7 @@ function error_handler(){
     if [ $davfs2_pid ]; then
         sudo umount /data/tailscale/drive
         sudo kill -TERM $davfs2_pid
+        sudo rm /var/run/mount.davfs/data-tailscale-drive.pid
     fi
 
     if [ $crate_pid ]; then
