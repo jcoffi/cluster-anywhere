@@ -20,6 +20,8 @@ export IMAGETYPE=$DOCKER_TAG
 
 
 docker buildx build \
+--cache-to type=registry,ref=jcoffi/cluster-anywhere:cache \
+--cache-from type=registry,ref=jcoffi/cluster-anywhere:cache \
 --push \
 -t jcoffi/cluster-anywhere:$DOCKER_TAG \
 --ulimit 'memlock=-1' \
