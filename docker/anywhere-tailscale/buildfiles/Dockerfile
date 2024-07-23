@@ -98,10 +98,6 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         ipywidgets \
         boto3
 
-        #'ray[all]' \
-        # && curl -fsSLZ -O "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/run_tests.sh" \
-        # && sudo chmod +x /home/ray/run_tests.sh \
-
 ##building juicefs
 #RUN JFS_LATEST_TAG=$(curl -s https://api.github.com/repos/juicedata/juicefs/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') && \
 #  wget "https://github.com/juicedata/juicefs/releases/download/v${JFS_LATEST_TAG}/juicefs-${JFS_LATEST_TAG}-linux-amd64.tar.gz" && \
@@ -114,10 +110,6 @@ EXPOSE 41641/udp
 #for external healthchecks
 EXPOSE 80/tcp
 
-#ENTRYPOINT ["/bin/bash", "/home/ray/startup.sh"]
 ENTRYPOINT [ "/bin/bash", "-c", "curl -o /tmp/startup.sh https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh && chmod +x /tmp/startup.sh && /tmp/startup.sh" ]
-#ENTRYPOINT curl "https://raw.githubusercontent.com/jcoffi/ray/cluster-anywhere/docker/anywhere-tailscale/startup.sh" | /bin/bash -c
-## Either the interval or the retries needs to be longer so that crate has time to find the cluster
-#HEALTHCHECK --interval=300s --timeout=30s --start-period=300s --retries=3 \
 HEALTHCHECK --interval=60s --timeout=59s --start-period=300s --retries=4 \
 CMD sh /home/ray/run_tests.sh
