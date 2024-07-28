@@ -446,31 +446,31 @@ echo -e '\n\n' | sudo mount -t davfs http://100.100.100.100:8080/jcoffi.github/ 
 function term_handler(){
     davfs2_pid=$(pgrep -f davfs)
     crate_pid=$(pgrep -f crate)
-    if [ $(tailscale status -json | jq -r .BackendState | grep -q "Running") ]; then
-      if [ $crate_pid ]; then
-        echo "Running Cluster Decommission"
-        /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
-      fi
-
-      if [ $(ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE") ]; then
-          echo "***Stopping Ray***"
-          ray stop -g 20
-      fi
-
-
-      echo "tailscale logout"
-      sudo tailscale logout
-      sudo tailscale down
-      sudo tailscaled -cleanup
-
-      if [ $crate_pid ]; then
-          sudo kill -TERM $crate_pid
-      fi
-      if [ $davfs2_pid ]; then
-          sudo umount /data/tailscale/drive
-          sudo kill -TERM $davfs2_pid
-      fi
+    #if [ $(tailscale status -json | jq -r .BackendState | grep -q "Running") ]; then
+    if [ $crate_pid ]; then
+      echo "Running Cluster Decommission"
+      /usr/local/bin/crash --hosts ${CLUSTERHOSTS} -c "ALTER CLUSTER DECOMMISSION '"$HOSTNAME"';" &
     fi
+
+    if [ $(ray list nodes -f NODE_NAME="${HOSTNAME}.chimp-beta.ts.net" -f STATE=ALIVE | grep -q "ALIVE") ]; then
+        echo "***Stopping Ray***"
+        ray stop -g 20
+    fi
+
+
+    echo "tailscale logout"
+    sudo tailscale logout
+    sudo tailscale down
+    sudo tailscaled -cleanup
+
+    if [ $crate_pid ]; then
+        sudo kill -TERM $crate_pid
+    fi
+    if [ $davfs2_pid ]; then
+        sudo umount /data/tailscale/drive
+        sudo kill -TERM $davfs2_pid
+    fi
+    #fi
     exit 0
 }
 
@@ -494,7 +494,7 @@ function error_handler(){
     if [ $davfs2_pid ]; then
         sudo umount /data/tailscale/drive
         sudo kill -TERM $davfs2_pid
-        sudo rm /var/run/mount.davfs/data-tailscale-drive.pid
+        sudo rm -f /var/run/mount.davfs/data-tailscale-drive.pid
     fi
 
     if [ $crate_pid ]; then
