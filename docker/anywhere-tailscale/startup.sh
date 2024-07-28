@@ -431,6 +431,7 @@ else
 fi
 
 #sudo sudo apt install -yq --no-install-recommends davfs2
+sudo rm -f /var/run/mount.davfs/data-tailscale-drive.pid
 sudo mkdir -pv /data/tailscale/drive
 echo -e '\n\n' | sudo mount -t davfs http://100.100.100.100:8080/jcoffi.github/ /data/tailscale/drive -o uid=1000,gid=crate,suid,user=ray,username=ray
 
