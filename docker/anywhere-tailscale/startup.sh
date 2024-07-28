@@ -469,6 +469,8 @@ function term_handler(){
     if [ $davfs2_pid ]; then
         sudo umount /data/tailscale/drive
         sudo kill -TERM $davfs2_pid
+    else
+        sudo rm -f /var/run/mount.davfs/data-tailscale-drive.pid
     fi
     #fi
     exit 0
@@ -494,6 +496,7 @@ function error_handler(){
     if [ $davfs2_pid ]; then
         sudo umount /data/tailscale/drive
         sudo kill -TERM $davfs2_pid
+    else
         sudo rm -f /var/run/mount.davfs/data-tailscale-drive.pid
     fi
 
