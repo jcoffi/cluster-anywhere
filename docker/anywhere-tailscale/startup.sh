@@ -399,7 +399,7 @@ elif [ "$NODETYPE" = "user" ]; then
 
   #todo: https://docs.ray.io/en/latest/ray-core/using-ray-with-jupyter.html#setting-up-notebook
 
-  sudo tailscale funnel --bg --https 443 https+insecure://localhost:8888
+  sudo tailscale funnel --bg https+insecure://localhost:8888
   #sudo tailscale funnel --bg --https 443 https+insecure://localhost:4200
   #sudo tailscale funnel --bg --tcp 5432 tcp://localhost:5432
 
