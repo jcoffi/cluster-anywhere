@@ -410,10 +410,10 @@ elif [ "$NODETYPE" = "user" ]; then
     sudo chmod -R 777 /files
   fi
 
+  conda config --add channels defaults
   conda config --set default_threads $(nproc)
-  conda update --solver=classic  -y -c conda-forge conda
-  conda install --solver=classic -y -c conda-forge conda conda-libmamba-solver
-  conda install --solver=classic -c conda-forge -y ipympl jupyterlab libta-lib nodejs nano ta-lib
+  conda install --solver=classic -y conda-libmamba-solver
+  conda install -y ipympl jupyterlab libta-lib nodejs nano ta-lib
   jupyter-lab --allow-root --IdentityProvider.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt --keyfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key --preferred-dir /files &
   #look into using /lab or /admin or whatever so that they can live on the same port (on the head node perhaps)
   #but we can't move it to the head node right now because the only other port is 10001 and that conflicts with ray
