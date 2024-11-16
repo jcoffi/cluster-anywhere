@@ -77,7 +77,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         pandas \
         pandas_market_calendars \
         modin[ray] \
-        crate[sqlalchemy] \
+        sqlalchemy-cratedb \
         'distributed' \
         scikit-learn-intelex \
         sympy \
