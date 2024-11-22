@@ -79,7 +79,6 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         modin[ray] \
         sqlalchemy-cratedb \
         'distributed' \
-        scikit-learn-intelex \
         sympy \
         numpy \
         numba \
@@ -97,6 +96,8 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         smart_open \
         ipywidgets \
         boto3
+
+        #scikit-learn-intelex \
 
 ##building juicefs
 #RUN JFS_LATEST_TAG=$(curl -s https://api.github.com/repos/juicedata/juicefs/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') && \
