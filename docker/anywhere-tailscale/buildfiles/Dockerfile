@@ -81,7 +81,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         'distributed' \
         sympy \
         scikit-learn-intelex \
-        'numpy<=2.0.0' \
+        'numpy<2.0.0' \
         numba \
         statsmodels \
         datetime \
