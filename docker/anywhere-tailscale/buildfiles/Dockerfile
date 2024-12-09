@@ -80,7 +80,6 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         sqlalchemy-cratedb \
         'distributed' \
         sympy \
-        scikit-learn-intelex \
         scikit-learn \
         numba \
         statsmodels \
