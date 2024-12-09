@@ -82,7 +82,6 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         sympy \
         scipy>=1.13 \
         scikit-learn \
-        numba \
         statsmodels \
         datetime \
         geojson \
