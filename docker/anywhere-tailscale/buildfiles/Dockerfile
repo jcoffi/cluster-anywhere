@@ -80,6 +80,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         sqlalchemy-cratedb \
         'distributed' \
         sympy \
+        'numpy<1.28.0' \
         scikit-learn \
         numba \
         statsmodels \
@@ -97,7 +98,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         ipywidgets \
         boto3
 
-
+# Need to hold back numpy due to scipy version constraint
 
 ##building juicefs
 #RUN JFS_LATEST_TAG=$(curl -s https://api.github.com/repos/juicedata/juicefs/releases/latest | grep 'tag_name' | cut -d '"' -f 4 | tr -d 'v') && \
