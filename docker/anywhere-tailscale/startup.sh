@@ -37,7 +37,7 @@ IPADDRESS=$(curl -s http://ifconfig.me/ip)
 export IPADDRESS=$IPADDRESS
 
 
-echo "export NUMEXPR_MAX_THREADS='$(nproc)'" | sudo tee -a ~/.bashrc
+#echo "export NUMEXPR_MAX_THREADS='$(nproc)'" | sudo tee -a ~/.bashrc
 echo "export MAKEFLAGS='-j$(nproc)'" | sudo tee -a ~/.bashrc
 echo "export CPU_COUNT='$(nproc)'" | sudo tee -a ~/.bashrc
 
