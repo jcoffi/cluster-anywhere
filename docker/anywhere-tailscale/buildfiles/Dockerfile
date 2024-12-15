@@ -80,7 +80,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         sqlalchemy-cratedb \
         'distributed' \
         sympy \
-        scipy>=1.13 \
+        'scipy>=1.13' \
         scikit-learn \
         statsmodels \
         datetime \
