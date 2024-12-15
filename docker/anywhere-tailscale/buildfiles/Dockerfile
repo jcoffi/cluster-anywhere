@@ -22,7 +22,9 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         HOME=/home/ray \
         TS_STATEDIR="/data/tailscale" \
         TS_ACCEPT_DNS=true \
-        DEBIAN_FRONTEND=noninteractive
+        DEBIAN_FRONTEND=noninteractive \
+        IPv6=false \
+        DISABLE_IPV6=true
 ARG TS_AUTHKEY
 ARG TSAPIKEY
 ARG OPENAPI_KEY
