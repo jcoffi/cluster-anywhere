@@ -253,7 +253,7 @@ fi
 
 if [ -c /dev/net/tun ] || [ -c /dev/tun ]; then
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR 2>/dev/null&
-    sudo tailscale up --operator=ray --auth-key=$TS_AUTHKEY --accept-risk=all --accept-routes --ssh
+    sudo tailscale up --operator=ray --auth-key=$TS_AUTHKEY --accept-dns=true --accept-risk=all --accept-routes --ssh
 else
     echo "tun doesn't exist"
     sudo tailscaled -port 41641 -statedir $TS_STATEDIR -tun userspace-networking -state mem: -socks5-server=localhost:1055 -outbound-http-proxy-listen=localhost:1055 2>/dev/null&
@@ -413,7 +413,7 @@ elif [ "$NODETYPE" = "user" ]; then
   conda config --add channels defaults
   conda config --set default_threads $(nproc)
   conda install --solver=classic -y conda-libmamba-solver
-  conda install -y ipympl jupyterlab libta-lib nodejs nano ta-lib
+  conda install -y ipympl 'ipywidgets>=8' jupyterlab libta-lib nodejs nano ta-lib
   jupyter-lab --allow-root --IdentityProvider.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt --keyfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key --preferred-dir /files &
   #look into using /lab or /admin or whatever so that they can live on the same port (on the head node perhaps)
   #but we can't move it to the head node right now because the only other port is 10001 and that conflicts with ray
