@@ -17,11 +17,11 @@ fi
 #needed for the custom healthcheck until such time as I move over to k8s
 python3 -m http.server 80 --directory /tmp --bind 0.0.0.0 > output.log 2>&1 &
 
-#echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-#echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-#echo "net.ipv6.conf.lo.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
-#echo "vm.max_map_count = 262144" | sudo tee -a /etc/sysctl.conf
-#echo "vm.swappiness = 1" | sudo tee -a /etc/sysctl.conf
+echo "net.ipv6.conf.all.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
+echo "net.ipv6.conf.default.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
+echo "net.ipv6.conf.lo.disable_ipv6=1" | sudo tee -a /etc/sysctl.conf
+echo "vm.max_map_count = 262144" | sudo tee -a /etc/sysctl.conf
+# echo "vm.swappiness = 1" | sudo tee -a /etc/sysctl.conf
 
 # Make sure directories exist as they are not automatically created
 # This needs to happen at runtime, as the directory could be mounted.
