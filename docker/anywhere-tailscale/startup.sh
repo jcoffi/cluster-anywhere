@@ -410,7 +410,6 @@ elif [ "$NODETYPE" = "user" ]; then
     sudo chmod -R 777 /files
   fi
 
-  conda config --add channels defaults
   conda config --set default_threads $(nproc)
   conda install --solver=classic -y conda-libmamba-solver
   export JUPYTERLAB_SETTINGS_DIR='/data/.jupyter/lab/user-settings/'
