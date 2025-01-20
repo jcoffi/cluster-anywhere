@@ -80,7 +80,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
         pandas_market_calendars \
         modin[ray] \
         sqlalchemy-cratedb \
-        'distributed' \
+        'dask[distributed]' \
         sympy \
         'scipy>=1.13' \
         scikit-learn \
