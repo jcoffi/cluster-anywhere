@@ -196,13 +196,20 @@ fi
 export $(grep "CPU_VENDOR=" /etc/environment)
 
 #set -ae
+sudo chmod 774 -R $TS_STATEDIR/
+if [ -d "$TS_STATEDIR/certs/" ] && [ ! -e "/data/certs" ]; then
+  cd /data
+  sudo ln -s ./tailscale/certs/ certs
+  cd ~
+  # add in code to search and remove the machine name from tailscale if it already exists
+  deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
+  export deviceid=$deviceid
 
-# add in code to search and remove the machine name from tailscale if it already exists
-deviceid=$(curl -s -u "${TSAPIKEY}:" https://api.tailscale.com/api/v2/tailnet/jcoffi.github/devices | jq '.devices[] | select(.hostname=="'$HOSTNAME'")' | jq -r .id)
-export deviceid=$deviceid
+  echo "Deleting the device from Tailscale"
+  curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
+fi
 
-echo "Deleting the device from Tailscale"
-curl -s -X DELETE https://api.tailscale.com/api/v2/device/$deviceid -u $TSAPIKEY: || echo "Error deleting $deviceid"
+
 
 
 
@@ -328,14 +335,6 @@ while [ ! $tailscale_status = "Running" ]
         echo "Waiting for tailscale to start..."
         tailscale_status="$(tailscale status -json | jq -r .BackendState)"
 done
-
-sudo chmod 774 -R $TS_STATEDIR/
-if [ -d "$TS_STATEDIR/certs/" ] && [ ! -e "/data/certs" ]; then
-  cd /data
-  sudo ln -s ./tailscale/certs/ certs
-  cd ~
-  #sudo chmod 774 -R $TS_STATEDIR/certs/
-fi
 
 #current_node_master=$(crash --hosts ${CLUSTERHOSTS} -c "SELECT n.hostname FROM sys.cluster c JOIN sys.nodes n ON c.master_node = n.id;" --format raw | jq -r '.rows[] | .[0]')
 #export CURRENTNODEMASTER="$(crash --hosts ${CLUSTERHOSTS} -c "SELECT n.hostname FROM sys.cluster c JOIN sys.nodes n ON c.master_node = n.id;" --format raw | jq -r '.rows[] | .[0]')"
