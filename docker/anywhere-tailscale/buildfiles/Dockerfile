@@ -1,4 +1,6 @@
 ARG IMAGETYPE=cpu
+ARG TS_AUTHKEY
+ARG TSAPIKEY
 FROM rayproject/ray:latest-py310-$IMAGETYPE
 ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         MODIN_ENGINE=ray \
@@ -22,11 +24,12 @@ ENV __MODIN_AUTOIMPORT_PANDAS__=1 \
         HOME=/home/ray \
         TS_STATEDIR="/data/tailscale" \
         TS_ACCEPT_DNS=true \
+        TS_AUTHKEY=$TS_AUTHKEY \
         DEBIAN_FRONTEND=noninteractive \
         IPv6=false \
         DISABLE_IPV6=true
-ARG TS_AUTHKEY
-ARG TSAPIKEY
+
+
 ARG OPENAPI_KEY
 #        TSAPIKEY="" \
 ARG AWS_ACCESS_KEY_ID
@@ -74,7 +77,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
 && sudo mv crash_standalone_latest /usr/local/bin/crash \
 && sudo chmod +x /usr/local/bin/crash \
 && $HOME/anaconda3/bin/pip install --no-cache-dir -U pip \
-        cupy-cuda11x \
+        cupy-cuda12x \
         pyarrow-hotfix \
         pandas \
         pandas_market_calendars \
