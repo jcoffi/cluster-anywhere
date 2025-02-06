@@ -58,6 +58,10 @@ ray_object_store=$(echo "scale=0; $memory * 1024 * .40 / 1" | bc)
 export MAKEFLAGS="-j$(nproc)"
 #used by conda
 export CPU_COUNT="$(nproc)"
+#https://docs.cupy.dev/en/stable/reference/environment.html#:~:text=%5B%3A%5D%20%3D%20numpy_ndarray-,CUPY_ACCELERATORS,-%23
+export CUPY_ACCELERATORs=cub,cutensor,cutensornet
+
+
 
 #CRATE_HEAP_SIZE=$(echo $shm_memory | awk '{print int($0+0.5)}')
 export CRATE_HEAP_SIZE="${shm_memory}G"
