@@ -418,7 +418,6 @@ elif [ "$NODETYPE" = "user" ]; then
   conda config --set pip_interop_enabled true
   conda config --append channels rapidsai
   conda config --append channels conda-forge
-  conda install -y -c rapidsai cudf
   conda update -n base -c defaults
   export JUPYTERLAB_SETTINGS_DIR='/data/.jupyter/lab/user-settings/'
   export JUPYTERLAB_WORKSPACES_DIR='/data/.jupyter/lab/workspaces/'
