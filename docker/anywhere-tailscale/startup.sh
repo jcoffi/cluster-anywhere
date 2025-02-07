@@ -414,11 +414,11 @@ elif [ "$NODETYPE" = "user" ]; then
   fi
 
   conda config --set default_threads $(nproc)
-  conda config --set pip_interop_enabled true
   conda config --add channels rapidsai
   conda config --add channels defaults
   conda install --solver=classic -y conda-libmamba-solver
   conda update -n base -c defaults
+  conda config --set pip_interop_enabled true
   export JUPYTERLAB_SETTINGS_DIR='/data/.jupyter/lab/user-settings/'
   export JUPYTERLAB_WORKSPACES_DIR='/data/.jupyter/lab/workspaces/'
   conda install -y ipympl 'ipywidgets>=8' jupyterlab cudf libta-lib nodejs nano ta-lib
