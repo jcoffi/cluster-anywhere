@@ -418,7 +418,7 @@ elif [ "$NODETYPE" = "user" ]; then
   conda config --set fetch_threads $(nproc)
   conda install -n base --solver=classic -y conda-libmamba-solver
   conda config --set solver libmamba
-  conda config --set pip_interop_enabled true
+  #conda config --set pip_interop_enabled true
   #conda update -n base -c defaults
   conda config --append channels rapidsai
   conda config --append channels conda-forge
