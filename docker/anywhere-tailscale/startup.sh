@@ -422,7 +422,7 @@ elif [ "$NODETYPE" = "user" ]; then
   conda update -n base -c defaults
   export JUPYTERLAB_SETTINGS_DIR='/data/.jupyter/lab/user-settings/'
   export JUPYTERLAB_WORKSPACES_DIR='/data/.jupyter/lab/workspaces/'
-  conda install -y ipympl 'ipywidgets>=8' jupyterlab cudf libta-lib nodejs nano ta-lib
+  conda install --strict-channel-priority -y ipympl 'ipywidgets>=8' jupyterlab cudf libta-lib nodejs nano ta-lib
   jupyter-lab --allow-root --IdentityProvider.token='' --ServerApp.password='31337_hax0r' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt --keyfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key --preferred-dir /files &
   #look into using /lab or /admin or whatever so that they can live on the same port (on the head node perhaps)
   #but we can't move it to the head node right now because the only other port is 10001 and that conflicts with ray
