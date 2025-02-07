@@ -414,9 +414,9 @@ elif [ "$NODETYPE" = "user" ]; then
   fi
 
   conda config --set default_threads $(nproc)
-  conda config --add channels rapidsai
+  conda config --append channels rapidsai
+  conda config --append channels conda-forge
   conda install -y -c rapidsai cudf
-  conda config --add channels defaults
   conda install --solver=classic -y conda-libmamba-solver
   conda update -n base -c defaults
   conda config --set pip_interop_enabled true
