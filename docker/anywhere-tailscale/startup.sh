@@ -419,7 +419,7 @@ elif [ "$NODETYPE" = "user" ]; then
   conda install -n base --solver=classic -y conda-libmamba-solver
   conda config --set solver libmamba
   conda config --set pip_interop_enabled true
-  conda update -n base -c defaults
+  #conda update -n base -c defaults
   conda config --append channels rapidsai
   conda config --append channels conda-forge
   export JUPYTERLAB_SETTINGS_DIR='/data/.jupyter/lab/user-settings/'
