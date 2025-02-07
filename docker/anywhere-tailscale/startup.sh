@@ -415,7 +415,8 @@ elif [ "$NODETYPE" = "user" ]; then
 
   conda config --set default_threads $(nproc)
   conda config --set pip_interop_enabled true
-  conda config --add channels defaults rapidsai
+  conda config --add channels rapidsai
+  conda config --add channels defaults
   conda install --solver=classic -y conda-libmamba-solver
   conda update -n base -c defaults
   export JUPYTERLAB_SETTINGS_DIR='/data/.jupyter/lab/user-settings/'
