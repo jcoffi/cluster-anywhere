@@ -59,7 +59,7 @@ export MAKEFLAGS="-j$(nproc)"
 #used by conda
 export CPU_COUNT="$(nproc)"
 #https://docs.cupy.dev/en/stable/reference/environment.html#:~:text=%5B%3A%5D%20%3D%20numpy_ndarray-,CUPY_ACCELERATORS,-%23
-export CUPY_ACCELERATORs=cub,cutensor,cutensornet
+#export CUPY_ACCELERATORs=cub,cutensor,cutensornet
 
 
 

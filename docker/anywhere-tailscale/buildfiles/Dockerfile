@@ -79,7 +79,7 @@ RUN --mount=type=cache,target=/var/cache/apt sudo apt update \
 && $HOME/anaconda3/bin/pip install --no-cache-dir -U pip \
         cupy-cuda12x \
         pyarrow-hotfix \
-        pandas \
+        'pandas[performance]' \
         pandas_market_calendars \
         modin[ray] \
         sqlalchemy-cratedb \
