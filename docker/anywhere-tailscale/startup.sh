@@ -416,16 +416,13 @@ elif [ "$NODETYPE" = "user" ]; then
   conda config --set default_threads $(nproc)
   conda config --set repodata_threads $(nproc)
   conda config --set fetch_threads $(nproc)
-  conda config --set pip_interop_enabled false
-  conda install -n base --solver=classic -y conda-libmamba-solver
-  conda config --set solver libmamba
-  #conda update -n base -c defaults
+  conda config --set pip_interop_enabled true
   conda config --append channels rapidsai
   conda config --append channels conda-forge
   export JUPYTERLAB_SETTINGS_DIR='/data/.jupyter/lab/user-settings/'
   export JUPYTERLAB_WORKSPACES_DIR='/data/.jupyter/lab/workspaces/'
   conda install --strict-channel-priority -y ipympl 'ipywidgets>=8' jupyterlab 'cudf=24.12' libta-lib nodejs nano ta-lib
-  jupyter-lab --allow-root --IdentityProvider.token='' --ServerApp.password='31337_hax0r' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt --keyfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key --preferred-dir /files &
+  jupyter-lab --allow-root --IdentityProvider.token='' --ServerApp.password='' --notebook-dir /files --ip 0.0.0.0 --no-browser --certfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.crt --keyfile=/data/certs/${HOSTNAME,,}.chimp-beta.ts.net.key --preferred-dir /files &
   #look into using /lab or /admin or whatever so that they can live on the same port (on the head node perhaps)
   #but we can't move it to the head node right now because the only other port is 10001 and that conflicts with ray
   #eventually we can make the below lines available to all nodetypes for cluster health checks. but first we need to configured the instances to connect was a password when connecting remotely.
