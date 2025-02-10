@@ -129,7 +129,7 @@ unless you customize this with ``storage_path`` and ``name`` in :class:`~ray.tra
     )
     tuner.fit()
 
-In this example, all experiment results can found locally at ``/tmp/custom/storage/path/experiment_name`` for further processing.
+In this example, all experiment results can be found locally at ``/tmp/custom/storage/path/experiment_name`` for further processing.
 
 
 On a multi-node cluster (Deprecated)
@@ -212,7 +212,7 @@ you can resume it any time starting from the experiment state saved in the cloud
 There are a few options for restoring an experiment:
 ``resume_unfinished``, ``resume_errored`` and ``restart_errored``.
 Please see the documentation of
-:meth:`Tuner.restore() <ray.tune.tuner.Tuner.restore>` for more details.
+:meth:`~ray.tune.Tuner.restore` for more details.
 
 
 Advanced configuration

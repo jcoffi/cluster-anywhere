@@ -28,7 +28,6 @@ if TYPE_CHECKING:
     from ray.tune.callback import Callback
     from ray.tune.execution.placement_groups import PlacementGroupFactory
     from ray.tune.experimental.output import AirVerbosity
-    from ray.tune.progress_reporter import ProgressReporter
     from ray.tune.search.sample import Domain
     from ray.tune.stopper import Stopper
     from ray.tune.utils.log import Verbosity
@@ -103,6 +102,8 @@ def _repr_dataclass(obj, *, default_values: Optional[Dict[str, Any]] = None) -> 
 class ScalingConfig:
     """Configuration for scaling training.
 
+    For more details, see :ref:`train_scaling_config`.
+
     Args:
         trainer_resources: Resources to allocate for the training coordinator.
             The training coordinator launches the worker group and executes
@@ -121,8 +122,9 @@ class ScalingConfig:
             argument.
         resources_per_worker: If specified, the resources
             defined in this Dict is reserved for each worker.
-            Define the ``"CPU"`` and ``"GPU"`` keys (case-sensitive) to
-            override the number of CPU or GPUs used by each worker.
+            Define the ``"CPU"`` key (case-sensitive) to
+            override the number of CPUs used by each worker.
+            This can also be used to request :ref:`custom resources <custom-resources>`.
         placement_strategy: The placement strategy to use for the
             placement group of the Ray actors. See :ref:`Placement Group
             Strategies <pgroup-strategy>` for the possible options.
@@ -143,8 +145,8 @@ class ScalingConfig:
                 num_workers=2,
                 # Turn on/off GPU.
                 use_gpu=True,
-                # Specify resources used for trainer.
-                trainer_resources={"CPU": 1},
+                # Assign extra CPU/GPU/custom resources per worker.
+                resources_per_worker={"GPU": 1, "CPU": 1, "memory": 1e9, "custom": 1.0},
                 # Try to schedule workers on different nodes.
                 placement_strategy="SPREAD",
             )
@@ -650,7 +652,9 @@ class RunConfig:
     verbose: Optional[Union[int, "AirVerbosity", "Verbosity"]] = None
     stop: Optional[Union[Mapping, "Stopper", Callable[[str, Mapping], bool]]] = None
     callbacks: Optional[List["Callback"]] = None
-    progress_reporter: Optional["ProgressReporter"] = None
+    progress_reporter: Optional[
+        "ray.tune.progress_reporter.ProgressReporter"  # noqa: F821
+    ] = None
     log_to_file: Union[bool, str, Tuple[str, str]] = False
 
     # Deprecated
@@ -661,9 +665,17 @@ class RunConfig:
         from ray.train.constants import DEFAULT_STORAGE_PATH
         from ray.tune.experimental.output import AirVerbosity, get_air_verbosity
 
+        if self.local_dir is not None:
+            raise DeprecationWarning(
+                "The `RunConfig(local_dir)` argument is deprecated. "
+                "You should set the `RunConfig(storage_path)` instead."
+                "See the docs: https://docs.ray.io/en/latest/train/user-guides/"
+                "persistent-storage.html#setting-the-local-staging-directory"
+            )
+
         if self.storage_path is None:
-            # TODO(justinvyu): [Deprecated] Remove fallback to local dir.
-            self.storage_path = self.local_dir or DEFAULT_STORAGE_PATH
+            # TODO(justinvyu): [Deprecated] Remove in 2.30
+            self.storage_path = DEFAULT_STORAGE_PATH
 
             # If no remote path is set, try to get Ray Storage URI
             ray_storage_uri: Optional[str] = _get_storage_uri()
@@ -683,16 +695,14 @@ class RunConfig:
         if not self.checkpoint_config:
             self.checkpoint_config = CheckpointConfig()
 
+        # Save the original verbose value to check for deprecations
+        self._verbose = self.verbose
         if self.verbose is None:
             # Default `verbose` value. For new output engine,
             # this is AirVerbosity.DEFAULT.
             # For old output engine, this is Verbosity.V3_TRIAL_DETAILS
             # Todo (krfricke): Currently uses number to pass test_configs::test_repr
             self.verbose = get_air_verbosity(AirVerbosity.DEFAULT) or 3
-
-        # Convert Paths to strings
-        if isinstance(self.local_dir, Path):
-            self.local_dir = self.local_dir.as_posix()
 
         if isinstance(self.storage_path, Path):
             self.storage_path = self.storage_path.as_posix()
